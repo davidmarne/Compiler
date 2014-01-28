@@ -13,6 +13,7 @@ public class Scanner {
 	
 	public static Token dispatch(){
 		//skip white space
+		//set lineNum and colNum
 		//peek
 		//switch for each possible FSA
 		//call that FSA's fucntion which returns token
@@ -35,5 +36,8 @@ public class Scanner {
 		return colNumber;
 	}
 	
+	private void peekedDigit(){
+		
+	}
 	
 }
