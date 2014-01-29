@@ -79,73 +79,467 @@ public class Scanner {
 	}
 	
 	public static Token digitFSA(){
+		/*
+		 * states are enumerated
+		 */
+		int state = 0;
 		int indexOfLastAccept;
 		char currentChar = file.charAt(index);
 		String lexeme = "";
+		
 		while(true){
-			switch(currentChar){
-				case '0':
-					indexOfLastAccept = index;
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-				case '1':
-					indexOfLastAccept = index;
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-				case '2':
-					indexOfLastAccept = index;
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-				case '3':
-					indexOfLastAccept = index;
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-				case '4':
-					indexOfLastAccept = index;
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-				case '5':
-					indexOfLastAccept = index;
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-				case '6':
-					indexOfLastAccept = index;
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-				case '7':
-					indexOfLastAccept = index;
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-				case '8':
-					indexOfLastAccept = index;
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-				case '9':
-					indexOfLastAccept = index;
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-				case '.':
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-				case 'e':
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-				case 'E':
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
+			currentChar = file.charAt(index);
+			switch(state){
+				case 0:
+					switch(currentChar){
+						case '0':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 1;
+						case '1':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 1;
+						case '2':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 1;
+						case '3':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 1;
+						case '4':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 1;
+						case '5':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 1;
+						case '6':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 1;
+						case '7':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 1;
+						case '8':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 1;
+						case '9':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 1;
+						default:
+							//return mp_int_lit
+							//index = indexOfLastAccept + 1
+							//
+					}
+				case 1:
+					switch(currentChar){
+						case '0':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '1':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '2':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '3':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '4':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '5':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '6':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '7':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '8':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '9':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '.':
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 2;
+						case 'e':
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 3;
+						case 'E':
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 3;
+					}
+				case 2:
+					switch(currentChar){
+						case '0':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 6;
+						case '1':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 6;
+						case '2':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 6;
+						case '3':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 6;
+						case '4':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 6;
+						case '5':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 6;
+						case '6':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 6;
+						case '7':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 6;
+						case '8':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 6;
+						case '9':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 6;
+					}
+				case 3:
+					switch(currentChar){
+						case '0':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '1':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '2':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '3':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '4':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '5':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '6':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '7':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '8':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '9':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '+' :
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 4;
+						case '-' :
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 4;
+					}
+				case 4:
+					switch(currentChar){
+						case '0':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '1':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '2':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '3':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '4':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '5':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '6':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '7':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '8':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+						case '9':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 5;
+					}
+				case 5:
+					switch(currentChar){
+						case '0':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '1':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '2':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '3':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '4':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '5':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '6':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '7':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '8':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '9':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+					}
+				case 6:
+					switch(currentChar){
+						case '0':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '1':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '2':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '3':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '4':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '5':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '6':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '7':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '8':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case '9':
+							indexOfLastAccept = index;
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+						case 'e':
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 3;
+						case 'E':
+							lexeme = lexeme + currentChar;
+							index++;
+							colNumber++;
+							state = 3;
+					}
 			}
 		}
 	}
