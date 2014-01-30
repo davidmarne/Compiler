@@ -49,11 +49,11 @@ public class Scanner {
 			
 		}
 		//switch for each possible FSA
-		//call that FSA's fucntion which returns token
+		//call that FSA's function which returns token
 	}
 	
 	public static void openFile(String fileName) throws IOException{
-		//get file frome esus
+		//get file from esus
 		index = 0;
 		input = new BufferedReader(new FileReader(fileName));
 		file = "";
@@ -78,15 +78,7 @@ public class Scanner {
 	public static int getColumnNumber(){
 		return colNumber;
 	}
-	
-<<<<<<< Updated upstream
-	public static String digitFSA(){
-		/*
-		 * states are enumerated
-		 */
-		int state = 0;
-		int indexOfLastAccept = 0;
-=======
+
 	public static String MP_STRING_LIT() {
 		int indexOfLastAccept;
 		char currentChar = file.charAt(index);
@@ -136,10 +128,13 @@ public class Scanner {
 			}
 		}
 	}
-	
-	public static Token digitFSA(){
-		int indexOfLastAccept;
->>>>>>> Stashed changes
+
+	public static String digitFSA(){
+	/*
+	 * states are enumerated
+	 */
+		int state = 0;
+		int indexOfLastAccept = 0;
 		char currentChar = file.charAt(index);
 		String lexeme = "";
 		String tempLexeme = "";
