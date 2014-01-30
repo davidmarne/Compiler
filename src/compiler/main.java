@@ -11,9 +11,12 @@ public class main {
 		//String filename = args[0];
 
 		try{
-			
-			Scanner.openFile(args[0]);
-			//Scanner.getToken(input);
+			String s = " ";
+			while(s != ""){
+				Scanner.openFile("test.txt");
+				s = Scanner.getToken();
+				System.out.println(s);
+			}
 		}catch(Exception e){
 			
 		}

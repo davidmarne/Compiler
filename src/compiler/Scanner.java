@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Scanner {
-	static Token currentToken;
+	static String currentToken;
 	static String currentLexeme;
 	static int lineNumber;
 	static int colNumber;
@@ -21,11 +21,11 @@ public class Scanner {
 										{"MP_OR","or"}, {"MP_PROCEDURE","procedure"},{"MP_PROGRAM","program"},{"MP_READ","read"},{"MP_REPEAT","repeat"},
 										{"MP_THEN","then"},{"MP_TO","to"},{"MP_UNTIL","until"},{"MP_VAR","var"},{"MP_WHILE","while"},{"MP_WRITE","write"}};
 
-	public static Token getToken() {
+	public static String getToken() throws IOException {
 		return dispatch();
 	}
 
-	public static Token dispatch() throws IOException {
+	public static String dispatch() throws IOException {
 		// skip white space
 		char currentChar;
 		while (true) {
@@ -44,13 +44,14 @@ public class Scanner {
 		}
 		currentChar = file.charAt(index);
 		if (Character.isDigit(currentChar)) {
-			// go to digit FSA
+			return digitFSA();
 		} else if (Character.isAlphabetic(currentChar)) {
-			currentChar = Character.toLowerCase(currentChar);
+			return MP_STRING_LIT();
 			// go to identifier FSA
 		} else {
 
 		}
+		return "";
 		//switch for each possible FSA
 		//call that FSA's function which returns token
 	}
@@ -142,6 +143,7 @@ public class Scanner {
 		String lexeme = "";
 		String tempLexeme = "";
 		
+		
 		while(true){
 			currentChar = file.charAt(index);
 			switch(state){
@@ -153,10 +155,12 @@ public class Scanner {
 						index++;
 						colNumber++;
 						state = 1;
+						currentToken = reservedWords[12][0];
 					}else{
 						index = ++indexOfLastAccept;
 						return lexeme;
 					}
+					break;
 				case 1:
 					if(Character.isDigit(currentChar)){
 						tempLexeme += currentChar;
@@ -164,6 +168,7 @@ public class Scanner {
 						indexOfLastAccept = index;
 						index++;
 						colNumber++;
+						currentToken = reservedWords[12][0];
 					}else if(currentChar == 'e' || currentChar == 'E'){
 						tempLexeme += currentChar;
 						index++;
@@ -178,18 +183,21 @@ public class Scanner {
 						index = ++indexOfLastAccept;
 						return lexeme;
 					}
+					break;
 				case 2:
 					if(Character.isDigit(currentChar)){
 						indexOfLastAccept = index;
-						lexeme += currentChar;
 						tempLexeme += currentChar;
+						lexeme = tempLexeme;
 						index++;
 						colNumber++;
 						state = 6;
+						currentToken = reservedWords[7][0];
 					}else{
 						index = ++indexOfLastAccept;
 						return lexeme;
 					}
+					break;
 				case 3:
 					if(Character.isDigit(currentChar)){
 						tempLexeme += currentChar;
@@ -198,6 +206,7 @@ public class Scanner {
 						index++;
 						colNumber++;
 						state = 5;
+						currentToken = reservedWords[8][0];
 					}else if(currentChar == '+' || currentChar == '-'){
 						tempLexeme += currentChar;
 						index++;
@@ -207,6 +216,7 @@ public class Scanner {
 						index = ++indexOfLastAccept;
 						return lexeme;
 					}
+					break;
 				case 4:
 					if(Character.isDigit(currentChar)){
 						tempLexeme += currentChar;
@@ -215,7 +225,9 @@ public class Scanner {
 						index++;
 						colNumber++;
 						state = 5;
+						currentToken = reservedWords[8][0];
 					}
+					break;
 				case 5:
 					if(Character.isDigit(currentChar)){
 						tempLexeme += currentChar;
@@ -223,10 +235,12 @@ public class Scanner {
 						indexOfLastAccept = index;
 						index++;
 						colNumber++;
+						currentToken = reservedWords[8][0];
 					}else{
 						index = ++indexOfLastAccept;
 						return lexeme;
 					}
+					break;
 				case 6:
 					if(Character.isDigit(currentChar)){
 						tempLexeme += currentChar;
@@ -234,6 +248,7 @@ public class Scanner {
 						indexOfLastAccept = index;
 						index++;
 						colNumber++;
+						currentToken = reservedWords[7][0];
 					}else if(currentChar == 'e' || currentChar == 'E'){
 						tempLexeme += currentChar;
 						index++;
@@ -243,6 +258,7 @@ public class Scanner {
 						index = ++indexOfLastAccept;
 						return lexeme;
 					}
+					break;
 			}
 		}
 	}
