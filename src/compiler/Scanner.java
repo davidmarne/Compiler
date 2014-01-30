@@ -14,6 +14,7 @@ public class Scanner {
 	static BufferedReader input;
 	static String file;
 	static int index;
+	char letter = 'a'|'b';
 	
 	
 	
@@ -78,467 +79,116 @@ public class Scanner {
 		return colNumber;
 	}
 	
-	public static Token digitFSA(){
+	public static String digitFSA(){
 		/*
 		 * states are enumerated
 		 */
 		int state = 0;
-		int indexOfLastAccept;
+		int indexOfLastAccept = 0;
 		char currentChar = file.charAt(index);
 		String lexeme = "";
+		String tempLexeme = "";
 		
 		while(true){
 			currentChar = file.charAt(index);
 			switch(state){
 				case 0:
-					switch(currentChar){
-						case '0':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 1;
-						case '1':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 1;
-						case '2':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 1;
-						case '3':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 1;
-						case '4':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 1;
-						case '5':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 1;
-						case '6':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 1;
-						case '7':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 1;
-						case '8':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 1;
-						case '9':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 1;
-						default:
-							//return mp_int_lit
-							//index = indexOfLastAccept + 1
-							//
+					if(Character.isDigit(currentChar)){
+						lexeme += currentChar;
+						tempLexeme += currentChar;
+						indexOfLastAccept = index;
+						index++;
+						colNumber++;
+						state = 1;
+					}else{
+						index = ++indexOfLastAccept;
+						return lexeme;
 					}
 				case 1:
-					switch(currentChar){
-						case '0':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '1':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '2':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '3':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '4':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '5':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '6':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '7':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '8':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '9':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '.':
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 2;
-						case 'e':
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 3;
-						case 'E':
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 3;
+					if(Character.isDigit(currentChar)){
+						tempLexeme += currentChar;
+						lexeme = tempLexeme;
+						indexOfLastAccept = index;
+						index++;
+						colNumber++;
+					}else if(currentChar == 'e' || currentChar == 'E'){
+						tempLexeme += currentChar;
+						index++;
+						colNumber++;
+						state = 3;
+					}else if(currentChar == '.'){
+						tempLexeme += currentChar;
+						index++;
+						colNumber++;
+						state = 2;
+					}else{
+						index = ++indexOfLastAccept;
+						return lexeme;
 					}
 				case 2:
-					switch(currentChar){
-						case '0':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 6;
-						case '1':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 6;
-						case '2':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 6;
-						case '3':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 6;
-						case '4':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 6;
-						case '5':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 6;
-						case '6':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 6;
-						case '7':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 6;
-						case '8':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 6;
-						case '9':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 6;
+					if(Character.isDigit(currentChar)){
+						indexOfLastAccept = index;
+						lexeme += currentChar;
+						tempLexeme += currentChar;
+						index++;
+						colNumber++;
+						state = 6;
+					}else{
+						index = ++indexOfLastAccept;
+						return lexeme;
 					}
 				case 3:
-					switch(currentChar){
-						case '0':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '1':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '2':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '3':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '4':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '5':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '6':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '7':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '8':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '9':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '+' :
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 4;
-						case '-' :
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 4;
+					if(Character.isDigit(currentChar)){
+						tempLexeme += currentChar;
+						lexeme = tempLexeme;
+						indexOfLastAccept = index;
+						index++;
+						colNumber++;
+						state = 5;
+					}else if(currentChar == '+' || currentChar == '-'){
+						tempLexeme += currentChar;
+						index++;
+						colNumber++;
+						state = 4;
+					}else{
+						index = ++indexOfLastAccept;
+						return lexeme;
 					}
 				case 4:
-					switch(currentChar){
-						case '0':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '1':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '2':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '3':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '4':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '5':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '6':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '7':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '8':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
-						case '9':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 5;
+					if(Character.isDigit(currentChar)){
+						tempLexeme += currentChar;
+						lexeme = tempLexeme;
+						indexOfLastAccept = index;
+						index++;
+						colNumber++;
+						state = 5;
 					}
 				case 5:
-					switch(currentChar){
-						case '0':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '1':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '2':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '3':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '4':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '5':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '6':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '7':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '8':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '9':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
+					if(Character.isDigit(currentChar)){
+						tempLexeme += currentChar;
+						lexeme = tempLexeme;
+						indexOfLastAccept = index;
+						index++;
+						colNumber++;
+					}else{
+						index = ++indexOfLastAccept;
+						return lexeme;
 					}
 				case 6:
-					switch(currentChar){
-						case '0':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '1':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '2':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '3':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '4':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '5':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '6':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '7':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '8':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case '9':
-							indexOfLastAccept = index;
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-						case 'e':
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 3;
-						case 'E':
-							lexeme = lexeme + currentChar;
-							index++;
-							colNumber++;
-							state = 3;
+					if(Character.isDigit(currentChar)){
+						tempLexeme += currentChar;
+						lexeme = tempLexeme;
+						indexOfLastAccept = index;
+						index++;
+						colNumber++;
+					}else if(currentChar == 'e' || currentChar == 'E'){
+						tempLexeme += currentChar;
+						index++;
+						colNumber++;
+						state = 3;
+					}else{
+						index = ++indexOfLastAccept;
+						return lexeme;
 					}
 			}
 		}
