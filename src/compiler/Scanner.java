@@ -79,12 +79,67 @@ public class Scanner {
 		return colNumber;
 	}
 	
+<<<<<<< Updated upstream
 	public static String digitFSA(){
 		/*
 		 * states are enumerated
 		 */
 		int state = 0;
 		int indexOfLastAccept = 0;
+=======
+	public static String MP_STRING_LIT() {
+		int indexOfLastAccept;
+		char currentChar = file.charAt(index);
+		String lexeme = "";
+		String tempLexeme = "";
+		int state = 0;
+		while(true){
+			currentChar = file.charAt(index);
+			switch(state){
+				case 0:
+					if(currentChar == '\'') {
+						tempLexeme += currentChar;
+						index++;
+						colNumber++;
+						state = 1;
+					} else {
+						// we should never make it here
+					}
+				case 1:
+					if(currentChar == '\'') { // to accept state
+						tempLexeme += currentChar;
+						lexeme = tempLexeme;
+						indexOfLastAccept = index;
+						index++;
+						colNumber++;
+						lexeme = tempLexeme;
+						state = 2;
+					} else if (currentChar == '\n') {
+						return lexeme;
+					} else { //other
+						tempLexeme += currentChar;
+						index++;
+						colNumber++;
+						state = 2;
+					}
+				case 2:
+					if (currentChar == '\'') {
+						tempLexeme += currentChar;
+						lexeme = tempLexeme;
+						indexOfLastAccept = index;
+						index++;
+						colNumber++;
+						state = 1;	
+					} else {
+						return lexeme;
+					}
+			}
+		}
+	}
+	
+	public static Token digitFSA(){
+		int indexOfLastAccept;
+>>>>>>> Stashed changes
 		char currentChar = file.charAt(index);
 		String lexeme = "";
 		String tempLexeme = "";
