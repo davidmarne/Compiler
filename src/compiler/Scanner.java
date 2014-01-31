@@ -9,6 +9,7 @@ public class Scanner {
 	static String currentToken;
 	static String currentLexeme;
 	static int lineNumber;
+	static int currentColNumber;
 	static int colNumber;
 	static BufferedReader input;
 	static String file;
@@ -22,6 +23,7 @@ public class Scanner {
 
 	public static String getToken() throws IOException {
 		return dispatch();
+		
 	}
 
 	public static String dispatch() throws IOException {
@@ -32,19 +34,20 @@ public class Scanner {
 			if (Character.isWhitespace(currentChar)) {
 				if (currentChar == '\n') {
 					lineNumber++;
-					colNumber = 0;
+					currentColNumber = 0;
 				} else {
-					colNumber++;
+					currentColNumber++;
 				}
 				index++;
 			} else {
 				break;
 			}
 		}
+		colNumber = currentColNumber;
 		currentChar = file.charAt(index);
 		if (Character.isDigit(currentChar)) {
 			return digitFSA();
-		} else if (Character.isAlphabetic(currentChar)) {
+		} else if (Character.isAlphabetic(currentChar) || currentChar == '_') {
 			MP_IDENTIFIER();
 			return getTokenFromIdentifier(currentLexeme);
 		} else {
@@ -98,7 +101,7 @@ public class Scanner {
 		}
 		file += (char) 3;
 		lineNumber = 0;
-		colNumber = 0;
+		currentColNumber = 0;
 	}
 
 	public static String getLexeme() {
@@ -130,7 +133,7 @@ public class Scanner {
 					if(currentChar == '\'') {
 						tempLexeme += currentChar;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						state = 1;
 					} else {
 						// we should never make it here
@@ -142,7 +145,7 @@ public class Scanner {
 						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						currentLexeme = tempLexeme;
 						state = 2;
 					} else if (currentChar == '\n') {
@@ -151,7 +154,7 @@ public class Scanner {
 					} else { //other
 						tempLexeme += currentChar;
 						index++;
-						colNumber++;
+						currentColNumber++;
 					}
 					break;
 				case 2:
@@ -160,7 +163,7 @@ public class Scanner {
 						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						state = 1;	
 					} else {
 						index = ++indexOfLastAccept;
@@ -191,7 +194,7 @@ public class Scanner {
 						tempLexeme += currentChar;
 						indexOfLastAccept = index;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						state = 1;
 						currentToken = "MP_INTEGER_LIT";
 					}else{
@@ -205,17 +208,17 @@ public class Scanner {
 						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						currentToken = "MP_INTEGER_LIT";
 					}else if(currentChar == 'e' || currentChar == 'E'){
 						tempLexeme += currentChar;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						state = 3;
 					}else if(currentChar == '.'){
 						tempLexeme += currentChar;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						state = 2;
 					}else{
 						index = ++indexOfLastAccept;
@@ -228,7 +231,7 @@ public class Scanner {
 						tempLexeme += currentChar;
 						currentLexeme = tempLexeme;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						state = 6;
 						currentToken = "MP_FIXED_LIT";
 					}else{
@@ -242,13 +245,13 @@ public class Scanner {
 						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						state = 5;
 						currentToken = "MP_FLOAT_LIT";
 					}else if(currentChar == '+' || currentChar == '-'){
 						tempLexeme += currentChar;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						state = 4;
 					}else{
 						index = ++indexOfLastAccept;
@@ -261,7 +264,7 @@ public class Scanner {
 						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						state = 5;
 						currentToken = "MP_FLOAT_LIT";
 					}
@@ -272,7 +275,7 @@ public class Scanner {
 						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						currentToken = "MP_FLOAT_LIT";
 					}else{
 						index = ++indexOfLastAccept;
@@ -285,12 +288,12 @@ public class Scanner {
 						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						currentToken = "MP_FIXED_LIT";
 					}else if(currentChar == 'e' || currentChar == 'E'){
 						tempLexeme += currentChar;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						state = 3;
 					}else{
 						index = ++indexOfLastAccept;
@@ -310,7 +313,7 @@ public class Scanner {
 			case '.':
 				currentLexeme = currentLexeme+ currentChar;
 				index++;
-				colNumber++;
+				currentColNumber++;
 				currentToken = "MP_PERIOD";
 				return currentToken;
 			default:
@@ -328,7 +331,7 @@ public class Scanner {
 			case ',':
 				currentLexeme = currentLexeme+ currentChar;
 				index++;
-				colNumber++;
+				currentColNumber++;
 				currentToken = "MP_COMMA";
 				return currentToken;
 			default:
@@ -346,7 +349,7 @@ public class Scanner {
 			case ';':
 				currentLexeme = currentLexeme+ currentChar;
 				index++;
-				colNumber++;
+				currentColNumber++;
 				currentToken = "MP_SCOLON";
 				return currentToken;
 			default:
@@ -364,7 +367,7 @@ public class Scanner {
 			case '(':
 				currentLexeme = currentLexeme+ currentChar;
 				index++;
-				colNumber++;
+				currentColNumber++;
 				currentToken = "MP_LPAREN";
 				return currentToken;
 			default:
@@ -382,7 +385,7 @@ public class Scanner {
 			case ')':
 				currentLexeme = currentLexeme+ currentChar;
 				index++;
-				colNumber++;
+				currentColNumber++;
 				currentToken = "MP_RPAREN";
 				return currentToken;
 			default:
@@ -400,7 +403,7 @@ public class Scanner {
 			case '=':
 				currentLexeme = currentLexeme+ currentChar;
 				index++;
-				colNumber++;
+				currentColNumber++;
 				currentToken = "MP_EQUAL";
 				return currentToken;
 			default:
@@ -423,7 +426,7 @@ public class Scanner {
 				case '>':
 					currentLexeme = currentLexeme+ currentChar;
 					index++;
-					colNumber++;
+					currentColNumber++;
 					state = 1;
 				}
 				break;
@@ -432,7 +435,7 @@ public class Scanner {
 				case '=':
 					currentLexeme = currentLexeme+ currentChar;
 					index++;
-					colNumber++;
+					currentColNumber++;
 					currentToken = "MP_GEQUAL";
 					return currentToken;
 				default:
@@ -457,7 +460,7 @@ public class Scanner {
 					case '<':
 						currentLexeme = currentLexeme+ currentChar;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						state = 1;
 					}
 					break;
@@ -466,13 +469,13 @@ public class Scanner {
 					case '=':
 						currentLexeme = currentLexeme+ currentChar;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						currentToken = "MP_LEQUAL";
 						return currentToken;
 					case '>':
 						currentLexeme = currentLexeme+ currentChar;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						currentToken = "MP_NEQUAL";
 						return currentToken;
 					default:
@@ -498,7 +501,7 @@ public class Scanner {
 				case ':':
 					currentLexeme = currentLexeme+ currentChar;
 					index++;
-					colNumber++;
+					currentColNumber++;
 					state = 1;
 				}
 				break;
@@ -507,7 +510,7 @@ public class Scanner {
 				case '=':
 					currentLexeme = currentLexeme+ currentChar;
 					index++;
-					colNumber++;
+					currentColNumber++;
 					currentToken = "MP_ASSIGN";
 					return currentToken;
 				default:
@@ -527,7 +530,7 @@ public class Scanner {
 			case '+':
 				currentLexeme = currentLexeme+ currentChar;
 				index++;
-				colNumber++;
+				currentColNumber++;
 				currentToken = "MP_PLUS";
 				return currentToken;
 			default:
@@ -545,7 +548,7 @@ public class Scanner {
 			case '-':
 				currentLexeme = currentLexeme+ currentChar;
 				index++;
-				colNumber++;
+				currentColNumber++;
 				currentToken = "MP_MINUS";
 				return currentToken;
 			default:
@@ -563,7 +566,7 @@ public class Scanner {
 			case '*':
 				currentLexeme = currentLexeme+ currentChar;
 				index++;
-				colNumber++;
+				currentColNumber++;
 				currentToken = "MP_TIMES";
 				return currentToken;
 			default:
@@ -588,13 +591,13 @@ public class Scanner {
 						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						currentLexeme = tempLexeme;
 						state = 1;
 					} else if (currentChar == '_') {
 						tempLexeme += currentChar;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						state = 2;
 					}
 					break;
@@ -604,12 +607,12 @@ public class Scanner {
 						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						currentLexeme = tempLexeme;
 					} else if (currentChar == '_') {
 						tempLexeme += currentChar;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						state = 2;
 					} else { //other
 						index = ++indexOfLastAccept;
@@ -622,7 +625,7 @@ public class Scanner {
 						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
-						colNumber++;
+						currentColNumber++;
 						currentLexeme = tempLexeme;
 						state = 1;
 					} else {
@@ -639,6 +642,7 @@ public class Scanner {
 				return reservedWords[i][0];
 			}
 		}
-		return "MP_IDENTIFER";
+		currentToken = "MP_IDENTIFIER";
+		return currentToken;
 	}
 }
