@@ -639,7 +639,8 @@ public class Scanner {
 	private static String getTokenFromIdentifier(String lexeme){
 		for(int i = 0; i < reservedWords.length; i++){
 			if(lexeme.equals(reservedWords[i][1])){
-				return reservedWords[i][0];
+				currentToken = reservedWords[i][0];
+				return currentToken;
 			}
 		}
 		currentToken = "MP_IDENTIFIER";
