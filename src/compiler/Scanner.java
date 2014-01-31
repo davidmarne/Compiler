@@ -44,10 +44,38 @@ public class Scanner {
 		currentChar = file.charAt(index);
 		if (Character.isDigit(currentChar)) {
 			return digitFSA();
-		} else if (currentChar == '\'') {
-			return MP_STRING_LIT();
-			// go to identifier FSA
+		} else if (Character.isAlphabetic(currentChar)) {
+			MP_IDENTIFIER();
+			return getTokenFromIdentifier(currentLexeme);
 		} else {
+			switch(currentChar){
+			case('\''):
+				return MP_STRING_LIT();
+			case('.'):
+				return MP_PERIOD();
+			case(','):
+				return MP_COMMA();
+			case(';'):
+				return MP_SCOLON();
+			case('('):
+				return MP_LPAREN();
+			case(')'):
+				return MP_RPAREN();
+			case('='):
+				return MP_EQUAL();
+			case('>'):
+				return MP_GTHAN();
+			case('<'):
+				return MP_LTHAN();
+			case(':'):
+				return MP_ASSIGN();
+			case('+'):
+				return MP_PLUS();
+			case('-'):
+				return MP_MINUS();
+			case('*'):
+				return MP_TIMES();
+			}
 
 		}
 		return "";
@@ -270,15 +298,16 @@ public class Scanner {
 
 	public static String MP_PERIOD() {
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme= "";
 
 		while (true) {
 			switch (currentChar) {
 			case '.':
-				lexeme = lexeme + currentChar;
+				currentLexeme = currentLexeme+ currentChar;
 				index++;
 				colNumber++;
-				return lexeme;
+				currentToken = "MP_PERIOD";
+				return currentToken;
 			default:
 				// Should never reach here
 			}
@@ -287,15 +316,16 @@ public class Scanner {
 
 	public static String MP_COMMA() {
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme= "";
 
 		while (true) {
 			switch (currentChar) {
 			case ',':
-				lexeme = lexeme + currentChar;
+				currentLexeme = currentLexeme+ currentChar;
 				index++;
 				colNumber++;
-				return lexeme;
+				currentToken = "MP_COMMA";
+				return currentToken;
 			default:
 				// Should never reach here
 			}
@@ -304,15 +334,16 @@ public class Scanner {
 
 	public static String MP_SCOLON() {
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme= "";
 
 		while (true) {
 			switch (currentChar) {
 			case ';':
-				lexeme = lexeme + currentChar;
+				currentLexeme = currentLexeme+ currentChar;
 				index++;
 				colNumber++;
-				return lexeme;
+				currentToken = "MP_SCOLON";
+				return currentToken;
 			default:
 				// Should never reach here
 			}
@@ -321,15 +352,16 @@ public class Scanner {
 
 	public static String MP_LPAREN() {
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme= "";
 
 		while (true) {
 			switch (currentChar) {
 			case '(':
-				lexeme = lexeme + currentChar;
+				currentLexeme = currentLexeme+ currentChar;
 				index++;
 				colNumber++;
-				return lexeme;
+				currentToken = "MP_LPAREN";
+				return currentToken;
 			default:
 				// Should never reach here
 			}
@@ -338,15 +370,16 @@ public class Scanner {
 
 	public static String MP_RPAREN() {
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme= "";
 
 		while (true) {
 			switch (currentChar) {
 			case ')':
-				lexeme = lexeme + currentChar;
+				currentLexeme = currentLexeme+ currentChar;
 				index++;
 				colNumber++;
-				return lexeme;
+				currentToken = "MP_RPAREN";
+				return currentToken;
 			default:
 				// Should never reach here
 			}
@@ -355,186 +388,143 @@ public class Scanner {
 
 	public static String MP_EQUAL() {
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme= "";
 
 		while (true) {
 			switch (currentChar) {
 			case '=':
-				lexeme = lexeme + currentChar;
+				currentLexeme = currentLexeme+ currentChar;
 				index++;
 				colNumber++;
-				return lexeme;
+				currentToken = "MP_EQUAL";
+				return currentToken;
 			default:
 				// Should never reach here
 			}
 		}
 	}
+
 
 	public static String MP_GTHAN() {
+		int state = 0;
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme= "";
 
 		while (true) {
-			switch (currentChar) {
-			case '>':
-				lexeme = lexeme + currentChar;
-				index++;
-				colNumber++;
-				return lexeme;
-			default:
-				// Should never reach here
+			currentChar = file.charAt(index);
+			switch (state) {
+			case 0:
+				switch (currentChar) {
+				case '>':
+					currentLexeme = currentLexeme+ currentChar;
+					index++;
+					colNumber++;
+					state = 1;
+				}
+				break;
+			case 1:
+				switch (currentChar) {
+				case '=':
+					currentLexeme = currentLexeme+ currentChar;
+					index++;
+					colNumber++;
+					currentToken = "MP_GEQUAL";
+					return currentToken;
+				default:
+					currentToken = "MP_GTHAN";
+					return currentToken;
+				}
+
 			}
 		}
 	}
-
+	
 	public static String MP_LTHAN() {
-		char currentChar = file.charAt(index);
-		String lexeme = "";
-
-		while (true) {
-			switch (currentChar) {
-			case '<':
-				lexeme = lexeme + currentChar;
-				index++;
-				colNumber++;
-				return lexeme;
-			default:
-				// Should never reach here
-			}
-		}
-	}
-
-	public static String MP_GEQUAL() {
 		int state = 0;
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme= "";
 
 		while (true) {
+			currentChar = file.charAt(index);
 			switch (state) {
-			case 0:
-				switch (currentChar) {
-				case '>':
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-					state = 1;
-				}
-			case 1:
-				switch (currentChar) {
-				case '=':
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-					return lexeme;
-				default:
-					return lexeme;
-				}
+				case 0:
+					switch (currentChar) {
+					case '<':
+						currentLexeme = currentLexeme+ currentChar;
+						index++;
+						colNumber++;
+						state = 1;
+					}
+					break;
+				case 1:
+					switch (currentChar) {
+					case '=':
+						currentLexeme = currentLexeme+ currentChar;
+						index++;
+						colNumber++;
+						currentToken = "MP_LEQUAL";
+						return currentToken;
+					case '>':
+						currentLexeme = currentLexeme+ currentChar;
+						index++;
+						colNumber++;
+						currentToken = "MP_NEQUAL";
+						return currentToken;
+					default:
+						currentToken = "MP_LTHAN";
+						return currentToken;
+					}
 
 			}
 		}
 	}
 	
-	public static String MP_LEQUAL() {
-		int state = 0;
-		char currentChar = file.charAt(index);
-		String lexeme = "";
-
-		while (true) {
-			switch (state) {
-			case 0:
-				switch (currentChar) {
-				case '<':
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-					state = 1;
-				}
-			case 1:
-				switch (currentChar) {
-				case '=':
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-					return lexeme;
-				default:
-					return lexeme;
-				}
-
-			}
-		}
-	}
-	
-	public static String MP_NEQUAL() {
-		int state = 0;
-		char currentChar = file.charAt(index);
-		String lexeme = "";
-
-		while (true) {
-			switch (state) {
-			case 0:
-				switch (currentChar) {
-				case '<':
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-					state = 1;
-				}
-			case 1:
-				switch (currentChar) {
-				case '>':
-					lexeme = lexeme + currentChar;
-					index++;
-					colNumber++;
-					return lexeme;
-				default:
-					return lexeme;
-				}
-
-			}
-		}
-	}
 	
 	public static String MP_ASSIGN() {
 		int state = 0;
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme= "";
 
 		while (true) {
+			currentChar = file.charAt(index);
 			switch (state) {
 			case 0:
 				switch (currentChar) {
 				case ':':
-					lexeme = lexeme + currentChar;
+					currentLexeme = currentLexeme+ currentChar;
 					index++;
 					colNumber++;
 					state = 1;
 				}
+				break;
 			case 1:
 				switch (currentChar) {
 				case '=':
-					lexeme = lexeme + currentChar;
+					currentLexeme = currentLexeme+ currentChar;
 					index++;
 					colNumber++;
-					return lexeme;
+					currentToken = "MP_ASSIGN";
+					return currentToken;
 				default:
-					return lexeme;
+					currentToken = "MP_COLON";
+					return currentToken;
 				}
-
 			}
 		}
 	}
 	
 	public static String MP_PLUS() {
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme= "";
 
 		while (true) {
 			switch (currentChar) {
 			case '+':
-				lexeme = lexeme + currentChar;
+				currentLexeme = currentLexeme+ currentChar;
 				index++;
 				colNumber++;
-				return lexeme;
+				currentToken = "MP_PLUS";
+				return currentToken;
 			default:
 				// Should never reach here
 			}
@@ -543,15 +533,16 @@ public class Scanner {
 	
 	public static String MP_MINUS() {
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme= "";
 
 		while (true) {
 			switch (currentChar) {
 			case '-':
-				lexeme = lexeme + currentChar;
+				currentLexeme = currentLexeme+ currentChar;
 				index++;
 				colNumber++;
-				return lexeme;
+				currentToken = "MP_MINUS";
+				return currentToken;
 			default:
 				// Should never reach here
 			}
@@ -560,37 +551,22 @@ public class Scanner {
 	
 	public static String MP_TIMES() {
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme= "";
 
 		while (true) {
 			switch (currentChar) {
 			case '*':
-				lexeme = lexeme + currentChar;
+				currentLexeme = currentLexeme+ currentChar;
 				index++;
 				colNumber++;
-				return lexeme;
+				currentToken = "MP_TIMES";
+				return currentToken;
 			default:
 				// Should never reach here
 			}
 		}
 	}
 	
-	public static String MP_COLON() {
-		char currentChar = file.charAt(index);
-		String lexeme = "";
-
-		while (true) {
-			switch (currentChar) {
-			case ':':
-				lexeme = lexeme + currentChar;
-				index++;
-				colNumber++;
-				return lexeme;
-			default:
-				// Should never reach here
-			}
-		}
-	}
 	
 	public static String MP_IDENTIFIER() {
 		int indexOfLastAccept = index - 1;
@@ -632,7 +608,7 @@ public class Scanner {
 						state = 2;
 					} else { //other
 						index = ++indexOfLastAccept;
-						return "MP_STRING_LIT";
+						return "MP_IDENTIFIER";
 					}
 					break;
 				case 2:
@@ -646,10 +622,18 @@ public class Scanner {
 						state = 1;
 					} else {
 						index = ++indexOfLastAccept;
-						return "MP_STRING_LIT";
+						return "MP_IDENTIFIER";
 					}
 					break;
 			}
 		}
+	}
+	private static String getTokenFromIdentifier(String lexeme){
+		for(int i = 0; i < reservedWords.length; i++){
+			if(lexeme.equals(reservedWords[i][1])){
+				return reservedWords[i][0];
+			}
+		}
+		return "MP_IDENTIFER";
 	}
 }
