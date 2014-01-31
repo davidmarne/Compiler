@@ -591,4 +591,65 @@ public class Scanner {
 			}
 		}
 	}
+	
+	public static String MP_IDENTIFIER() {
+		int indexOfLastAccept = index - 1;
+		char currentChar = file.charAt(index);
+		currentLexeme = "";
+		String tempLexeme = "";
+		int state = 0;
+		while(true){
+			currentChar = file.charAt(index);
+			switch(state){
+				case 0:
+					if(Character.isAlphabetic(currentChar)) { // to accept state
+						tempLexeme += currentChar;
+						currentLexeme = tempLexeme;
+						indexOfLastAccept = index;
+						index++;
+						colNumber++;
+						currentLexeme = tempLexeme;
+						state = 1;
+					} else if (currentChar == '_') {
+						tempLexeme += currentChar;
+						index++;
+						colNumber++;
+						state = 2;
+					}
+					break;
+				case 1:
+					if(Character.isLetterOrDigit(currentChar)) { // to accept state
+						tempLexeme += currentChar;
+						currentLexeme = tempLexeme;
+						indexOfLastAccept = index;
+						index++;
+						colNumber++;
+						currentLexeme = tempLexeme;
+					} else if (currentChar == '_') {
+						tempLexeme += currentChar;
+						index++;
+						colNumber++;
+						state = 2;
+					} else { //other
+						index = ++indexOfLastAccept;
+						return "MP_STRING_LIT";
+					}
+					break;
+				case 2:
+					if(Character.isLetterOrDigit(currentChar)) { // to accept state
+						tempLexeme += currentChar;
+						currentLexeme = tempLexeme;
+						indexOfLastAccept = index;
+						index++;
+						colNumber++;
+						currentLexeme = tempLexeme;
+						state = 1;
+					} else {
+						index = ++indexOfLastAccept;
+						return "MP_STRING_LIT";
+					}
+					break;
+			}
+		}
+	}
 }
