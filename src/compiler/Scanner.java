@@ -76,6 +76,7 @@ public class Scanner {
 			case('*'):
 				return MP_TIMES();
 			default:
+				index++;
 				return "MP_ERROR";
 			}
 			

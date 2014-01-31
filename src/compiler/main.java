@@ -16,12 +16,12 @@ public class main {
 			while(s != ""){
 				
 				s = Scanner.getToken();
-				System.out.println(s);
-				if(!s.equals("")){
-					System.out.println("LEXEME: " + Scanner.getLexeme());
-					System.out.println("Line Number: " + Scanner.getLineNumber());
-				}
-			}
+				System.out.print("token: " + Scanner.getToken());
+				System.out.print("  line number " + Scanner.getLineNumber());
+				System.out.print("  column number " + Scanner.getColumnNumber());
+				System.out.println("  lexeme " + Scanner.getLexeme());
+
+			}	
 		}catch(Exception e){
 			
 		}
