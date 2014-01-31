@@ -13,7 +13,6 @@ public class Scanner {
 	static BufferedReader input;
 	static String file;
 	static int index;
-	char letter = 'a'|'b';
 	
 	static String[][] reservedWords = {{"MP_AND","and"},{"MP_BEGIN", "begin"},{"MP_DIV", "div"},{"MP_DO", "do"},{"MP_DOWNTO", "downto"},
 										{"MP_ELSE", "else"},{"MP_END","end"},{"MP_FIXED","fixed"},{"MP_FLOAT", "float"},{"MP_FOR","for"},
@@ -45,7 +44,7 @@ public class Scanner {
 		currentChar = file.charAt(index);
 		if (Character.isDigit(currentChar)) {
 			return digitFSA();
-		} else if (Character.isAlphabetic(currentChar)) {
+		} else if (currentChar == '\'') {
 			return MP_STRING_LIT();
 			// go to identifier FSA
 		} else {
@@ -67,6 +66,8 @@ public class Scanner {
 			file += ((char) in);
 			in = input.read();
 		}
+		file += (char) 3;
+		System.out.println(file);
 		lineNumber = 0;
 		colNumber = 0;
 	}
@@ -84,9 +85,9 @@ public class Scanner {
 	}
 
 	public static String MP_STRING_LIT() {
-		int indexOfLastAccept;
+		int indexOfLastAccept = index - 1;
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme = "";
 		String tempLexeme = "";
 		int state = 0;
 		while(true){
@@ -101,34 +102,38 @@ public class Scanner {
 					} else {
 						// we should never make it here
 					}
+					break;
 				case 1:
 					if(currentChar == '\'') { // to accept state
 						tempLexeme += currentChar;
-						lexeme = tempLexeme;
+						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
 						colNumber++;
-						lexeme = tempLexeme;
+						currentLexeme = tempLexeme;
 						state = 2;
 					} else if (currentChar == '\n') {
-						return lexeme;
+						index = ++indexOfLastAccept;
+						return "MP_STRING_LIT";
 					} else { //other
 						tempLexeme += currentChar;
 						index++;
 						colNumber++;
-						state = 2;
 					}
+					break;
 				case 2:
 					if (currentChar == '\'') {
 						tempLexeme += currentChar;
-						lexeme = tempLexeme;
+						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
 						colNumber++;
 						state = 1;	
 					} else {
-						return lexeme;
+						index = ++indexOfLastAccept;
+						return "MP_STRING_LIT";
 					}
+					break;
 			}
 		}
 	}
@@ -138,9 +143,9 @@ public class Scanner {
 	 * states are enumerated
 	 */
 		int state = 0;
-		int indexOfLastAccept = 0;
+		int indexOfLastAccept = index - 1;
 		char currentChar = file.charAt(index);
-		String lexeme = "";
+		currentLexeme = "";
 		String tempLexeme = "";
 		
 		
@@ -149,26 +154,26 @@ public class Scanner {
 			switch(state){
 				case 0:
 					if(Character.isDigit(currentChar)){
-						lexeme += currentChar;
+						currentLexeme += currentChar;
 						tempLexeme += currentChar;
 						indexOfLastAccept = index;
 						index++;
 						colNumber++;
 						state = 1;
-						currentToken = reservedWords[12][0];
+						currentToken = "MP_INTEGER_LIT";
 					}else{
 						index = ++indexOfLastAccept;
-						return lexeme;
+						return currentToken;
 					}
 					break;
 				case 1:
 					if(Character.isDigit(currentChar)){
 						tempLexeme += currentChar;
-						lexeme = tempLexeme;
+						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
 						colNumber++;
-						currentToken = reservedWords[12][0];
+						currentToken = "MP_INTEGER_LIT";
 					}else if(currentChar == 'e' || currentChar == 'E'){
 						tempLexeme += currentChar;
 						index++;
@@ -181,32 +186,32 @@ public class Scanner {
 						state = 2;
 					}else{
 						index = ++indexOfLastAccept;
-						return lexeme;
+						return currentToken;
 					}
 					break;
 				case 2:
 					if(Character.isDigit(currentChar)){
 						indexOfLastAccept = index;
 						tempLexeme += currentChar;
-						lexeme = tempLexeme;
+						currentLexeme = tempLexeme;
 						index++;
 						colNumber++;
 						state = 6;
-						currentToken = reservedWords[7][0];
+						currentToken = "MP_FIXED_LIT";
 					}else{
 						index = ++indexOfLastAccept;
-						return lexeme;
+						return currentToken;
 					}
 					break;
 				case 3:
 					if(Character.isDigit(currentChar)){
 						tempLexeme += currentChar;
-						lexeme = tempLexeme;
+						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
 						colNumber++;
 						state = 5;
-						currentToken = reservedWords[8][0];
+						currentToken = "MP_FLOAT_LIT";
 					}else if(currentChar == '+' || currentChar == '-'){
 						tempLexeme += currentChar;
 						index++;
@@ -214,41 +219,41 @@ public class Scanner {
 						state = 4;
 					}else{
 						index = ++indexOfLastAccept;
-						return lexeme;
+						return currentToken;
 					}
 					break;
 				case 4:
 					if(Character.isDigit(currentChar)){
 						tempLexeme += currentChar;
-						lexeme = tempLexeme;
+						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
 						colNumber++;
 						state = 5;
-						currentToken = reservedWords[8][0];
+						currentToken = "MP_FLOAT_LIT";
 					}
 					break;
 				case 5:
 					if(Character.isDigit(currentChar)){
 						tempLexeme += currentChar;
-						lexeme = tempLexeme;
+						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
 						colNumber++;
-						currentToken = reservedWords[8][0];
+						currentToken = "MP_FLOAT_LIT";
 					}else{
 						index = ++indexOfLastAccept;
-						return lexeme;
+						return currentToken;
 					}
 					break;
 				case 6:
 					if(Character.isDigit(currentChar)){
 						tempLexeme += currentChar;
-						lexeme = tempLexeme;
+						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
 						index++;
 						colNumber++;
-						currentToken = reservedWords[7][0];
+						currentToken = "MP_FIXED_LIT";
 					}else if(currentChar == 'e' || currentChar == 'E'){
 						tempLexeme += currentChar;
 						index++;
@@ -256,7 +261,7 @@ public class Scanner {
 						state = 3;
 					}else{
 						index = ++indexOfLastAccept;
-						return lexeme;
+						return currentToken;
 					}
 					break;
 			}

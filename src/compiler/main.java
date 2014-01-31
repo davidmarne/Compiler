@@ -12,10 +12,15 @@ public class main {
 
 		try{
 			String s = " ";
+			Scanner.openFile("test.txt");
 			while(s != ""){
-				Scanner.openFile("test.txt");
+				
 				s = Scanner.getToken();
 				System.out.println(s);
+				if(!s.equals("")){
+					System.out.println("LEXEME: " + Scanner.getLexeme());
+					System.out.println("Line Number: " + Scanner.getLineNumber());
+				}
 			}
 		}catch(Exception e){
 			
