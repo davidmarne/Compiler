@@ -16,7 +16,7 @@ public class main {
 			while(s != ""){
 				
 				s = Scanner.getToken();
-				System.out.print("token: " + Scanner.getToken());
+				System.out.print("token: " + Scanner.getTokenName());
 				System.out.print("  line number " + Scanner.getLineNumber());
 				System.out.print("  column number " + Scanner.getColumnNumber());
 				System.out.println("  lexeme " + Scanner.getLexeme());

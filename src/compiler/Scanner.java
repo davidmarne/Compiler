@@ -97,7 +97,6 @@ public class Scanner {
 			in = input.read();
 		}
 		file += (char) 3;
-		System.out.println(file);
 		lineNumber = 0;
 		colNumber = 0;
 	}
@@ -112,6 +111,10 @@ public class Scanner {
 
 	public static int getColumnNumber() {
 		return colNumber;
+	}
+	
+	public static String getTokenName() {
+		return currentToken;
 	}
 
 	public static String MP_STRING_LIT() {
