@@ -75,10 +75,11 @@ public class Scanner {
 				return MP_MINUS();
 			case('*'):
 				return MP_TIMES();
+			default:
+				return "MP_ERROR";
 			}
-
+			
 		}
-		return "";
 		//switch for each possible FSA
 		//call that FSA's function which returns token
 	}
