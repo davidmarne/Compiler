@@ -500,7 +500,7 @@ public class Parser {
 	public static void FactorTail() {
 		switch(lookahead) {
 		case "MP_MULT":
-//		case "/":
+		case "MP_FLOAT_DIVIDE":
 		case "MP_DIV":
 		case "MP_MOD":
 		case "MP_AND":
@@ -510,9 +510,19 @@ public class Parser {
 		default:
 			// epsilon
 		}
-			
+	}
+	
+	public static void MultiplyingOperator() {
+		switch(lookahead) {
+		
+		}
 	}
 		
+	public static void match(String token) {
+		if(tokens.get(0).equals(token)) {
+			tokens.remove(0);
+		}
+	}
 }
 
 
