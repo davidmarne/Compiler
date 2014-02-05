@@ -81,7 +81,7 @@ public class Parser {
 				VariableDeclarationTail();
 				break;
 			default:
-				//empty --- im confused about this one
+				throw new Exception("PARSE ERROR");
 			}
 		default:
 			//epsilon
@@ -447,4 +447,69 @@ public class Parser {
 			throw new Exception("PARSE ERROR");
 		}
 	}
+
+	public static void SimpleExpression(){
+		OptionalSign();
+		Term();
+		TermTail();
+	}
+	
+	public static void TermTail() {
+		switch(lookahead) {
+		case "MP_PLUS":
+		case "MP_MINUS":
+		case "MP_OR":
+			AddingOperator();
+			Term();
+			TermTail();
+			break;
+		default:
+			// epsilon
+		}
+	}
+	
+	public static void OptionalSign() {
+		switch(lookahead) {
+		case "MP_PLUS":
+		case "MP_MINUS":
+			lookahead = tokens.remove(0);
+		default:
+			// epsilon
+		}
+	}
+	
+	public static void AddingOperator() throws Exception {
+		switch(lookahead) {
+		case "MP_PLUS":
+		case "MP_MINUS":
+		case "MP_OR":
+			lookahead = tokens.remove(0);
+		default:
+			throw new Exception("PARSE ERROR");
+		}
+	}
+	
+	public static void Term() {
+		Factor();
+		FactorTail();
+	}
+	
+	public static void FactorTail() {
+		switch(lookahead) {
+		case "MP_MULT":
+//		case "/":
+		case "MP_DIV":
+		case "MP_MOD":
+		case "MP_AND":
+			MultiplyingOperator();
+			Factor();
+			FactorTail();
+		default:
+			// epsilon
+		}
+			
+	}
+		
 }
+
+
