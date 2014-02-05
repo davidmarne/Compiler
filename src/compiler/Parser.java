@@ -122,9 +122,11 @@ public class Parser {
 		case "MP_FUNCTION":
 			FunctionDeclaration();
 			ProcedureAndFunctionDeclarationPart();
+			break;
 		case "MP_PROCEDURE":
 			ProcedureDeclaration();
 			ProcedureAndFunctionDeclarationPart();
+			break;
 		default:
 			throw new Exception("PARSE ERROR");
 		}
@@ -140,6 +142,7 @@ public class Parser {
 			case "MP_SCOLON":
 				//good to go
 				lookahead = tokens.remove(0);
+				break;
 			default:
 				throw new Exception("PARSE ERROR");
 			}
@@ -158,6 +161,7 @@ public class Parser {
 			case "MP_SCOLON":
 				//good to go
 				lookahead = tokens.remove(0);
+				break;
 			default:
 				throw new Exception("PARSE ERROR");
 			}
@@ -166,4 +170,281 @@ public class Parser {
 		}
 	}
 	
+	public static void EmptyStatement(){	
+		//Epsilon
+	}
+	
+	public static void ReadStatement(){
+		switch(lookahead){
+		case "MP_READ":
+			lookahead = tokens.remove(0);
+			switch(lookahead){
+			case "MP_LPAREN":
+				lookahead = tokens.remove(0);
+				ReadParameter();
+				ReadParameterTail();
+				switch(lookahead){
+				case "MP_RPAREN":
+					lookahead = tokens.remove(0);
+					break;
+				default:
+					throw new Exception("PARSE ERROR");
+				}
+			default:
+				throw new Exception("PARSE ERROR");
+
+			}
+		default:
+			throw new Exception("PARSE ERROR");
+
+		}
+	}
+	
+	public static void ReadParameterTail(){
+		switch(lookahead){
+		case "MP_COMMA":
+			lookahead = tokens.remove(0);
+			ReadParameter();
+			ReadParameterTail();
+			break;
+		default:
+			//Epsilon 
+		}
+	}
+	
+	public static void ReadParameter(){
+		VariableIdentifer();
+	}
+	
+	public static void WriteStatement(){
+		switch(lookahead){
+		case "MP_WRITE":
+			lookahead = tokens.remove(0);
+			switch(lookahead){
+			case "LPAREN":
+				WriteParameter();
+				WriteParameterTail();
+				switch(lookahead){
+				case "RPAREN":
+					lookahead = tokens.remove(0);
+					break;
+				default:
+					throw new Exception("PARSE ERROR");
+				}
+			default:
+				throw new Exception("PARSE ERROR");
+			}
+		case "MP_WRITELN": //Does not exist yet..
+			lookahead = tokens.remove(0);
+			switch(lookahead){
+			case "LPAREN":
+				WriteParameter();
+				WriteParameterTail();
+				switch(lookahead){
+				case "RPAREN":
+					lookahead = tokens.remove(0);
+					break;
+				}
+			}
+		}
+	}
+	
+	public static void WriteParameterTail(){
+		switch(lookahead){
+		case "MP_COMMA":
+			WriteParameter();
+			WriteParameterTail();
+		default:
+			//Epsilon
+		}
+	}
+	
+	public static void WriteParameter(){
+		OrdinalExpression();
+	}
+	
+	public static void AssignmentStatement(){
+		switch(lookahead){
+		case "MP_IDENTIFER":
+			lookahead = tokens.remove(0);
+			switch(lookahead){
+			case "MP_ASSIGN":
+				Expression();
+				break;
+			default:
+				throw new Exception("PARSE ERROR");
+			}
+		default:
+			throw new Exception("PARSE ERROR");
+		}
+	}
+	
+	public static void IfStatement(){
+		switch(lookahead){
+		case "MP_IF":
+			lookahead = tokens.remove(0);
+			BooleanExpression();
+			switch(lookahead){
+			case "MP_THEN":
+				lookahead = tokens.remove(0);
+				Statement();
+				OptionalElsePart();
+				break;
+			default:
+				throw new Exception("PARSE ERROR");
+			}
+			throw new Exception("PARSE ERROR");
+		}
+	}
+	
+	public static void OptionalElsePart(){
+		switch(lookahead){
+		case "MP_ELSE":
+			lookahead = tokens.remove(0);
+			Statement();
+		default:
+			//Epsilon
+		}
+	}
+	
+	public static void RepeatStatement(){
+		switch(lookahead){
+		case "MP_REPEAT":
+			lookahead = tokens.remove(0);
+			StatementSequence();
+			switch(lookahead){
+			case "MP_UNTIL":
+				lookahead = tokens.remove(0);
+				BooleanExpression();
+				break;
+			}
+		}
+	}
+	
+	public static void WhileStatement(){
+		switch(lookahead){
+		case "MP_WHILE":
+			lookahead = tokens.remove(0);
+			BooleanExpression();
+			switch(lookahead){
+			case "MP_DO":
+				lookahead = tokens.remove(0);
+				Statement();
+				break;
+			default:
+				throw new Exception("PARSE ERROR");
+			}
+		default:
+			throw new Exception("PARSE ERROR");
+		}
+	}
+	
+	public static void ForStatement(){
+		switch(lookahead){
+		case "MP_FOR":
+			lookahead = tokens.remove(0);
+			ControlVariable();
+			switch(lookahead){
+			case "MP_ASSIGN":
+				lookahead = tokens.remove(0);
+				InitialValue();
+				StepValue();
+				FinalValue();
+				switch(lookahead){
+				case "MP_DO":
+					lookahead = tokens.remove(0);
+					Statement();
+					break;
+				default:
+					throw new Exception("PARSE ERROR");
+				}
+			default:
+				throw new Exception("PARSE ERROR");
+			}
+		default:
+			throw new Exception("PARSE ERROR");
+		}
+	}
+	
+	public static void ControlVariable(){
+		VariableIdentifer();
+	}
+	
+	public static void InitialValue(){
+		OrdinalExpression();
+	}
+	
+	public static void StepValue(){
+		switch(lookahead){
+		case "MP_TO":
+			lookahead = tokens.remove(0);
+			break;
+		case "MP_DOWNTO":
+			lookahead = tokens.remove(0);
+			break;
+		default:
+			throw new Exception("PARSE ERROR");
+		}
+	}
+	
+	public static void FinalValue(){
+		OrdinalExpression();
+	}
+	
+	public static void ProcedureStatement(){
+		ProcedureIdentifer();
+		OptionalActualParameterList();
+	}
+	
+	public static void OptionalActualParameterList(){
+		switch(lookahead){
+		case "MP_LPAREN":
+			lookahead = tokens.remove(0);
+			ActualParameter();
+			ActualParameterTail();
+			switch(lookahead){
+			case "MP_RPAREN":
+				lookahead = tokens.remove(0);
+				break;
+			default:
+				throw new Exception("PARSE ERROR");
+			}
+		default:
+			//Epsilon
+		}
+	}
+	
+	public static void ActualParameterTail(){
+		switch(lookahead){
+		case "MP_COMMA":
+			lookahead = tokens.remove(0);
+			ActualParameter();
+			ActualParameterTail();
+			break;
+		default:
+			//Epsilon
+		}
+	}
+	
+	public static void Expression(){
+		SimpleExpression();
+		OptionalRelationalPart();
+	}
+	
+	public static void OptionalRelationalPart(){
+		RelationalOperator();
+		SimpleExpression();
+	}
+	
+	public static void RelationalOperator(){
+		switch(lookahead){
+		case "MP_EQUALS":
+		case "MP_LTHAN":
+		case "MP_GTHAN":
+			lookahead = tokens.remove(0);
+			break;
+		default:
+			throw new Exception("PARSE ERROR");
+		}
+	}
 }
