@@ -441,6 +441,9 @@ public class Parser {
 		case "MP_EQUALS":
 		case "MP_LTHAN":
 		case "MP_GTHAN":
+		case "MP_LEQUAL":
+		case "MP_GEQUAL":
+		case "MP_NEQUAL":
 			lookahead = tokens.remove(0);
 			break;
 		default:
