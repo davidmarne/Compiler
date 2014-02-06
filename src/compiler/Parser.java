@@ -535,8 +535,11 @@ public class Parser {
 		case "MP_STRING_LIT":
 		case "MP_TRUE":
 		case "MP_FALSE":
+			match(lookahead);
+			break;
 		case "MP_NOT":
 			match(lookahead);
+			Factor();
 			break;
 		case "MP_LPAREN":
 			match(lookahead); // "("
