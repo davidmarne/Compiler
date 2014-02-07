@@ -13,13 +13,17 @@ public class Parser {
 		SystemGoal();
 	}
 	
-	public static void SystemGoal(){
+	public static void SystemGoal() throws Exception{
 		Program();
 		EOF();
 	}
 	
-	public static void Program(){
+	public static void Program() throws Exception{
 		ProgramHeading();
+		match("MP_SCOLON");
+		Block();
+		match("MP_PERIOD");
+		/*
 		switch(lookahead){
 		case "MP_SCOLON":
 			lookahead = tokens.remove(0);
@@ -32,10 +36,13 @@ public class Parser {
 			break;
 		default:
 			throw new Exception("PARSE ERROR");
-		}
+		}*/
 	}
 	
-	public static void ProgramHeading(){
+	public static void ProgramHeading() throws Exception{
+		match("MP_PROGRAM");
+		ProgramIdentifier();
+		/*
 		switch(lookahead){
 		case "MP_PROGRAM":
 			lookahead = tokens.remove(0);
@@ -43,18 +50,27 @@ public class Parser {
 			break;
 		default:
 			throw new Exception("PARSE ERROR");
-		}
+		}*/
 	}
 	
-	public static void Block(){
+	public static void Block() throws Exception{
 		VariableDeclarationPart();
 		ProcedureAndFunctionDeclarationPart();
 		StatementPart();
 	}
 	
-	public static void VariableDeclarationPart(){
+	public static void VariableDeclarationPart() throws Exception{
 		switch(lookahead){
 		case "MP_VAR":
+			match("MP_VAR");
+			VariableDeclaration();
+			match("MP_SCOLON");
+			VariableDeclarationTail();
+			break;
+		default:
+			//epsilon
+		}
+			/*
 			lookahead = tokens.remove(0);
 			VariableDeclaration();
 			switch(lookahead){
@@ -68,12 +84,19 @@ public class Parser {
 			break;
 		default:
 			//empty -- could be epsilon
-		}
+		}*/
 	}
 	
-	public static void VariableDeclarationTail(){
+	public static void VariableDeclarationTail() throws Exception{
 		switch(lookahead){
 		case "MP_IDENTIFIER":
+			VariableDeclaration();
+			match("MP_SCOLON");
+			break;
+		default:
+			//epsilon
+		}
+			/*
 			VariableDeclaration();
 			switch(lookahead){
 			case "MP_SCOLON":
@@ -87,10 +110,21 @@ public class Parser {
 			//epsilon
 		}
 		
-		
+		*/
 	}
 	
-	public static void VariableDeclaration(){
+	public static void VariableDeclaration() throws Exception{
+		IdentifierList();
+		match("MP_COLON");
+		switch(lookahead){
+		case "MP_INTEGER":
+		case "MP_BOOLEAN":
+		case "MP_FLOAT":
+		case "MP_STRING":
+			Type();
+		}
+		
+		/*
 		Identifierlist();
 		switch(lookahead){
 		case "MP_COLON":
@@ -99,25 +133,33 @@ public class Parser {
 			break;
 		default:
 			throw new Exception("PARSE ERROR");
-		}
+		}*/
 	}
 	
-	public static void Type(){
+	public static void Type() throws Exception{
 		switch(lookahead){
 		case "MP_INTEGER":
 			//term
+			match("MP_INTEGER");
+			break;
 		case "MP_FLOAT":
 			//term
+			match("MP_FLOAT");
+			break;
 		case "MP_STRING":
 			//term
+			match("MP_STRING");
+			break;
 		case "MP_BOOLEAN":
 			//term
+			match("MP_BOOLEAN");
+			break;
 		default:
 			throw new Exception("PARSE ERROR");
 		}
 	}
 	
-	public static void ProcedureAndFunctionDeclarationPart(){
+	public static void ProcedureAndFunctionDeclarationPart() throws Exception{
 		switch(lookahead){
 		case "MP_FUNCTION":
 			FunctionDeclaration();
@@ -128,11 +170,16 @@ public class Parser {
 			ProcedureAndFunctionDeclarationPart();
 			break;
 		default:
-			throw new Exception("PARSE ERROR");
+			//epsilon
 		}
 	}
 	
-	public static void ProcedureDeclaration(){
+	public static void ProcedureDeclaration() throws Exception{
+		ProcedureHeading();
+		match("MP_SCOLON");
+		Block();
+		match("MP_SCOLON");
+		/*
 		ProcedureHeading();
 		switch(lookahead){
 		case "MP_SCOLON":
@@ -148,11 +195,15 @@ public class Parser {
 			}
 		default:
 			throw new Exception("PARSE ERROR");
-		}
+		}*/
 	}
 	
-	public static void FunctionDeclaration(){
+	public static void FunctionDeclaration() throws Exception{
 		FunctionHeading();
+		match("MP_SCOLON");
+		Block();
+		match("MP_SCOLON");
+		/*
 		switch(lookahead){
 		case "MP_SCOLON":
 			lookahead = tokens.remove(0);
@@ -167,8 +218,134 @@ public class Parser {
 			}
 		default:
 			throw new Exception("PARSE ERROR");
+		}*/
+	}
+	
+	public static void ProcedureHeading() throws Exception{
+		match("MP_FUNCTION");
+		ProcedureIdentifier();
+		OptionalFormalParameterList();
+	}
+	
+	public static void FunctionHeading() throws Exception{
+		match("MP_FUNCTION");
+		FunctionIdentifier();
+		OptionalFormalParameterList();
+		Type();
+	}
+	
+	public static void OptionalFormalParameterList() throws Exception{
+		switch(lookahead){
+		case "MP_LPAREN":
+			match("MP_LPAREN");
+			FormalParameterSection();
+			FormalParameterSectionTail();
+			match("MP_RPAREN");
+			break;
+		default:
+			//epsilon
 		}
 	}
+	
+	public static void FormalParameterSectionTail() throws Exception{
+		switch(lookahead){
+		case "MP_SCOLON":
+			match("MP_SCOLON");
+			FormalParameterSection();
+			FormalParameterSectionTail();
+			break;
+		default:
+			//epsilon
+		}
+	}
+	
+	public static void FormalParameterSection() throws Exception{
+		switch(lookahead){
+		case "MP_IDENTIFIER":
+			ValueParameterSection();
+			break;
+		case "MP_VAR":
+			VariableParameterSection();
+			break;
+		default:
+			throw new Exception("PARSE ERROR");
+		}
+	}
+	
+	public static void ValueParameterSection() throws Exception{
+		IdentifierList();
+		match("MP_COLON");
+		Type();
+	}
+	
+	public static void VariableParameterSection() throws Exception{
+		match("MP_VAR");
+		IdentifierList();
+		match("MP_COLON");
+		Type();
+	}
+	
+	public static void StatementPart() throws Exception{
+		CompoundStatement();
+	}
+	
+	public static void CompoundStatement() throws Exception{
+		match("MP_BEGIN");
+		StatementSequence();
+		match("MP_END");
+	}
+	
+	public static void StatementSequence() throws Exception{
+		Statement();
+		StatementTail();
+	}
+	
+	public static void StatementTail() throws Exception{
+		switch(lookahead){
+		case "MP_SCOLON":
+			match("MP_SCOLON");
+			Statement();
+			StatementTail();
+			break;
+		default:
+			//epsilon
+		}
+	}
+	
+	public static void Statement() throws Exception{
+		switch(lookahead){
+		case "MP_BEGIN":
+			CompoundStatement();
+			break;
+		case "MP_READ":
+			ReadStatement();
+			break;
+		case "MP_WRITE":
+			WriteStatement();
+			break;
+		case "MP_IDENTIFIER()":
+			AssignmentStatement();  //Could be assignment statment or procedure statment WTH do i do?
+			break;
+		case "MP_IF":
+			IfStatement();
+			break;
+		case "MP_WHILE":
+			WhileStatement();
+			break;
+		case "MP_REPEAT":
+			RepeatStatement();
+			break;
+		case "MP_FOR":
+			ForStatement();
+			break;
+		default:
+			EmptyStatement();
+		}
+	}
+	
+	/********************
+	 JOURDANS SECTION 
+	 ********************/
 	
 	public static void EmptyStatement(){	
 		//Epsilon
@@ -451,6 +628,10 @@ public class Parser {
 		}
 	}
 
+	
+	/****************
+	 * DOMS SECTION
+	 ****************/
 	public static void SimpleExpression() throws Exception {
 		OptionalSign();
 		Term();
@@ -554,7 +735,7 @@ public class Parser {
 		}
 	}
 		
-	public static void PragramIdentifier() throws Exception {
+	public static void ProgramIdentifier() throws Exception {
 		if(lookahead.equals("MP_IDENTIFIER")) {
 			match(lookahead);
 		} else {
@@ -620,9 +801,11 @@ public class Parser {
 	}
 	
 	
-	public static void match(String token) {
-		if(tokens.get(0).equals(token)) {
+	public static void match(String token) throws Exception{
+		if(lookahead.equals(token)) {
 			tokens.remove(0);
+		}else{
+			throw new Exception("PARSE ERROR");
 		}
 	}
 }
