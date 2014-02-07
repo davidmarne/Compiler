@@ -149,9 +149,9 @@ public class Scanner {
 						currentColNumber++;
 						currentLexeme = tempLexeme;
 						state = 2;
-					} else if (currentChar == '\n') {
+					} else if (currentChar == '\n') { //if we get a new line in the middle of our string return run on string
 						index = ++indexOfLastAccept;
-						return "MP_STRING_LIT";
+						return "MP_RUN_STRING";
 					} else { //other
 						tempLexeme += currentChar;
 						index++;
@@ -159,7 +159,7 @@ public class Scanner {
 					}
 					break;
 				case 2:
-					if (currentChar == '\'') {
+					if (currentChar == '\'') {     //Should this exist? didnt it already find the end ' in case 1?
 						tempLexeme += currentChar;
 						currentLexeme = tempLexeme;
 						indexOfLastAccept = index;
