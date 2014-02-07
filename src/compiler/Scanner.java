@@ -19,7 +19,8 @@ public class Scanner {
 										{"MP_ELSE", "else"},{"MP_END","end"},{"MP_FIXED","fixed"},{"MP_FLOAT", "float"},{"MP_FOR","for"},
 										{"MP_FUNCTION","function"},{"MP_IF","if"},{"MP_INTEGER","integer"},{"MP_MOD","mod"},{"MP_NOT","not"},
 										{"MP_OR","or"}, {"MP_PROCEDURE","procedure"},{"MP_PROGRAM","program"},{"MP_READ","read"},{"MP_REPEAT","repeat"},
-										{"MP_THEN","then"},{"MP_TO","to"},{"MP_UNTIL","until"},{"MP_VAR","var"},{"MP_WHILE","while"},{"MP_WRITE","write"}};
+										{"MP_THEN","then"},{"MP_TO","to"},{"MP_UNTIL","until"},{"MP_VAR","var"},{"MP_WHILE","while"},{"MP_WRITE","write"},
+										{"MP_BOOLEAN", "Boolean"},{"MP_FALSE", "false"},{"MP_STRING", "string"},{"MP_TRUE", "true"}, {"MP_WRITELN","writeln"}};
 
 	public static String getToken() throws IOException {
 		return dispatch();
@@ -575,6 +576,23 @@ public class Scanner {
 		}
 	}
 	
+	public static String MP_FLOAT_DIVID() {
+		char currentChar = file.charAt(index);
+		currentLexeme= "";
+
+		while (true) {
+			switch (currentChar) {
+			case '/':
+				currentLexeme = currentLexeme+ currentChar;
+				index++;
+				currentColNumber++;
+				currentToken = "MP_FLOAT_DIVIDE";
+				return currentToken;
+			default:
+				// Should never reach here
+			}
+		}
+	}
 	
 	public static String MP_IDENTIFIER() {
 		int indexOfLastAccept = index - 1;
