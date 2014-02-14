@@ -19,6 +19,7 @@ public class Parser {
 	}
 	
 	public static void Program() throws Exception{
+		
 		ProgramHeading();
 		match("MP_SCOLON");
 		Block();
@@ -63,6 +64,7 @@ public class Parser {
 		switch(lookahead){
 		case "MP_VAR":
 			match("MP_VAR");
+			
 			VariableDeclaration();
 			match("MP_SCOLON");
 			VariableDeclarationTail();
@@ -804,6 +806,7 @@ public class Parser {
 	public static void match(String token) throws Exception{
 		if(lookahead.equals(token)) {
 			tokens.remove(0);
+			lookahead = tokens.get(0);
 		}else{
 			throw new Exception("PARSE ERROR");
 		}
