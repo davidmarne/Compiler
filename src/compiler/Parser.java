@@ -7,7 +7,7 @@ public class Parser {
 	static String lookahead;
 	static ArrayList<String> tokens;
 	
-	public static void parser(ArrayList<String> tkns){
+	public static void parser(ArrayList<String> tkns) throws Exception{
 		tokens = tkns;
 		lookahead = tokens.remove(0);
 		SystemGoal();
@@ -18,6 +18,11 @@ public class Parser {
 		EOF();
 	}
 	
+	private static void EOF() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	public static void Program() throws Exception{
 		
 		ProgramHeading();
@@ -353,7 +358,7 @@ public class Parser {
 		//Epsilon
 	}
 	
-	public static void ReadStatement(){
+	public static void ReadStatement() throws Exception{
 		switch(lookahead){
 		case "MP_READ":
 			lookahead = tokens.remove(0);
@@ -379,7 +384,7 @@ public class Parser {
 		}
 	}
 	
-	public static void ReadParameterTail(){
+	public static void ReadParameterTail() throws Exception{
 		switch(lookahead){
 		case "MP_COMMA":
 			lookahead = tokens.remove(0);
@@ -391,11 +396,11 @@ public class Parser {
 		}
 	}
 	
-	public static void ReadParameter(){
-		VariableIdentifer();
+	public static void ReadParameter() throws Exception{
+		VariableIdentifier();
 	}
 	
-	public static void WriteStatement(){
+	public static void WriteStatement() throws Exception{
 		switch(lookahead){
 		case "MP_WRITE":
 			lookahead = tokens.remove(0);
@@ -428,7 +433,7 @@ public class Parser {
 		}
 	}
 	
-	public static void WriteParameterTail(){
+	public static void WriteParameterTail() throws Exception{
 		switch(lookahead){
 		case "MP_COMMA":
 			WriteParameter();
@@ -438,11 +443,11 @@ public class Parser {
 		}
 	}
 	
-	public static void WriteParameter(){
+	public static void WriteParameter() throws Exception{
 		OrdinalExpression();
 	}
 	
-	public static void AssignmentStatement(){
+	public static void AssignmentStatement() throws Exception{
 		switch(lookahead){
 		case "MP_IDENTIFER":
 			lookahead = tokens.remove(0);
@@ -458,7 +463,7 @@ public class Parser {
 		}
 	}
 	
-	public static void IfStatement(){
+	public static void IfStatement() throws Exception{
 		switch(lookahead){
 		case "MP_IF":
 			lookahead = tokens.remove(0);
@@ -476,7 +481,7 @@ public class Parser {
 		}
 	}
 	
-	public static void OptionalElsePart(){
+	public static void OptionalElsePart() throws Exception{
 		switch(lookahead){
 		case "MP_ELSE":
 			lookahead = tokens.remove(0);
@@ -486,7 +491,7 @@ public class Parser {
 		}
 	}
 	
-	public static void RepeatStatement(){
+	public static void RepeatStatement() throws Exception{
 		switch(lookahead){
 		case "MP_REPEAT":
 			lookahead = tokens.remove(0);
@@ -500,7 +505,7 @@ public class Parser {
 		}
 	}
 	
-	public static void WhileStatement(){
+	public static void WhileStatement() throws Exception{
 		switch(lookahead){
 		case "MP_WHILE":
 			lookahead = tokens.remove(0);
@@ -518,7 +523,7 @@ public class Parser {
 		}
 	}
 	
-	public static void ForStatement(){
+	public static void ForStatement() throws Exception{
 		switch(lookahead){
 		case "MP_FOR":
 			lookahead = tokens.remove(0);
@@ -545,15 +550,15 @@ public class Parser {
 		}
 	}
 	
-	public static void ControlVariable(){
-		VariableIdentifer();
+	public static void ControlVariable() throws Exception{
+		VariableIdentifier();
 	}
 	
-	public static void InitialValue(){
+	public static void InitialValue() throws Exception{
 		OrdinalExpression();
 	}
 	
-	public static void StepValue(){
+	public static void StepValue() throws Exception{
 		switch(lookahead){
 		case "MP_TO":
 			lookahead = tokens.remove(0);
@@ -566,16 +571,16 @@ public class Parser {
 		}
 	}
 	
-	public static void FinalValue(){
+	public static void FinalValue() throws Exception{
 		OrdinalExpression();
 	}
 	
-	public static void ProcedureStatement(){
-		ProcedureIdentifer();
+	public static void ProcedureStatement() throws Exception{
+		ProcedureIdentifier();
 		OptionalActualParameterList();
 	}
 	
-	public static void OptionalActualParameterList(){
+	public static void OptionalActualParameterList() throws Exception{
 		switch(lookahead){
 		case "MP_LPAREN":
 			lookahead = tokens.remove(0);
@@ -593,7 +598,7 @@ public class Parser {
 		}
 	}
 	
-	public static void ActualParameterTail(){
+	public static void ActualParameterTail() throws Exception{
 		switch(lookahead){
 		case "MP_COMMA":
 			lookahead = tokens.remove(0);
@@ -605,17 +610,31 @@ public class Parser {
 		}
 	}
 	
-	public static void Expression(){
+	public static void ActualParameter() throws Exception{
+		switch(lookahead){
+		case "MP_PLUS":
+			match("MP_PLUS");
+			break;
+		case "MP_MINUS":
+			match("MP_MINUS");
+			break;
+		default:
+			//Epsilon
+		}
+	}
+	
+	
+	public static void Expression() throws Exception{
 		SimpleExpression();
 		OptionalRelationalPart();
 	}
 	
-	public static void OptionalRelationalPart(){
+	public static void OptionalRelationalPart() throws Exception{
 		RelationalOperator();
 		SimpleExpression();
 	}
 	
-	public static void RelationalOperator(){
+	public static void RelationalOperator() throws Exception{
 		switch(lookahead){
 		case "MP_EQUALS":
 		case "MP_LTHAN":
