@@ -32,6 +32,10 @@ public class Scanner {
 		char currentChar;
 		while (true) {
 			currentChar = file.charAt(index);
+			// Check for EOF
+			if(currentChar == (char) 3){
+				return "";
+			}
 			if (Character.isWhitespace(currentChar)) {
 				if (currentChar == '\n') {
 					lineNumber++;

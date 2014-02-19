@@ -1,29 +1,25 @@
 package compiler;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 
 public class main {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		//String filename = args[0];
 
 		try{
-			String s = " ";
 			Scanner.openFile("test.txt");
+			String s = Scanner.getToken();
 			while(s != ""){
 				
-				s = Scanner.getToken();
-				System.out.print("token: " + Scanner.getTokenName());
-				System.out.print("  line number " + Scanner.getLineNumber());
-				System.out.print("  column number " + Scanner.getColumnNumber());
+				System.out.format("token: %-15s", Scanner.getTokenName());
+				System.out.format("  line number: %-3s", Scanner.getLineNumber());
+				System.out.format("  column number: %-3s", Scanner.getColumnNumber());
 				System.out.println("  lexeme " + Scanner.getLexeme());
+				s = Scanner.getToken();
 
 			}	
 		}catch(Exception e){
-			
+			e.printStackTrace();
 		}
 	}
 
