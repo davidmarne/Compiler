@@ -9,13 +9,19 @@ public class main {
 		try{
 			Scanner.openFile("test.txt");
 			String s = Scanner.getToken();
-			while(s != ""){
-				
-				System.out.format("token: %-15s", Scanner.getTokenName());
-				System.out.format("  line number: %-3s", Scanner.getLineNumber());
-				System.out.format("  column number: %-3s", Scanner.getColumnNumber());
-				System.out.println("  lexeme " + Scanner.getLexeme());
-				s = Scanner.getToken();
+			while(true){
+				try {
+					s = Scanner.getToken();
+					if(s == "") {
+						break;
+					}
+					System.out.format("token: %-15s", Scanner.getTokenName());
+					System.out.format("  line number: %-3s", Scanner.getLineNumber());
+					System.out.format("  column number: %-3s", Scanner.getColumnNumber());
+					System.out.println("  lexeme " + Scanner.getLexeme());
+				} catch (Exception e) {
+					System.out.println(e);
+				}
 
 			}	
 		}catch(Exception e){
