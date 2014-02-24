@@ -746,8 +746,8 @@ public class Parser {
 	}
 	
 	public static void Term() throws Exception {
-			Factor();
-			FactorTail();
+		Factor();
+		FactorTail();
 	}
 	
 	public static void FactorTail() throws Exception {
@@ -855,6 +855,7 @@ public class Parser {
 		case "MP_IDENTIFIER":
 			FunctionIdentifier();
 			OptionalActualParameterList();
+			break;
 		default:
 			throw new Exception("Parse Error");
 		}
@@ -870,12 +871,10 @@ public class Parser {
 	
 	public static void ProcedureIdentifier() throws Exception {
 		match("MP_IDENTIFIER");
-
 	}
 	
 	public static void FunctionIdentifier() throws Exception {
 		match("MP_IDENTIFIER");
-
 	}
 	
 	public static void BooleanExpression() throws Exception {
