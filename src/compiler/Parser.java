@@ -10,88 +10,93 @@ public class Parser {
 	public static void parser(ArrayList<String> tkns) throws Exception{
 		tokens = tkns;
 		lookahead = tokens.remove(0);
-		SystemGoal();
+		if(lookahead == "MP_PROGRAM"){
+			SystemGoal();
+		}else{
+			throw new Exception("Parse Error");
+		}
 	}
 	
 	public static void SystemGoal() throws Exception{
-		Program();
-		EOF();
-	}
-	
-	private static void EOF() {
-		// TODO Auto-generated method stub
-		
+		if(lookahead == "MP_PROGRAM"){
+			Program();
+		}else{
+			throw new Exception("Parse Error");
+		}
+		match("MP_EOF");
 	}
 
+
 	public static void Program() throws Exception{
-		
-		ProgramHeading();
-		match("MP_SCOLON");
-		Block();
-		match("MP_PERIOD");
-		/*
-		switch(lookahead){
-		case "MP_SCOLON":
-			lookahead = tokens.remove(0);
-			Block();
-			switch(lookahead){
-			case "MP_PERIOD":
-				lookahead = tokens.remove(0);
-				break; //unnecessary but i'm leaving it
+		if(lookahead == "MP_PROGRAM"){
+			ProgramHeading();
+			match("MP_SCOLON");
+			if(lookahead == "MP_VAR" || lookahead == "MP_PROCEDURE" || lookahead == "MP_FUNCTION" || lookahead == "MP_BEGIN"){
+				Block();
+				match("MP_PERIOD");
+			}else{
+				throw new Exception("Parse Error");
 			}
-			break;
-		default:
-			throw new Exception("PARSE ERROR");
-		}*/
+		}else{
+			throw new Exception("Parse Error");
+		}
 	}
 	
 	public static void ProgramHeading() throws Exception{
 		match("MP_PROGRAM");
-		ProgramIdentifier();
-		/*
-		switch(lookahead){
-		case "MP_PROGRAM":
-			lookahead = tokens.remove(0);
+		if(lookahead == "MP_IDENTIFIER"){
 			ProgramIdentifier();
-			break;
-		default:
-			throw new Exception("PARSE ERROR");
-		}*/
+		}else{
+			throw new Exception("Parse Error");
+		}
 	}
 	
 	public static void Block() throws Exception{
-		VariableDeclarationPart();
-		ProcedureAndFunctionDeclarationPart();
-		StatementPart();
+		if(lookahead == "MP_VAR"){
+			VariableDeclarationPart();
+			if(lookahead == "MP_PROCEDURE" || lookahead == "MP_FUNCTION"){
+				ProcedureAndFunctionDeclarationPart();
+				if(lookahead == "MP_BEGIN"){
+					StatementPart();
+				}else{
+					throw new Exception("Parse Error");
+				}
+			}else if(lookahead == "MP_BEGIN"){
+				StatementPart();
+			}else{
+				throw new Exception("Parse Error");
+			}
+		}else if(lookahead == "MP_PROCEDURE" || lookahead == "MP_FUNCTION"){
+			ProcedureAndFunctionDeclarationPart();
+			if(lookahead == "MP_BEGIN"){
+				StatementPart();
+			}else{
+				throw new Exception("Parse Error");
+			}
+		}else if(lookahead == "MP_BEGIN"){
+			StatementPart();
+		}else{
+			throw new Exception("Parse Error");
+		}
+		
 	}
 	
 	public static void VariableDeclarationPart() throws Exception{
-		switch(lookahead){
-		case "MP_VAR":
-			match("MP_VAR");
-			
+		match("MP_VAR");
+		if(lookahead == "MP_IDENTIFER"){
 			VariableDeclaration();
 			match("MP_SCOLON");
-			VariableDeclarationTail();
-			break;
-		default:
-			//epsilon
-		}
-			/*
-			lookahead = tokens.remove(0);
-			VariableDeclaration();
-			switch(lookahead){
-			case "MP_SCOLON":
-				lookahead = tokens.remove(0);
+			if(lookahead == "MP_IDENTIFIER"){
 				VariableDeclarationTail();
-				break;
-			default:
-				throw new Exception("PARSE ERROR");
+			}else if(lookahead == "MP_FUNCTION" || lookahead == "MP_PROCEDURE"){
+				
+			}else{
+				throw new Exception("Parse Error");
 			}
-			break;
-		default:
-			//empty -- could be epsilon
-		}*/
+		}else{
+			throw new Exception("Parse Error");
+		}
+		
 	}
 	
 	public static void VariableDeclarationTail() throws Exception{
