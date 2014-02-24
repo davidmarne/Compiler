@@ -22,8 +22,17 @@ public class Scanner {
 										{"MP_THEN","then"},{"MP_TO","to"},{"MP_UNTIL","until"},{"MP_VAR","var"},{"MP_WHILE","while"},{"MP_WRITE","write"},
 										{"MP_BOOLEAN", "Boolean"},{"MP_FALSE", "false"},{"MP_STRING", "string"},{"MP_TRUE", "true"}, {"MP_WRITELN","writeln"}};
 
-	public static String getToken() throws IOException {
-		return dispatch();
+	public static String getToken() throws Exception {
+		String token = "";
+		token = dispatch();
+		if(token == "MP_RUN_STRING") {
+			throw new Exception("Scanned in a run-on string: " + lineNumber + ":" + colNumber + " " + currentLexeme);
+		} else if(token == "MP_ERROR") {
+			throw new Exception("Unknown first character of token: " + lineNumber + ":" + colNumber + " " + currentLexeme);
+		} else if (token == "MP_RUN_COMMENT") {
+			throw new Exception("Scanned in run-on comment: " + lineNumber + ":" + colNumber);
+		}
+		return token;
 		
 	}
 
@@ -57,6 +66,8 @@ public class Scanner {
 			return getTokenFromIdentifier(currentLexeme);
 		} else {
 			switch(currentChar){
+			case('{'):
+				return MP_COMMENT();
 			case('\''):
 				return MP_STRING_LIT();
 			case('.'):
@@ -85,6 +96,7 @@ public class Scanner {
 				return MP_TIMES();
 			default:
 				index++;
+				currentLexeme = "" + currentChar;
 				return "MP_ERROR";
 			}
 			
@@ -154,8 +166,9 @@ public class Scanner {
 						currentLexeme = tempLexeme;
 						state = 2;
 					} else if (currentChar == '\n') { //if we get a new line in the middle of our string return run on string
-						index = ++indexOfLastAccept;
-						return "MP_RUN_STRING";
+						currentLexeme = tempLexeme;
+						currentToken = "MP_RUN_STRING";
+						return currentToken;
 					} else { //other
 						tempLexeme += currentChar;
 						index++;
@@ -309,6 +322,48 @@ public class Scanner {
 		}
 	}
 
+	public static String MP_COMMENT() {
+		int indexOfLastAccept = index - 1;
+		char currentChar = file.charAt(index);
+		currentLexeme = "";
+		String tempLexeme = "";
+		int state = 0;
+		while(true){
+			currentChar = file.charAt(index);
+			switch(state){
+				case 0:
+					if(currentChar == '{') {
+						tempLexeme += currentChar;
+						index++;
+						currentColNumber++;
+						state = 1;
+					} else {
+						// we should never make it here
+					}
+					break;
+				case 1:
+					if(currentChar == '}') { // accept
+						tempLexeme += currentChar;
+						currentLexeme = tempLexeme;
+						indexOfLastAccept = index;
+						index++;
+						currentColNumber++;
+						currentLexeme = tempLexeme;
+						currentToken = "MP_COMMENT";
+						return currentToken;
+					} else if (currentChar == (char) 3) { //if we get EOF, we have a run-on comment
+						currentLexeme = tempLexeme;
+						currentToken = "MP_RUN_COMMENT";
+						return currentToken;
+					} else { //other
+						tempLexeme += currentChar;
+						index++;
+						currentColNumber++;
+					}
+					break;
+			}
+		}
+	}
 	public static String MP_PERIOD() {
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
