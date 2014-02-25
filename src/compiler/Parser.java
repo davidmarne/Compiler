@@ -206,7 +206,7 @@ public class Parser {
 			try{
 				AssignmentStatement();  //Could be assignment statment or procedure statment WTH do i do?
 			}catch(Exception e){
-				ProcedureStatement();
+				OptionalActualParameterList();
 			}
 			break;
 		case "MP_IF":
