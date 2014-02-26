@@ -438,37 +438,82 @@ public class Parser {
 		TermTail();
 	}
 	
-	public static void TermTail() throws Exception {
+	public static void TermTail() throws Exception {	
 		switch(lookahead) {
 		case "MP_PLUS":
-		case "MP_MINUS":
-		case "MP_OR":
-			match(lookahead);
+			match("MP_PLUS");
 			AddingOperator();
 			Term();
 			TermTail();
 			break;
-		default:
+		case "MP_MINUS":
+			match("MP_MINUS");
+			AddingOperator();
+			Term();
+			TermTail();
+			break;
+		case "MP_OR":
+			match("MP_OR");
+			AddingOperator();
+			Term();
+			TermTail();
+			break;
+		case "MP_DO":
+		case "MP_DOWNTO":
+		case "MP_END":
+		case "MP_TO":
+		case "MP_UNTIL":
+		case "MP_COMMA":
+		case "MP_EQUAL":
+		case "MP_GEQUAL":
+		case "MP_GTHAN":
+		case "MP_LEQUAL":
+		case "MP_LTHAN":
+		case "MP_NEQUAL":
+		case "MP_RPAREN":
+		case "MP_SCOLON":
 			// epsilon
+			break;
+		default:
+			throw new Exception("Parse Error");
 		}
 	}
 	
 	public static void OptionalSign() throws Exception {
 		switch(lookahead) {
 		case "MP_PLUS":
+			match("MP_PLUS");
+			break;
 		case "MP_MINUS":
-			match(lookahead);
+			match("MP_MINUS");
+			break;
+		case "MP_FALSE":
+		case "MP_NOT":
+		case "MP_TRUE":
+		case "MP_IDENTIFIER":
+		case "MP_INTEGER_LIT":
+		case "MP_FIXED_LIT":
+		case "MP_FLOAT_LIT":
+		case "MP_STRING_LIT":
+		case "MP_LPAREN":	
+			//epsilon
+			break;
 		default:
-			// epsilon
+			throw new Exception("Parse Error");
 		}
 	}
-	
+
 	public static void AddingOperator() throws Exception {
 		switch(lookahead) {
 		case "MP_PLUS":
+			match("MP_PLUS");
+			break;
 		case "MP_MINUS":
+			match("MP_MINUS");
+			break;
 		case "MP_OR":
-			match(lookahead);
+			match("MP_OR");
+			break;
 		default:
 			throw new Exception("PARSE ERROR");
 		}
@@ -482,89 +527,128 @@ public class Parser {
 	public static void FactorTail() throws Exception {
 		switch(lookahead) {
 		case "MP_MULT":
-		case "MP_FLOAT_DIVIDE":
-		case "MP_DIV":
-		case "MP_MOD":
-		case "MP_AND":
+			match("MP_MULT");
 			MultiplyingOperator();
 			Factor();
 			FactorTail();
+			break;
+		case "MP_FLOAT_DIVIDE":
+			match("MP_FLOAT_DIVIDE");
+			MultiplyingOperator();
+			Factor();
+			FactorTail();
+			break;
+		case "MP_DIV":
+			match("MP_DIV");
+			MultiplyingOperator();
+			Factor();
+			FactorTail();
+			break;
+		case "MP_MOD":
+			match("MP_MOD");
+			MultiplyingOperator();
+			Factor();
+			FactorTail();
+			break;
+		case "MP_AND":
+			match("MP_AND");
+			MultiplyingOperator();
+			Factor();
+			FactorTail();
+			break;
+		case "MP_TO":
+		case "MP_UNTIL":
+		case "MP_EQUAL":
+		case "MP_GEQUAL":
+		case "MP_GTHAN":
+		case "MP_LEQUAL":
+		case "MP_LTHAN":
+		case "MP_MINUS":
+		case "MP_NEQUAL":
+		case "MP_PLUS":
+		case "MP_RPAREN":
+		case "MP_SCOLON":
+			//epsilon
+			break;
 		default:
-			// epsilon
+			throw new Exception("Parse Error");
 		}
 	}
 	
 	public static void MultiplyingOperator() throws Exception {
 		switch(lookahead) {
 		case "MP_TIMES":
+			match("MP_TIMES");
+			break;
 		case "MP_FLOAT_DIVIDE":
+			match("MP_FLOAT_DIVIDE");
+			break;
 		case "MP_DIV":
+			match("MP_DIV");
+			break;
 		case "MP_MOD":
+			match("MP_MOD");
+			break;
 		case "MP_AND":
-			match(lookahead);
+			match("MP_AND");
 			break;
 		default:
-			throw new Exception("PARSE ERROR");
+			throw new Exception("Parse Error");
 		}
 	}
 	
 	public static void Factor() throws Exception {
 		switch(lookahead) {
 		case "MP_INTEGER_LIT":
+			match("MP_INTEGER_LIT");
+			break;
 		case "MP_FIXED_LIT":
+			match("MP_FIXED_LIT");
+			break;
 		case "MP_FLOAT_LIT":
+			match("MP_FLOAT_LIT");
+			break;
 		case "MP_STRING_LIT":
+			match("MP_STRING_LIT");
+			break;
 		case "MP_TRUE":
+			match("MP_TRUE");
+			break;
 		case "MP_FALSE":
-			match(lookahead);
+			match("MP_FALSE");
 			break;
 		case "MP_NOT":
-			match(lookahead);
+			match("MP_NOT");
 			Factor();
 			break;
 		case "MP_LPAREN":
-			match(lookahead); // "("
+			match("MP_LPAREN");
 			Expression();
-			match(lookahead); // ")"
+			match("MP_RPAREN");
 			break;
 		case "MP_IDENTIFIER":
 			FunctionIdentifier();
 			OptionalActualParameterList();
+			break;
 		default:
-			throw new Exception("PARSE ERROR");
+			throw new Exception("Parse Error");
 		}
 	}
 		
 	public static void ProgramIdentifier() throws Exception {
-		if(lookahead.equals("MP_IDENTIFIER")) {
-			match(lookahead);
-		} else {
-			throw new Exception("PARSE ERROR");
-		}
+		match("MP_IDENTIFIER");
 	}
 	
 	public static void VariableIdentifier() throws Exception {
-		if(lookahead.equals("MP_IDENTIFIER")) {
-			match(lookahead);
-		} else {
-			throw new Exception("PARSE ERROR");
-		}
+		match("MP_IDENTIFIER");
 	}
 	
 	public static void ProcedureIdentifier() throws Exception {
-		if(lookahead.equals("MP_IDENTIFIER")) {
-			match(lookahead);
-		} else {
-			throw new Exception("PARSE ERROR");
-		}
+		match("MP_IDENTIFIER");
 	}
 	
 	public static void FunctionIdentifier() throws Exception {
-		if(lookahead.equals("MP_IDENTIFIER")) {
-			match(lookahead);
-		} else {
-			throw new Exception("PARSE ERROR");
-		}
+		match("MP_IDENTIFIER");
 	}
 	
 	public static void BooleanExpression() throws Exception {
@@ -576,27 +660,22 @@ public class Parser {
 	}
 	
 	public static void IdentifierList() throws Exception {
-		if(lookahead.equals("MP_IDENTIFIER")){
-			match(lookahead);
-			IdentifierTail();
-		} else {
-			throw new Exception("PARES ERROR");
-		}
+		match("MP_IDENTIFIER");
+		IdentifierTail();
 	}
 	
 	public static void IdentifierTail() throws Exception {
 		switch(lookahead) {
 		case "MP_COMMA":
-			match(lookahead);
-			if(lookahead.equals("MP_IDENTIFIER")){
-				match(lookahead);
-				IdentifierTail();
-			} else {
-				throw new Exception("PARES ERROR");
-			}
+			match("MP_COMMA");
+			match("MP_IDENTIFIER");
+			IdentifierTail();
+			break;
+		case "MP_COLON":
+			//epsilon
 			break;
 		default:
-			// epsilon
+			throw new Exception("Parse Error");
 		}	
 	}
 	

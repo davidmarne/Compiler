@@ -117,7 +117,7 @@ public class Scanner {
 			in = input.read();
 		}
 		file += (char) 3;
-		lineNumber = 0;
+		lineNumber = 1;
 		currentColNumber = 0;
 	}
 
@@ -185,7 +185,8 @@ public class Scanner {
 						state = 1;	
 					} else {
 						index = ++indexOfLastAccept;
-						return "MP_STRING_LIT";
+						currentToken = "MP_STRING_LIT";
+						return currentToken;
 					}
 					break;
 			}
@@ -693,7 +694,8 @@ public class Scanner {
 						state = 2;
 					} else { //other
 						index = ++indexOfLastAccept;
-						return "MP_IDENTIFIER";
+						currentToken = "MP_IDENTIFIER";
+						return currentToken;
 					}
 					break;
 				case 2:
@@ -707,7 +709,8 @@ public class Scanner {
 						state = 1;
 					} else {
 						index = ++indexOfLastAccept;
-						return "MP_IDENTIFIER";
+						currentToken = "MP_IDENTIFIER";
+						return currentToken;
 					}
 					break;
 			}

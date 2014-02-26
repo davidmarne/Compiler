@@ -8,7 +8,7 @@ public class main {
 
 		try{
 			Scanner.openFile("test.txt");
-			String s = Scanner.getToken();
+			String s = "";
 			while(true){
 				try {
 					s = Scanner.getToken();
