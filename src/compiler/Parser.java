@@ -441,19 +441,8 @@ public class Parser {
 	public static void TermTail() throws Exception {	
 		switch(lookahead) {
 		case "MP_PLUS":
-			match("MP_PLUS");
-			AddingOperator();
-			Term();
-			TermTail();
-			break;
 		case "MP_MINUS":
-			match("MP_MINUS");
-			AddingOperator();
-			Term();
-			TermTail();
-			break;
 		case "MP_OR":
-			match("MP_OR");
 			AddingOperator();
 			Term();
 			TermTail();
@@ -527,31 +516,10 @@ public class Parser {
 	public static void FactorTail() throws Exception {
 		switch(lookahead) {
 		case "MP_MULT":
-			match("MP_MULT");
-			MultiplyingOperator();
-			Factor();
-			FactorTail();
-			break;
 		case "MP_FLOAT_DIVIDE":
-			match("MP_FLOAT_DIVIDE");
-			MultiplyingOperator();
-			Factor();
-			FactorTail();
-			break;
 		case "MP_DIV":
-			match("MP_DIV");
-			MultiplyingOperator();
-			Factor();
-			FactorTail();
-			break;
 		case "MP_MOD":
-			match("MP_MOD");
-			MultiplyingOperator();
-			Factor();
-			FactorTail();
-			break;
 		case "MP_AND":
-			match("MP_AND");
 			MultiplyingOperator();
 			Factor();
 			FactorTail();
