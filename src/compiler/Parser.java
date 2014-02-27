@@ -207,7 +207,7 @@ public class Parser {
 		case "MP_WRITE":
 			WriteStatement();
 			break;
-		case "MP_IDENTIFIER()":
+		case "MP_IDENTIFIER":
 			try{
 				AssignmentStatement();  //Could be assignment statment or procedure statment WTH do i do?
 			}catch(Exception e){
@@ -228,6 +228,7 @@ public class Parser {
 			break;
 		default:
 			EmptyStatement();
+			break;
 		}
 	}
 	
@@ -656,10 +657,14 @@ public class Parser {
 	public static void match(String token) throws Exception{
 		if(lookahead.equals(token)) {
 			tokens.remove(0);
+			System.out.println(lookahead + " matched");
 			lookahead = tokens.get(0);
+			
 			while(true){
 				if(lookahead == "MP_COMMENT"){
 					tokens.remove(0);
+					lookahead = tokens.get(0);
+					System.out.println("Comment removed");
 				}else{
 					break;
 				}
