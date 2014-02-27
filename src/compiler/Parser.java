@@ -43,8 +43,10 @@ public class Parser {
 			VariableDeclaration();
 			match("MP_SCOLON");
 			VariableDeclarationTail();
-		}else{
+		}else if(lookahead == "MP_BEGIN" || lookahead == "MP_FUNCTION" || lookahead == "MP_PROCEDURE" ){
 			//epsilon
+		}else{
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_VAR, MP_BEGIN, MP_FUNCTION, or MP_PROCEDURE");
 		}
 	}
 	
@@ -53,8 +55,10 @@ public class Parser {
 			VariableDeclaration();
 			match("MP_SCOLON");
 			VariableDeclarationTail();
-		}else{
+		}else if(lookahead == "MP_BEGIN" || lookahead == "MP_FUNCTION" || lookahead == "MP_PROCEDURE" ){
 			//epsilon
+		}else{
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_IDENTIFIER, MP_BEGIN, MP_FUNCTION, or MP_PROCEDURE");
 		}
 	}
 	
@@ -94,8 +98,10 @@ public class Parser {
 		}else if(lookahead == "MP_PROCEDURE"){
 			ProcedureDeclaration();
 			ProcedureAndFunctionDeclarationPart();
-		}else{
+		}else if(lookahead == "MP_BEGIN"){
 			//epsilon
+		}else{
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_BEGIN, MP_FUNCTION, or MP_PROCEDURE");
 		}
 	}
 	
@@ -133,8 +139,10 @@ public class Parser {
 			FormalParameterSection();
 			FormalParameterSectionTail();
 			match("MP_RPAREN");
-		}else{
+		}else if(lookahead == "MP_COLON" || lookahead == "MP_SCOLON"){
 			//epsilon
+		}else{
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_LPAREN, MP_COLON, or MP_SCOLON");
 		}
 	}
 	
@@ -143,8 +151,10 @@ public class Parser {
 			match("MP_SCOLON");
 			FormalParameterSection();
 			FormalParameterSectionTail();
-		}else{
+		}else if(lookahead == "MP_RPAREN"){
 			//epsilon
+		}else{
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_RPAREN, or MP_SCOLON");
 		}
 	}
 	
@@ -191,8 +201,10 @@ public class Parser {
 			match("MP_SCOLON");
 			Statement();
 			StatementTail();
-		}else{
+		}else if(lookahead == "MP_UNTIL" || lookahead == "MP_END"){
 			//epsilon
+		}else{
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_UNTIL, MP_END, or MP_SCOLON");
 		}
 	}
 	
@@ -253,8 +265,10 @@ public class Parser {
 			match("MP_COMMA");
 			ReadParameter();
 			ReadParameterTail();
-		}else{
+		}else if(lookahead == "MP_RPAREN"){
 			//epsilon
+		}else{
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_RPAREN, or MP_COMMA");
 		}
 	}
 	
@@ -285,8 +299,10 @@ public class Parser {
 			match("MP_COMMA");
 			WriteParameter();
 			WriteParameterTail();
+		}else if(lookahead == "MP_RPAREN"){
+			//epsilon
 		}else{
-			//Epsilon
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_RPAREN, or MP_COMMA");
 		}
 	}
 	
@@ -312,8 +328,10 @@ public class Parser {
 		if(lookahead == "MP_ELSE"){
 			match("MP_ELSE");
 			Statement();
-		}else{
+		}else if(lookahead == "MP_END" || lookahead == "MP_UNTIL"){
 			//epsilon
+		}else{
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_ELSE, MP_END, or MP_UNTIL");
 		}
 	}
 	
@@ -375,8 +393,10 @@ public class Parser {
 			ActualParameter();
 			ActualParameterTail();
 			match("MP_RPAREN");
-		}else{
+		}else if(lookahead == "MP_END" || lookahead == "MP_UNTIL"){
 			//epsilon
+		}else{
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_ELSE, MP_END, or MP_UNTIL");
 		}
 	}
 	
@@ -385,8 +405,10 @@ public class Parser {
 			match("MP_COMMA");
 			ActualParameter();
 			ActualParameterTail();
-		}else{
+		}else if(lookahead == "MP_RPAREN"){
 			//epsilon
+		}else{
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_COMMA, or MP_RPAREN");
 		}
 	}
 	
@@ -404,8 +426,10 @@ public class Parser {
 		if(lookahead == "MP_EQUAL" || lookahead == "MP_GTHAN" || lookahead == "MP_LTHAN" || lookahead == "MP_LEQUAL" || lookahead == "MP_GEQUAL" || lookahead == "MP_NEQUAL"){
 			RelationalOperator();
 			SimpleExpression();
-		}else{
+		}else if (lookahead == "MP_END" || lookahead == "MP_UNTIL"){
 			//epsilon
+		}else{
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_EQUAL, MP_GTHAN, MP_LTHAN, MP_LEQUAL, MP_GEQUAL, MP_NEQUAL, MP_END, or MP_UNTIL");
 		}
 	}
 	
