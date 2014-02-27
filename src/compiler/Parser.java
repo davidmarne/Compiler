@@ -9,7 +9,7 @@ public class Parser {
 	
 	public static void parser(ArrayList<String> tkns) throws Exception{
 		tokens = tkns;
-		lookahead = tokens.remove(0);
+		lookahead = tokens.get(0);
 		SystemGoal();
 	}
 	
@@ -653,7 +653,7 @@ public class Parser {
 			tokens.remove(0);
 			lookahead = tokens.get(0);
 		}else{
-			throw new Exception("PARSE ERROR");
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected " + token);
 		}
 	}
 }

@@ -1,17 +1,20 @@
 package compiler;
 
+import java.util.ArrayList;
+
 
 public class main {
 
 	public static void main(String[] args) {
 		//String filename = args[0];
-
+		ArrayList<String> tkns = new ArrayList<String>();
 		try{
-			Scanner.openFile("test.txt");
+			Scanner.openFile("sample1.txt");
 			String s = "";
 			while(true){
 				try {
 					s = Scanner.getToken();
+					tkns.add(s);
 					if(s == "") {
 						break;
 					}
@@ -24,6 +27,8 @@ public class main {
 				}
 
 			}	
+			
+			Parser.parser(tkns);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
