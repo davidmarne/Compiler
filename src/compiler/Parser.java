@@ -68,14 +68,19 @@ public class Parser {
 		switch(lookahead){
 		case "MP_INTEGER":
 			match("MP_INTEGER");
+			break;
 		case "MP_STRING":
 			match("MP_STRING");
+			break;
 		case "MP_BOOLEAN":
 			match("MP_BOOLEAN");
+			break;
 		case "MP_FIXED":
 			match("MP_FIXED");
+			break;
 		case "MP_FLOAT":
 			match("MP_FLOAT");
+			break;
 		default:
 			throw new Exception("Parse Error");
 		}
@@ -652,6 +657,13 @@ public class Parser {
 		if(lookahead.equals(token)) {
 			tokens.remove(0);
 			lookahead = tokens.get(0);
+			while(true){
+				if(lookahead == "MP_COMMENT"){
+					tokens.remove(0);
+				}else{
+					break;
+				}
+			}
 		}else{
 			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected " + token);
 		}
