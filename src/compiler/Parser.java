@@ -220,20 +220,28 @@ public class Parser {
 		case "MP_WRITE":
 			WriteStatement();
 			break;
+		case "MP_WRITELN":
+			WriteStatement();
+			break;
 		case "MP_IDENTIFIER":
-			ArrayList<String> tempTkns = new ArrayList<String>();
-			for(String t : tokens){
-				tempTkns.add(t);
-			}
-			try{
-				AssignmentStatement();  //Could be assignment statment or procedure statment WTH do i do?
-			}catch(Exception e){
-				tokens.clear();
-				for(String t : tempTkns){
-					tokens.add(t);
-				}
-				OptionalActualParameterList();
-			}
+//			ArrayList<String> tempTkns = new ArrayList<String>();
+//			for(String t : tokens){
+//				tempTkns.add(t);
+//			}
+//			
+//			try{
+//				AssignmentStatement();  //Could be assignment statment or procedure statment WTH do i do?
+//			}catch(Exception e){
+//				e.printStackTrace();
+//				tokens.clear();
+//				for(String t : tempTkns){
+//					tokens.add(t);
+//				}
+//				lookahead = tokens.get(0);
+//				OptionalActualParameterList();
+//			}
+			AssignmentStatement();
+			
 			break;
 		case "MP_IF":
 			IfStatement();
@@ -402,7 +410,7 @@ public class Parser {
 			ActualParameter();
 			ActualParameterTail();
 			match("MP_RPAREN");
-		}else if(lookahead == "MP_END" || lookahead == "MP_UNTIL"){
+		}else if(lookahead == "MP_END" || lookahead == "MP_UNTIL" || lookahead == "MP_TIMES" || lookahead == "MP_DIV" || lookahead == "MP_FLOAT_DIV" || lookahead == "MP_MOD"|| lookahead == "MP_AND" || lookahead == "MP_PLUS"|| lookahead == "MP_MINUS"|| lookahead == "MP_OR" || lookahead == "MP_EQUAL"|| lookahead == "MP_LTHAN"|| lookahead == "MP_GTHAN"|| lookahead == "MP_GEQUAL"|| lookahead == "MP_LEQUAL"|| lookahead == "MP_NEQUAL"|| lookahead == "MP_COMMA"|| lookahead == "MP_RPAREN"|| lookahead == "MP_DO"|| lookahead == "MP_DOWNTO"|| lookahead == "MP_TO"|| lookahead == "MP_THEN"|| lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
 			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_ELSE, MP_END, or MP_UNTIL");
@@ -435,7 +443,7 @@ public class Parser {
 		if(lookahead == "MP_EQUAL" || lookahead == "MP_GTHAN" || lookahead == "MP_LTHAN" || lookahead == "MP_LEQUAL" || lookahead == "MP_GEQUAL" || lookahead == "MP_NEQUAL"){
 			RelationalOperator();
 			SimpleExpression();
-		}else if (lookahead == "MP_END" || lookahead == "MP_UNTIL"){
+		}else if (lookahead == "MP_END" || lookahead == "MP_UNTIL" || lookahead == "MP_COMMA"|| lookahead == "MP_RPAREN"|| lookahead == "MP_DO"|| lookahead == "MP_DOWNTO"|| lookahead == "MP_TO"|| lookahead == "MP_THEN"|| lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
 			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_EQUAL, MP_GTHAN, MP_LTHAN, MP_LEQUAL, MP_GEQUAL, MP_NEQUAL, MP_END, or MP_UNTIL");
@@ -554,7 +562,7 @@ public class Parser {
 	
 	public static void FactorTail() throws Exception {
 		switch(lookahead) {
-		case "MP_MULT":
+		case "MP_TIMES":
 		case "MP_FLOAT_DIVIDE":
 		case "MP_DIV":
 		case "MP_MOD":
@@ -578,7 +586,7 @@ public class Parser {
 			//epsilon
 			break;
 		default:
-			throw new Exception("Parse Error");
+			throw new Exception("Parse Error : Found " + lookahead + ", Expected MP_TIMES, MP_FLOAT_DIVIDE, MP_DIV, MP_MOD, or MP_AND");
 		}
 	}
 	
@@ -637,6 +645,8 @@ public class Parser {
 			//maybe clone tokns and have try catch??
 			FunctionIdentifier();
 			OptionalActualParameterList();
+			
+			
 			break;
 		default:
 			throw new Exception("Parse Error");
@@ -692,16 +702,20 @@ public class Parser {
 		if(lookahead.equals(token)) {
 			tokens.remove(0);
 			System.out.println(lookahead + " matched");
-			lookahead = tokens.get(0);
-			
-			while(true){
-				if(lookahead == "MP_COMMENT"){
-					tokens.remove(0);
-					lookahead = tokens.get(0);
-					System.out.println("Comment removed");
-				}else{
-					break;
+			if(tokens.size() > 0){
+				lookahead = tokens.get(0);
+				
+				while(true){
+					if(lookahead == "MP_COMMENT"){
+						tokens.remove(0);
+						lookahead = tokens.get(0);
+						System.out.println("Comment removed");
+					}else{
+						break;
+					}
 				}
+			}else{
+				System.out.println("Programs successfully parsed");
 			}
 		}else{
 			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected " + token);

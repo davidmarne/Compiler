@@ -43,7 +43,7 @@ public class Scanner {
 			currentChar = file.charAt(index);
 			// Check for EOF
 			if(currentChar == (char) 3){
-				return "";
+				return "MP_EOF";
 			}
 			if (Character.isWhitespace(currentChar)) {
 				if (currentChar == '\n') {

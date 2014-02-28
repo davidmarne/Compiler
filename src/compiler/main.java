@@ -15,13 +15,13 @@ public class main {
 				try {
 					s = Scanner.getToken();
 					tkns.add(s);
-					if(s == "") {
-						break;
-					}
 					System.out.format("token: %-15s", Scanner.getTokenName());
 					System.out.format("  line number: %-3s", Scanner.getLineNumber());
 					System.out.format("  column number: %-3s", Scanner.getColumnNumber());
 					System.out.println("  lexeme " + Scanner.getLexeme());
+					if(s == "MP_EOF") {
+						break;
+					}
 				} catch (Exception e) {
 					System.out.println(e);
 				}

@@ -1,23 +1,9 @@
-program sample1;
-  var i, j: integer;
-begin
-  read(i); { get i }
-  j := 9 + i * 8; { evaluate j }
-  write( 'Result is ' );
-  write( j ); { print j }
-  writeln
-end.
-
-
-
-{ a sample program 1R }
 program sample1R;
   var i: integer;
-      j: real;
+      j: float;
 begin
-  readln(i); { get i }
+  read(i); { get i }
   j := 9 + i * 8.3e3; { evaluate j }
   write( 'Result is ' );
   write( j ); { print j }
-  writeln
 end.
