@@ -1,6 +1,7 @@
 package compiler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Parser {
 	
@@ -220,9 +221,17 @@ public class Parser {
 			WriteStatement();
 			break;
 		case "MP_IDENTIFIER":
+			ArrayList<String> tempTkns = new ArrayList<String>();
+			for(String t : tokens){
+				tempTkns.add(t);
+			}
 			try{
 				AssignmentStatement();  //Could be assignment statment or procedure statment WTH do i do?
 			}catch(Exception e){
+				tokens.clear();
+				for(String t : tempTkns){
+					tokens.add(t);
+				}
 				OptionalActualParameterList();
 			}
 			break;
@@ -625,6 +634,7 @@ public class Parser {
 			match("MP_RPAREN");
 			break;
 		case "MP_IDENTIFIER":
+			//maybe clone tokns and have try catch??
 			FunctionIdentifier();
 			OptionalActualParameterList();
 			break;
