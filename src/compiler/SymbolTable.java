@@ -8,7 +8,7 @@ public class SymbolTable {
 	public int sizeInBytes, nestingLevel;
 	public SymbolTable parent;
 	
-	private ArrayList<Symbol> table = new ArrayList<Symbol>();
+	public ArrayList<Symbol> table = new ArrayList<Symbol>();
 	
 	//constructor for additional scopes
 	public SymbolTable(String name, char label, SymbolTable parent){

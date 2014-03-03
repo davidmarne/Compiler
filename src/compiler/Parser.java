@@ -5,12 +5,16 @@ import java.util.ArrayList;
 public class Parser {
 	
 	static String lookahead;
-	static ArrayList<String> tokens;
+	static ArrayList<Token> tokens;
 	static SymbolTable currTable;
 	
-	public static void parser(ArrayList<String> tkns) throws Exception{
+	static String idenListType = "";
+	static String idenListKind = "";
+	static String idenListMode = "";
+	
+	public static void parser(ArrayList<Token> tkns) throws Exception{
 		tokens = tkns;
-		lookahead = tokens.get(0);
+		lookahead = tokens.get(0).token;
 		SystemGoal();
 	}
 	
@@ -64,10 +68,19 @@ public class Parser {
 	}
 	
 	public static void VariableDeclaration() throws Exception{
-		ArrayList<String> idens = new ArrayList<String>();
+		int currentPos = currTable.table.size();
+		
+		idenListType = "";
+		idenListMode = "";
+		idenListKind = "var";
+		
 		IdentifierList();
 		match("MP_COLON");
 		Type();
+		//update the type for all identifiers just added to the symbolTable
+		for(int i = currentPos; i < currTable.table.size(); i++){
+			currTable.table.get(i).type = idenListType;
+		}
 	}
 	
 	public static void Type() throws Exception{
@@ -171,16 +184,36 @@ public class Parser {
 	}
 	
 	public static void ValueParameterSection() throws Exception{
+		int currentPos = currTable.table.size();
+		
+		idenListType = "";
+		idenListMode = "in";
+		idenListKind = "value";
+		
 		IdentifierList();
 		match("MP_COLON");
 		Type();
+		//update the type for all identifiers just added to the symbolTable
+		for(int i = currentPos; i < currTable.table.size(); i++){
+			currTable.table.get(i).type = idenListType;
+		}
 	}
 	
 	public static void VariableParameterSection() throws Exception{
 		match("MP_VAR");
+		
+		idenListType = "";
+		idenListMode = "in";
+		idenListKind = "var";
+		
+		int currentPos = currTable.table.size();
 		IdentifierList();
 		match("MP_COLON");
 		Type();
+		//update the type for all identifiers just added to the symbolTable
+		for(int i = currentPos - 1; i < currTable.table.size(); i++){
+			currTable.table.get(i).type = idenListType;
+		}
 	}
 	
 	public static void StatementPart() throws Exception{
@@ -656,7 +689,7 @@ public class Parser {
 	}
 		
 	public static void ProgramIdentifier() throws Exception {
-		currTable = new SymbolTable(tokens.lexeme, 0);
+		currTable = new SymbolTable(tokens.get(0).lexeme, (char) 0);
 		match("MP_IDENTIFIER");
 	}
 	
@@ -665,12 +698,12 @@ public class Parser {
 	}
 	
 	public static void ProcedureIdentifier() throws Exception {
-		currTable = new SymbolTable(tokens.lexeme, currTable.label + 1, currTable);
+		currTable = new SymbolTable(tokens.get(0).lexeme, (char) (currTable.label + 1), currTable);
 		match("MP_IDENTIFIER");
 	}
 	
 	public static void FunctionIdentifier() throws Exception {
-		currTable = new SymbolTable(tokens.lexeme, currTable.label + 1, currTable);
+		currTable = new SymbolTable(tokens.get(0).lexeme, (char) (currTable.label + 1), currTable);
 		match("MP_IDENTIFIER");
 	}
 	
@@ -684,6 +717,7 @@ public class Parser {
 	
 	public static void IdentifierList() throws Exception {
 		match("MP_IDENTIFIER");
+		currTable.insert(new Symbol(tokens.get(0).lexeme, idenListType, idenListKind, idenListMode));
 		IdentifierTail();
 	}
 	
@@ -705,15 +739,16 @@ public class Parser {
 	
 	public static void match(String token) throws Exception{
 		if(lookahead.equals(token)) {
+			idenListType = tokens.get(0).token;
 			tokens.remove(0);
 			System.out.println(lookahead + " matched");
 			if(tokens.size() > 0){
-				lookahead = tokens.get(0);
+				lookahead = tokens.get(0).token;
 				
 				while(true){
 					if(lookahead == "MP_COMMENT"){
 						tokens.remove(0);
-						lookahead = tokens.get(0);
+						lookahead = tokens.get(0).token;
 						System.out.println("Comment removed");
 					}else{
 						break;
