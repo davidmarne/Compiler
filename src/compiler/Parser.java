@@ -6,11 +6,11 @@ import java.util.Collections;
 public class Parser {
 	
 	static String lookahead;
-	static ArrayList<String> tokens;
+	static ArrayList<Token> tokens;
 	
-	public static void parser(ArrayList<String> tkns) throws Exception{
+	public static void parser(ArrayList<Token> tkns) throws Exception{
 		tokens = tkns;
-		lookahead = tokens.get(0);
+		lookahead = tokens.get(0).token;
 		SystemGoal();
 	}
 	
@@ -703,12 +703,12 @@ public class Parser {
 			tokens.remove(0);
 			System.out.println(lookahead + " matched");
 			if(tokens.size() > 0){
-				lookahead = tokens.get(0);
+				lookahead = tokens.get(0).token;
 				
 				while(true){
 					if(lookahead == "MP_COMMENT"){
 						tokens.remove(0);
-						lookahead = tokens.get(0);
+						lookahead = tokens.get(0).token;
 						System.out.println("Comment removed");
 					}else{
 						break;
