@@ -1,0 +1,20 @@
+program test;
+var a, b, c : integer;
+x,y,z : float;
+
+procedure setA(var a : integer);
+begin
+	a := 99;
+end;
+
+procedure forLoop;
+var i : integer;
+begin
+	for i := 0 to 5 do
+		writeln(i);
+end;
+
+function getA : integer;
+begin
+	
+end;
