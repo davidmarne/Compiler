@@ -1,12 +1,12 @@
 package compiler;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Parser {
 	
 	static String lookahead;
 	static ArrayList<String> tokens;
+	static SymbolTable currTable;
 	
 	public static void parser(ArrayList<String> tkns) throws Exception{
 		tokens = tkns;
@@ -64,6 +64,7 @@ public class Parser {
 	}
 	
 	public static void VariableDeclaration() throws Exception{
+		ArrayList<String> idens = new ArrayList<String>();
 		IdentifierList();
 		match("MP_COLON");
 		Type();
@@ -189,6 +190,7 @@ public class Parser {
 	public static void CompoundStatement() throws Exception{
 		match("MP_BEGIN");
 		StatementSequence();
+		currTable.destroy(currTable);
 		match("MP_END");
 	}
 	
@@ -654,6 +656,7 @@ public class Parser {
 	}
 		
 	public static void ProgramIdentifier() throws Exception {
+		currTable = new SymbolTable(tokens.lexeme, 0);
 		match("MP_IDENTIFIER");
 	}
 	
@@ -662,10 +665,12 @@ public class Parser {
 	}
 	
 	public static void ProcedureIdentifier() throws Exception {
+		currTable = new SymbolTable(tokens.lexeme, currTable.label + 1, currTable);
 		match("MP_IDENTIFIER");
 	}
 	
 	public static void FunctionIdentifier() throws Exception {
+		currTable = new SymbolTable(tokens.lexeme, currTable.label + 1, currTable);
 		match("MP_IDENTIFIER");
 	}
 	
