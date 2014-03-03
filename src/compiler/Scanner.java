@@ -14,17 +14,17 @@ public class Scanner {
 	static BufferedReader input;
 	static String file;
 	static int index;
-	
-	static String[][] reservedWords = {{"MP_AND","and"},{"MP_BEGIN", "begin"},{"MP_DIV", "div"},{"MP_DO", "do"},{"MP_DOWNTO", "downto"},
-										{"MP_ELSE", "else"},{"MP_END","end"},{"MP_FIXED","fixed"},{"MP_FLOAT", "float"},{"MP_FOR","for"},
-										{"MP_FUNCTION","function"},{"MP_IF","if"},{"MP_INTEGER","integer"},{"MP_MOD","mod"},{"MP_NOT","not"},
-										{"MP_OR","or"}, {"MP_PROCEDURE","procedure"},{"MP_PROGRAM","program"},{"MP_READ","read"},{"MP_REPEAT","repeat"},
-										{"MP_THEN","then"},{"MP_TO","to"},{"MP_UNTIL","until"},{"MP_VAR","var"},{"MP_WHILE","while"},{"MP_WRITE","write"},
-										{"MP_BOOLEAN", "Boolean"},{"MP_FALSE", "false"},{"MP_STRING", "string"},{"MP_TRUE", "true"}, {"MP_WRITELN","writeln"}};
 
-	public static String getToken() throws Exception {
+	static String[][] reservedWords = {{"MP_AND","and"},{"MP_BEGIN", "begin"},{"MP_DIV", "div"},{"MP_DO", "do"},{"MP_DOWNTO", "downto"},
+		{"MP_ELSE", "else"},{"MP_END","end"},{"MP_FIXED","fixed"},{"MP_FLOAT", "float"},{"MP_FOR","for"},
+		{"MP_FUNCTION","function"},{"MP_IF","if"},{"MP_INTEGER","integer"},{"MP_MOD","mod"},{"MP_NOT","not"},
+		{"MP_OR","or"}, {"MP_PROCEDURE","procedure"},{"MP_PROGRAM","program"},{"MP_READ","read"},{"MP_REPEAT","repeat"},
+		{"MP_THEN","then"},{"MP_TO","to"},{"MP_UNTIL","until"},{"MP_VAR","var"},{"MP_WHILE","while"},{"MP_WRITE","write"},
+		{"MP_BOOLEAN", "Boolean"},{"MP_FALSE", "false"},{"MP_STRING", "string"},{"MP_TRUE", "true"}, {"MP_WRITELN","writeln"}};
+
+	public static Token getToken() throws Exception {
 		String token = "";
-		token = dispatch();
+		dispatch();
 		if(token == "MP_RUN_STRING") {
 			throw new Exception("Scanned in a run-on string: " + lineNumber + ":" + colNumber + " " + currentLexeme);
 		} else if(token == "MP_ERROR") {
@@ -32,18 +32,21 @@ public class Scanner {
 		} else if (token == "MP_RUN_COMMENT") {
 			throw new Exception("Scanned in run-on comment: " + lineNumber + ":" + colNumber);
 		}
-		return token;
-		
+
+		return new Token(currentToken, currentLexeme, lineNumber, colNumber);	
 	}
 
-	public static String dispatch() throws IOException {
+	public static void dispatch() throws IOException {
 		// skip white space
 		char currentChar;
 		while (true) {
 			currentChar = file.charAt(index);
 			// Check for EOF
 			if(currentChar == (char) 3){
-				return "MP_EOF";
+				currentLexeme = "";
+				colNumber = currentColNumber;
+				currentToken = "MP_EOF";
+				return;
 			}
 			if (Character.isWhitespace(currentChar)) {
 				if (currentChar == '\n') {
@@ -60,51 +63,65 @@ public class Scanner {
 		colNumber = currentColNumber;
 		currentChar = file.charAt(index);
 		if (Character.isDigit(currentChar)) {
-			return digitFSA();
+			digitFSA();
 		} else if (Character.isAlphabetic(currentChar) || currentChar == '_') {
 			MP_IDENTIFIER();
-			return getTokenFromIdentifier(currentLexeme);
+			getTokenFromIdentifier(currentLexeme);
 		} else {
 			switch(currentChar){
 			case('{'):
-				return MP_COMMENT();
+				MP_COMMENT();
+				break;
 			case('\''):
-				return MP_STRING_LIT();
+				MP_STRING_LIT();
+				break;
 			case('.'):
-				return MP_PERIOD();
+				MP_PERIOD();
+				break;
 			case(','):
-				return MP_COMMA();
+				MP_COMMA();
+				break;
 			case(';'):
-				return MP_SCOLON();
+				MP_SCOLON();
+				break;
 			case('('):
-				return MP_LPAREN();
+				MP_LPAREN();
+				break;
 			case(')'):
-				return MP_RPAREN();
+				MP_RPAREN();
+				break;
 			case('='):
-				return MP_EQUAL();
+				MP_EQUAL();
+				break;
 			case('>'):
-				return MP_GTHAN();
+				MP_GTHAN();
+				break;
 			case('<'):
-				return MP_LTHAN();
+				MP_LTHAN();
+				break;
 			case(':'):
-				return MP_ASSIGN();
+				MP_ASSIGN();
+				break;
 			case('+'):
-				return MP_PLUS();
+				MP_PLUS();
+				break;
 			case('-'):
-				return MP_MINUS();
+				MP_MINUS();
+				break;
 			case('*'):
-				return MP_TIMES();
+				MP_TIMES();
+				break;
 			default:
 				index++;
 				currentLexeme = "" + currentChar;
-				return "MP_ERROR";
+				currentToken = "MP_ERROR";
 			}
-			
+			return;
 		}
 		//switch for each possible FSA
 		//call that FSA's function which returns token
 	}
-	
+
 	public static void openFile(String fileName) throws IOException{
 		//get file from esus
 		index = 0;
@@ -121,23 +138,7 @@ public class Scanner {
 		currentColNumber = 0;
 	}
 
-	public static String getLexeme() {
-		return currentLexeme;
-	}
-
-	public static int getLineNumber() {
-		return lineNumber;
-	}
-
-	public static int getColumnNumber() {
-		return colNumber;
-	}
-	
-	public static String getTokenName() {
-		return currentToken;
-	}
-
-	public static String MP_STRING_LIT() {
+	public static void MP_STRING_LIT() {
 		int indexOfLastAccept = index - 1;
 		char currentChar = file.charAt(index);
 		currentLexeme = "";
@@ -146,185 +147,184 @@ public class Scanner {
 		while(true){
 			currentChar = file.charAt(index);
 			switch(state){
-				case 0:
-					if(currentChar == '\'') {
-						tempLexeme += currentChar;
-						index++;
-						currentColNumber++;
-						state = 1;
-					} else {
-						// we should never make it here
-					}
-					break;
-				case 1:
-					if(currentChar == '\'') { // to accept state
-						tempLexeme += currentChar;
-						currentLexeme = tempLexeme;
-						indexOfLastAccept = index;
-						index++;
-						currentColNumber++;
-						currentLexeme = tempLexeme;
-						state = 2;
-					} else if (currentChar == '\n') { //if we get a new line in the middle of our string return run on string
-						currentLexeme = tempLexeme;
-						currentToken = "MP_RUN_STRING";
-						return currentToken;
-					} else { //other
-						tempLexeme += currentChar;
-						index++;
-						currentColNumber++;
-					}
-					break;
-				case 2:
-					if (currentChar == '\'') {     //Should this exist? didnt it already find the end ' in case 1?
-						tempLexeme += currentChar;
-						currentLexeme = tempLexeme;
-						indexOfLastAccept = index;
-						index++;
-						currentColNumber++;
-						state = 1;	
-					} else {
-						index = ++indexOfLastAccept;
-						currentToken = "MP_STRING_LIT";
-						return currentToken;
-					}
-					break;
+			case 0:
+				if(currentChar == '\'') {
+					tempLexeme += currentChar;
+					index++;
+					currentColNumber++;
+					state = 1;
+				} else {
+					// we should never make it here
+				}
+				break;
+			case 1:
+				if(currentChar == '\'') { // to accept state
+					tempLexeme += currentChar;
+					currentLexeme = tempLexeme;
+					indexOfLastAccept = index;
+					index++;
+					currentColNumber++;
+					currentLexeme = tempLexeme;
+					state = 2;
+				} else if (currentChar == '\n') { //if we get a new line in the middle of our string return run on string
+					currentLexeme = tempLexeme;
+					currentToken = "MP_RUN_STRING";
+					return;
+				} else { //other
+					tempLexeme += currentChar;
+					index++;
+					currentColNumber++;
+				}
+				break;
+			case 2:
+				if (currentChar == '\'') {     //Should this exist? didnt it already find the end ' in case 1?
+					tempLexeme += currentChar;
+					currentLexeme = tempLexeme;
+					indexOfLastAccept = index;
+					index++;
+					currentColNumber++;
+					state = 1;	
+				} else {
+					index = ++indexOfLastAccept;
+					currentToken = "MP_STRING_LIT";
+					return;
+				}
+				break;
 			}
 		}
 	}
 
-	public static String digitFSA(){
-	/*
-	 * states are enumerated
-	 */
+	public static void digitFSA(){
+		/*
+		 * states are enumerated
+		 */
 		int state = 0;
 		int indexOfLastAccept = index - 1;
 		char currentChar = file.charAt(index);
 		currentLexeme = "";
 		String tempLexeme = "";
-		
-		
+
+
 		while(true){
 			currentChar = file.charAt(index);
 			switch(state){
-				case 0:
-					if(Character.isDigit(currentChar)){
-						currentLexeme += currentChar;
-						tempLexeme += currentChar;
-						indexOfLastAccept = index;
-						index++;
-						currentColNumber++;
-						state = 1;
-						currentToken = "MP_INTEGER_LIT";
-					}else{
-						index = ++indexOfLastAccept;
-						return currentToken;
-					}
-					break;
-				case 1:
-					if(Character.isDigit(currentChar)){
-						tempLexeme += currentChar;
-						currentLexeme = tempLexeme;
-						indexOfLastAccept = index;
-						index++;
-						currentColNumber++;
-						currentToken = "MP_INTEGER_LIT";
-					}else if(currentChar == 'e' || currentChar == 'E'){
-						tempLexeme += currentChar;
-						index++;
-						currentColNumber++;
-						state = 3;
-					}else if(currentChar == '.'){
-						tempLexeme += currentChar;
-						index++;
-						currentColNumber++;
-						state = 2;
-					}else{
-						index = ++indexOfLastAccept;
-						return currentToken;
-					}
-					break;
-				case 2:
-					if(Character.isDigit(currentChar)){
-						indexOfLastAccept = index;
-						tempLexeme += currentChar;
-						currentLexeme = tempLexeme;
-						index++;
-						currentColNumber++;
-						state = 6;
-						currentToken = "MP_FIXED_LIT";
-					}else{
-						index = ++indexOfLastAccept;
-						return currentToken;
-					}
-					break;
-				case 3:
-					if(Character.isDigit(currentChar)){
-						tempLexeme += currentChar;
-						currentLexeme = tempLexeme;
-						indexOfLastAccept = index;
-						index++;
-						currentColNumber++;
-						state = 5;
-						currentToken = "MP_FLOAT_LIT";
-					}else if(currentChar == '+' || currentChar == '-'){
-						tempLexeme += currentChar;
-						index++;
-						currentColNumber++;
-						state = 4;
-					}else{
-						index = ++indexOfLastAccept;
-						return currentToken;
-					}
-					break;
-				case 4:
-					if(Character.isDigit(currentChar)){
-						tempLexeme += currentChar;
-						currentLexeme = tempLexeme;
-						indexOfLastAccept = index;
-						index++;
-						currentColNumber++;
-						state = 5;
-						currentToken = "MP_FLOAT_LIT";
-					}
-					break;
-				case 5:
-					if(Character.isDigit(currentChar)){
-						tempLexeme += currentChar;
-						currentLexeme = tempLexeme;
-						indexOfLastAccept = index;
-						index++;
-						currentColNumber++;
-						currentToken = "MP_FLOAT_LIT";
-					}else{
-						index = ++indexOfLastAccept;
-						return currentToken;
-					}
-					break;
-				case 6:
-					if(Character.isDigit(currentChar)){
-						tempLexeme += currentChar;
-						currentLexeme = tempLexeme;
-						indexOfLastAccept = index;
-						index++;
-						currentColNumber++;
-						currentToken = "MP_FIXED_LIT";
-					}else if(currentChar == 'e' || currentChar == 'E'){
-						tempLexeme += currentChar;
-						index++;
-						currentColNumber++;
-						state = 3;
-					}else{
-						index = ++indexOfLastAccept;
-						return currentToken;
-					}
-					break;
+			case 0:
+				if(Character.isDigit(currentChar)){
+					currentLexeme += currentChar;
+					tempLexeme += currentChar;
+					indexOfLastAccept = index;
+					index++;
+					currentColNumber++;
+					state = 1;
+					currentToken = "MP_INTEGER_LIT";
+				}else{
+					index = ++indexOfLastAccept;
+					return;
+				}
+				break;
+			case 1:
+				if(Character.isDigit(currentChar)){
+					tempLexeme += currentChar;
+					currentLexeme = tempLexeme;
+					indexOfLastAccept = index;
+					index++;
+					currentColNumber++;
+					currentToken = "MP_INTEGER_LIT";
+				}else if(currentChar == 'e' || currentChar == 'E'){
+					tempLexeme += currentChar;
+					index++;
+					currentColNumber++;
+					state = 3;
+				}else if(currentChar == '.'){
+					tempLexeme += currentChar;
+					index++;
+					currentColNumber++;
+					state = 2;
+				}else{
+					index = ++indexOfLastAccept;
+					return;
+				}
+				break;
+			case 2:
+				if(Character.isDigit(currentChar)){
+					indexOfLastAccept = index;
+					tempLexeme += currentChar;
+					currentLexeme = tempLexeme;
+					index++;
+					currentColNumber++;
+					state = 6;
+					currentToken = "MP_FIXED_LIT";
+				}else{
+					index = ++indexOfLastAccept;
+					return;
+				}
+				break;
+			case 3:
+				if(Character.isDigit(currentChar)){
+					tempLexeme += currentChar;
+					currentLexeme = tempLexeme;
+					indexOfLastAccept = index;
+					index++;
+					currentColNumber++;
+					state = 5;
+					currentToken = "MP_FLOAT_LIT";
+				}else if(currentChar == '+' || currentChar == '-'){
+					tempLexeme += currentChar;
+					index++;
+					currentColNumber++;
+					state = 4;
+				}else{
+					index = ++indexOfLastAccept;
+					return;
+				}
+				break;
+			case 4:
+				if(Character.isDigit(currentChar)){
+					tempLexeme += currentChar;
+					currentLexeme = tempLexeme;
+					indexOfLastAccept = index;
+					index++;
+					currentColNumber++;
+					state = 5;
+					currentToken = "MP_FLOAT_LIT";
+				}
+				break;
+			case 5:
+				if(Character.isDigit(currentChar)){
+					tempLexeme += currentChar;
+					currentLexeme = tempLexeme;
+					indexOfLastAccept = index;
+					index++;
+					currentColNumber++;
+					currentToken = "MP_FLOAT_LIT";
+				}else{
+					index = ++indexOfLastAccept;
+					return;
+				}
+				break;
+			case 6:
+				if(Character.isDigit(currentChar)){
+					tempLexeme += currentChar;
+					currentLexeme = tempLexeme;
+					indexOfLastAccept = index;
+					index++;
+					currentColNumber++;
+					currentToken = "MP_FIXED_LIT";
+				}else if(currentChar == 'e' || currentChar == 'E'){
+					tempLexeme += currentChar;
+					index++;
+					currentColNumber++;
+					state = 3;
+				}else{
+					index = ++indexOfLastAccept;
+					return;
+				}
+				break;
 			}
 		}
 	}
 
-	public static String MP_COMMENT() {
-		int indexOfLastAccept = index - 1;
+	public static void MP_COMMENT() {
 		char currentChar = file.charAt(index);
 		currentLexeme = "";
 		String tempLexeme = "";
@@ -332,40 +332,39 @@ public class Scanner {
 		while(true){
 			currentChar = file.charAt(index);
 			switch(state){
-				case 0:
-					if(currentChar == '{') {
-						tempLexeme += currentChar;
-						index++;
-						currentColNumber++;
-						state = 1;
-					} else {
-						// we should never make it here
-					}
-					break;
-				case 1:
-					if(currentChar == '}') { // accept
-						tempLexeme += currentChar;
-						currentLexeme = tempLexeme;
-						indexOfLastAccept = index;
-						index++;
-						currentColNumber++;
-						currentLexeme = tempLexeme;
-						currentToken = "MP_COMMENT";
-						return currentToken;
-					} else if (currentChar == (char) 3) { //if we get EOF, we have a run-on comment
-						currentLexeme = tempLexeme;
-						currentToken = "MP_RUN_COMMENT";
-						return currentToken;
-					} else { //other
-						tempLexeme += currentChar;
-						index++;
-						currentColNumber++;
-					}
-					break;
+			case 0:
+				if(currentChar == '{') {
+					tempLexeme += currentChar;
+					index++;
+					currentColNumber++;
+					state = 1;
+				} else {
+					// we should never make it here
+				}
+				break;
+			case 1:
+				if(currentChar == '}') { // accept
+					tempLexeme += currentChar;
+					currentLexeme = tempLexeme;
+					index++;
+					currentColNumber++;
+					currentLexeme = tempLexeme;
+					currentToken = "MP_COMMENT";
+					return;
+				} else if (currentChar == (char) 3) { //if we get EOF, we have a run-on comment
+					currentLexeme = tempLexeme;
+					currentToken = "MP_RUN_COMMENT";
+					return;
+				} else { //other
+					tempLexeme += currentChar;
+					index++;
+					currentColNumber++;
+				}
+				break;
 			}
 		}
 	}
-	public static String MP_PERIOD() {
+	public static void MP_PERIOD() {
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
 
@@ -376,14 +375,14 @@ public class Scanner {
 				index++;
 				currentColNumber++;
 				currentToken = "MP_PERIOD";
-				return currentToken;
+				return;
 			default:
 				// Should never reach here
 			}
 		}
 	}
 
-	public static String MP_COMMA() {
+	public static void MP_COMMA() {
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
 
@@ -394,14 +393,14 @@ public class Scanner {
 				index++;
 				currentColNumber++;
 				currentToken = "MP_COMMA";
-				return currentToken;
+				return;
 			default:
 				// Should never reach here
 			}
 		}
 	}
 
-	public static String MP_SCOLON() {
+	public static void MP_SCOLON() {
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
 
@@ -412,14 +411,14 @@ public class Scanner {
 				index++;
 				currentColNumber++;
 				currentToken = "MP_SCOLON";
-				return currentToken;
+				return;
 			default:
 				// Should never reach here
 			}
 		}
 	}
 
-	public static String MP_LPAREN() {
+	public static void MP_LPAREN() {
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
 
@@ -430,14 +429,14 @@ public class Scanner {
 				index++;
 				currentColNumber++;
 				currentToken = "MP_LPAREN";
-				return currentToken;
+				return;
 			default:
 				// Should never reach here
 			}
 		}
 	}
 
-	public static String MP_RPAREN() {
+	public static void MP_RPAREN() {
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
 
@@ -448,14 +447,14 @@ public class Scanner {
 				index++;
 				currentColNumber++;
 				currentToken = "MP_RPAREN";
-				return currentToken;
+				return;
 			default:
 				// Should never reach here
 			}
 		}
 	}
 
-	public static String MP_EQUAL() {
+	public static void MP_EQUAL() {
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
 
@@ -466,7 +465,7 @@ public class Scanner {
 				index++;
 				currentColNumber++;
 				currentToken = "MP_EQUAL";
-				return currentToken;
+				return;
 			default:
 				// Should never reach here
 			}
@@ -474,7 +473,7 @@ public class Scanner {
 	}
 
 
-	public static String MP_GTHAN() {
+	public static void MP_GTHAN() {
 		int state = 0;
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
@@ -498,17 +497,17 @@ public class Scanner {
 					index++;
 					currentColNumber++;
 					currentToken = "MP_GEQUAL";
-					return currentToken;
+					return;
 				default:
 					currentToken = "MP_GTHAN";
-					return currentToken;
+					return;
 				}
 
 			}
 		}
 	}
-	
-	public static String MP_LTHAN() {
+
+	public static void MP_LTHAN() {
 		int state = 0;
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
@@ -516,40 +515,40 @@ public class Scanner {
 		while (true) {
 			currentChar = file.charAt(index);
 			switch (state) {
-				case 0:
-					switch (currentChar) {
-					case '<':
-						currentLexeme = currentLexeme+ currentChar;
-						index++;
-						currentColNumber++;
-						state = 1;
-					}
-					break;
-				case 1:
-					switch (currentChar) {
-					case '=':
-						currentLexeme = currentLexeme+ currentChar;
-						index++;
-						currentColNumber++;
-						currentToken = "MP_LEQUAL";
-						return currentToken;
-					case '>':
-						currentLexeme = currentLexeme+ currentChar;
-						index++;
-						currentColNumber++;
-						currentToken = "MP_NEQUAL";
-						return currentToken;
-					default:
-						currentToken = "MP_LTHAN";
-						return currentToken;
-					}
+			case 0:
+				switch (currentChar) {
+				case '<':
+					currentLexeme = currentLexeme+ currentChar;
+					index++;
+					currentColNumber++;
+					state = 1;
+				}
+				break;
+			case 1:
+				switch (currentChar) {
+				case '=':
+					currentLexeme = currentLexeme+ currentChar;
+					index++;
+					currentColNumber++;
+					currentToken = "MP_LEQUAL";
+					return;
+				case '>':
+					currentLexeme = currentLexeme+ currentChar;
+					index++;
+					currentColNumber++;
+					currentToken = "MP_NEQUAL";
+					return;
+				default:
+					currentToken = "MP_LTHAN";
+					return;
+				}
 
 			}
 		}
 	}
-	
-	
-	public static String MP_ASSIGN() {
+
+
+	public static void MP_ASSIGN() {
 		int state = 0;
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
@@ -573,16 +572,16 @@ public class Scanner {
 					index++;
 					currentColNumber++;
 					currentToken = "MP_ASSIGN";
-					return currentToken;
+					return;
 				default:
 					currentToken = "MP_COLON";
-					return currentToken;
+					return;
 				}
 			}
 		}
 	}
-	
-	public static String MP_PLUS() {
+
+	public static void MP_PLUS() {
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
 
@@ -593,14 +592,14 @@ public class Scanner {
 				index++;
 				currentColNumber++;
 				currentToken = "MP_PLUS";
-				return currentToken;
+				return;
 			default:
 				// Should never reach here
 			}
 		}
 	}
-	
-	public static String MP_MINUS() {
+
+	public static void MP_MINUS() {
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
 
@@ -611,14 +610,14 @@ public class Scanner {
 				index++;
 				currentColNumber++;
 				currentToken = "MP_MINUS";
-				return currentToken;
+				return;
 			default:
 				// Should never reach here
 			}
 		}
 	}
-	
-	public static String MP_TIMES() {
+
+	public static void MP_TIMES() {
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
 
@@ -629,14 +628,14 @@ public class Scanner {
 				index++;
 				currentColNumber++;
 				currentToken = "MP_TIMES";
-				return currentToken;
+				return;
 			default:
 				// Should never reach here
 			}
 		}
 	}
-	
-	public static String MP_FLOAT_DIVID() {
+
+	public static void MP_FLOAT_DIVID() {
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
 
@@ -647,14 +646,14 @@ public class Scanner {
 				index++;
 				currentColNumber++;
 				currentToken = "MP_FLOAT_DIVIDE";
-				return currentToken;
+				return;
 			default:
 				// Should never reach here
 			}
 		}
 	}
-	
-	public static String MP_IDENTIFIER() {
+
+	public static void MP_IDENTIFIER() {
 		int indexOfLastAccept = index - 1;
 		char currentChar = file.charAt(index);
 		currentLexeme = "";
@@ -663,67 +662,67 @@ public class Scanner {
 		while(true){
 			currentChar = file.charAt(index);
 			switch(state){
-				case 0:
-					if(Character.isAlphabetic(currentChar)) { // to accept state
-						tempLexeme += currentChar;
-						currentLexeme = tempLexeme;
-						indexOfLastAccept = index;
-						index++;
-						currentColNumber++;
-						currentLexeme = tempLexeme;
-						state = 1;
-					} else if (currentChar == '_') {
-						tempLexeme += currentChar;
-						index++;
-						currentColNumber++;
-						state = 2;
-					}
-					break;
-				case 1:
-					if(Character.isLetterOrDigit(currentChar)) { // to accept state
-						tempLexeme += currentChar;
-						currentLexeme = tempLexeme;
-						indexOfLastAccept = index;
-						index++;
-						currentColNumber++;
-						currentLexeme = tempLexeme;
-					} else if (currentChar == '_') {
-						tempLexeme += currentChar;
-						index++;
-						currentColNumber++;
-						state = 2;
-					} else { //other
-						index = ++indexOfLastAccept;
-						currentToken = "MP_IDENTIFIER";
-						return currentToken;
-					}
-					break;
-				case 2:
-					if(Character.isLetterOrDigit(currentChar)) { // to accept state
-						tempLexeme += currentChar;
-						currentLexeme = tempLexeme;
-						indexOfLastAccept = index;
-						index++;
-						currentColNumber++;
-						currentLexeme = tempLexeme;
-						state = 1;
-					} else {
-						index = ++indexOfLastAccept;
-						currentToken = "MP_IDENTIFIER";
-						return currentToken;
-					}
-					break;
+			case 0:
+				if(Character.isAlphabetic(currentChar)) { // to accept state
+					tempLexeme += currentChar;
+					currentLexeme = tempLexeme;
+					indexOfLastAccept = index;
+					index++;
+					currentColNumber++;
+					currentLexeme = tempLexeme;
+					state = 1;
+				} else if (currentChar == '_') {
+					tempLexeme += currentChar;
+					index++;
+					currentColNumber++;
+					state = 2;
+				}
+				break;
+			case 1:
+				if(Character.isLetterOrDigit(currentChar)) { // to accept state
+					tempLexeme += currentChar;
+					currentLexeme = tempLexeme;
+					indexOfLastAccept = index;
+					index++;
+					currentColNumber++;
+					currentLexeme = tempLexeme;
+				} else if (currentChar == '_') {
+					tempLexeme += currentChar;
+					index++;
+					currentColNumber++;
+					state = 2;
+				} else { //other
+					index = ++indexOfLastAccept;
+					currentToken = "MP_IDENTIFIER";
+					return;
+				}
+				break;
+			case 2:
+				if(Character.isLetterOrDigit(currentChar)) { // to accept state
+					tempLexeme += currentChar;
+					currentLexeme = tempLexeme;
+					indexOfLastAccept = index;
+					index++;
+					currentColNumber++;
+					currentLexeme = tempLexeme;
+					state = 1;
+				} else {
+					index = ++indexOfLastAccept;
+					currentToken = "MP_IDENTIFIER";
+					return;
+				}
+				break;
 			}
 		}
 	}
-	private static String getTokenFromIdentifier(String lexeme){
+	private static void getTokenFromIdentifier(String lexeme){
 		for(int i = 0; i < reservedWords.length; i++){
 			if(lexeme.equals(reservedWords[i][1])){
 				currentToken = reservedWords[i][0];
-				return currentToken;
+				return;
 			}
 		}
 		currentToken = "MP_IDENTIFIER";
-		return currentToken;
+		return;
 	}
 }
