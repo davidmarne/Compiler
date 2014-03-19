@@ -22,7 +22,7 @@ public class SymbolTable {
 	public SymbolTable(String name, char label){
 		this.name = name;
 		this.label = label;
-		this.nestingLevel = 0;
+		this.nestingLevel = 1;
 		this.parent = null;
 	}
 	
@@ -30,11 +30,25 @@ public class SymbolTable {
 		table.add(s);
 	}
 	
-	public void destroy(SymbolTable t){
-		t = parent;
+	public SymbolTable destroy(){
+		printTable();
+		return parent;
 	}
 	
 	public void find(){
 		
+	}
+	
+	public void printTable(){
+		String parentName;
+		if(parent == null){
+			parentName = "null";
+		}else{
+			parentName = parent.name;
+		}
+		System.out.printf("NAME: %s, LABEL: %c, NL: %d, PARENT: %s \n", name, label, nestingLevel, parentName);
+		for(Symbol s : table){
+			s.printSymbol();
+		}
 	}
 }

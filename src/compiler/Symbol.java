@@ -11,4 +11,7 @@ public class Symbol {
 		this.mode = mode;
 	}
 	
+	public void printSymbol(){
+		System.out.printf("IDEN: %s, TYPE: %s, KIND: %s, MODE: %s\n", iden, type, kind, mode);
+	}
 }

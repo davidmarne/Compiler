@@ -12,6 +12,5 @@ public class Token {
 		this.colNumber = colNumber;
 		this.lexeme = lexeme;
 		this.lineNumber = lineNumber;
-		
 	}
 }

@@ -18,3 +18,7 @@ function getA : integer;
 begin
 	
 end;
+
+begin
+
+end.

@@ -28,7 +28,7 @@ public class main {
 
 			}	
 			
-			//Parser.parser(tkns);
+			Parser.parser(tkns);
 		}catch(Exception e){
 			e.printStackTrace();
 		}

@@ -33,6 +33,7 @@ public class Parser {
 	
 	public static void ProgramHeading() throws Exception{
 		match("MP_PROGRAM");
+		currTable = new SymbolTable(tokens.get(0).lexeme, (char) 0);
 		ProgramIdentifier();
 	}
 	
@@ -44,6 +45,7 @@ public class Parser {
 	
 	public static void VariableDeclarationPart() throws Exception{
 		if(lookahead == "MP_VAR"){
+			idenListKind = "var";
 			match("MP_VAR");
 			VariableDeclaration();
 			match("MP_SCOLON");
@@ -57,6 +59,7 @@ public class Parser {
 	
 	public static void VariableDeclarationTail() throws Exception{
 		if(lookahead == "MP_IDENTIFIER"){
+			idenListKind = "value";
 			VariableDeclaration();
 			match("MP_SCOLON");
 			VariableDeclarationTail();
@@ -70,9 +73,6 @@ public class Parser {
 	public static void VariableDeclaration() throws Exception{
 		int currentPos = currTable.table.size();
 		
-		idenListType = "";
-		idenListMode = "";
-		idenListKind = "var";
 		
 		IdentifierList();
 		match("MP_COLON");
@@ -136,13 +136,15 @@ public class Parser {
 	
 	public static void ProcedureHeading() throws Exception{
 		match("MP_PROCEDURE");
+		currTable = new SymbolTable(tokens.get(0).lexeme, (char) (currTable.label + 1), currTable);
 		ProcedureIdentifier();
 		OptionalFormalParameterList();
 	}
 	
 	public static void FunctionHeading() throws Exception{
 		match("MP_FUNCTION");
-		ProcedureIdentifier();
+		currTable = new SymbolTable(tokens.get(0).lexeme, (char) (currTable.label + 1), currTable);
+		FunctionIdentifier();
 		OptionalFormalParameterList();
 		match("MP_COLON");
 		Type();
@@ -211,7 +213,7 @@ public class Parser {
 		match("MP_COLON");
 		Type();
 		//update the type for all identifiers just added to the symbolTable
-		for(int i = currentPos - 1; i < currTable.table.size(); i++){
+		for(int i = currentPos; i < currTable.table.size(); i++){
 			currTable.table.get(i).type = idenListType;
 		}
 	}
@@ -223,7 +225,7 @@ public class Parser {
 	public static void CompoundStatement() throws Exception{
 		match("MP_BEGIN");
 		StatementSequence();
-		currTable.destroy(currTable);
+		currTable = currTable.destroy();
 		match("MP_END");
 	}
 	
@@ -607,6 +609,8 @@ public class Parser {
 			FactorTail();
 			break;
 		case "MP_TO":
+		case "MP_DO":
+		case "MP_DOWNTO":
 		case "MP_UNTIL":
 		case "MP_EQUAL":
 		case "MP_GEQUAL":
@@ -689,7 +693,6 @@ public class Parser {
 	}
 		
 	public static void ProgramIdentifier() throws Exception {
-		currTable = new SymbolTable(tokens.get(0).lexeme, (char) 0);
 		match("MP_IDENTIFIER");
 	}
 	
@@ -698,12 +701,11 @@ public class Parser {
 	}
 	
 	public static void ProcedureIdentifier() throws Exception {
-		currTable = new SymbolTable(tokens.get(0).lexeme, (char) (currTable.label + 1), currTable);
 		match("MP_IDENTIFIER");
 	}
 	
 	public static void FunctionIdentifier() throws Exception {
-		currTable = new SymbolTable(tokens.get(0).lexeme, (char) (currTable.label + 1), currTable);
+		
 		match("MP_IDENTIFIER");
 	}
 	
@@ -716,8 +718,8 @@ public class Parser {
 	}
 	
 	public static void IdentifierList() throws Exception {
-		match("MP_IDENTIFIER");
 		currTable.insert(new Symbol(tokens.get(0).lexeme, idenListType, idenListKind, idenListMode));
+		match("MP_IDENTIFIER");
 		IdentifierTail();
 	}
 	
@@ -725,6 +727,7 @@ public class Parser {
 		switch(lookahead) {
 		case "MP_COMMA":
 			match("MP_COMMA");
+			currTable.insert(new Symbol(tokens.get(0).lexeme, idenListType, idenListKind, idenListMode));
 			match("MP_IDENTIFIER");
 			IdentifierTail();
 			break;
