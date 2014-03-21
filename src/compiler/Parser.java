@@ -11,6 +11,9 @@ public class Parser {
 	static String idenListType = "";
 	static String idenListKind = "";
 	static String idenListMode = "";
+	static String idenListId = "";
+	
+	static ArrayList<Symbol> listOfParameters = new ArrayList<Symbol>();
 	
 	public static void parser(ArrayList<Token> tkns) throws Exception{
 		tokens = tkns;
@@ -136,18 +139,26 @@ public class Parser {
 	
 	public static void ProcedureHeading() throws Exception{
 		match("MP_PROCEDURE");
-		currTable = new SymbolTable(tokens.get(0).lexeme, (char) (currTable.label + 1), currTable);
+		idenListId = tokens.get(0).lexeme;
+		currTable = new SymbolTable(idenListId, (char) (currTable.label + 1), currTable);
 		ProcedureIdentifier();
+		listOfParameters.clear();
 		OptionalFormalParameterList();
+		// insert into parent table after we know all the parameters listOfParameters
+		currTable.parent.insert(new Symbol(idenListId, "", "procedure", listOfParameters));
 	}
 	
 	public static void FunctionHeading() throws Exception{
 		match("MP_FUNCTION");
-		currTable = new SymbolTable(tokens.get(0).lexeme, (char) (currTable.label + 1), currTable);
+		idenListId = tokens.get(0).lexeme;
+		currTable = new SymbolTable(idenListId, (char) (currTable.label + 1), currTable);
 		FunctionIdentifier();
+		listOfParameters.clear();
 		OptionalFormalParameterList();
 		match("MP_COLON");
+		idenListType = lookahead;
 		Type();
+		currTable.parent.insert(new Symbol(idenListId, idenListType, "function", listOfParameters));
 	}
 	
 	public static void OptionalFormalParameterList() throws Exception{
@@ -188,33 +199,45 @@ public class Parser {
 	public static void ValueParameterSection() throws Exception{
 		int currentPos = currTable.table.size();
 		
-		idenListType = "";
 		idenListMode = "in";
 		idenListKind = "value";
 		
 		IdentifierList();
 		match("MP_COLON");
+		idenListType = lookahead;
 		Type();
-		//update the type for all identifiers just added to the symbolTable
+		
+		// update the type for all identifiers just added to the symbolTable
 		for(int i = currentPos; i < currTable.table.size(); i++){
 			currTable.table.get(i).type = idenListType;
+		}
+		
+		// update the types of the parameter list for the parent table
+		for(int i = 0; i < listOfParameters.size(); i++) {
+			listOfParameters.get(i).type = idenListType;
 		}
 	}
 	
 	public static void VariableParameterSection() throws Exception{
 		match("MP_VAR");
 		
-		idenListType = "";
 		idenListMode = "in";
 		idenListKind = "var";
 		
 		int currentPos = currTable.table.size();
 		IdentifierList();
 		match("MP_COLON");
+		idenListType = lookahead;
 		Type();
-		//update the type for all identifiers just added to the symbolTable
+		
+		// update the type for all identifiers just added to the symbolTable
 		for(int i = currentPos; i < currTable.table.size(); i++){
 			currTable.table.get(i).type = idenListType;
+		}
+		
+		// update the types of the parameter list for the parent table
+		for(int i = 0; i < listOfParameters.size(); i++) {
+			listOfParameters.get(i).type = idenListType;
 		}
 	}
 	
@@ -718,7 +741,10 @@ public class Parser {
 	}
 	
 	public static void IdentifierList() throws Exception {
+		// add the first one
+		listOfParameters.clear();
 		currTable.insert(new Symbol(tokens.get(0).lexeme, idenListType, idenListKind, idenListMode));
+		listOfParameters.add(new Symbol(idenListType, idenListKind));
 		match("MP_IDENTIFIER");
 		IdentifierTail();
 	}
@@ -727,7 +753,9 @@ public class Parser {
 		switch(lookahead) {
 		case "MP_COMMA":
 			match("MP_COMMA");
+			// add the rest
 			currTable.insert(new Symbol(tokens.get(0).lexeme, idenListType, idenListKind, idenListMode));
+			listOfParameters.add(new Symbol(idenListType, idenListKind));
 			match("MP_IDENTIFIER");
 			IdentifierTail();
 			break;

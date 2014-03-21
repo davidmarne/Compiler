@@ -10,20 +10,20 @@ public class SymbolTable {
 	
 	public ArrayList<Symbol> table = new ArrayList<Symbol>();
 	
-	//constructor for additional scopes
-	public SymbolTable(String name, char label, SymbolTable parent){
-		this.name = name;
-		this.label = label;
-		this.nestingLevel = parent.nestingLevel + 1;
-		this.parent = parent;
-	}
-	
 	//constructor for first table (Program's scope)
 	public SymbolTable(String name, char label){
 		this.name = name;
 		this.label = label;
 		this.nestingLevel = 1;
 		this.parent = null;
+	}
+	
+	//constructor for additional scopes
+	public SymbolTable(String name, char label, SymbolTable parent){
+		this.name = name;
+		this.label = label;
+		this.nestingLevel = parent.nestingLevel + 1;
+		this.parent = parent;
 	}
 	
 	public void insert(Symbol s){
