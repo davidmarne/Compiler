@@ -46,7 +46,7 @@ public class SymbolTable {
 		}else{
 			parentName = parent.name;
 		}
-		System.out.printf("NAME: %s, LABEL: %c, NL: %d, PARENT: %s \n", name, label, nestingLevel, parentName);
+		System.out.printf("NAME: %-10s LABEL: %-10c NL: %-10d PARENT: %-10s \n", name, label, nestingLevel, parentName);
 		for(Symbol s : table){
 			s.printSymbol();
 		}

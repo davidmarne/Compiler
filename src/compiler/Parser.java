@@ -284,24 +284,7 @@ public class Parser {
 			WriteStatement();
 			break;
 		case "MP_IDENTIFIER":
-//			ArrayList<String> tempTkns = new ArrayList<String>();
-//			for(String t : tokens){
-//				tempTkns.add(t);
-//			}
-//			
-//			try{
-//				AssignmentStatement();  //Could be assignment statment or procedure statment WTH do i do?
-//			}catch(Exception e){
-//				e.printStackTrace();
-//				tokens.clear();
-//				for(String t : tempTkns){
-//					tokens.add(t);
-//				}
-//				lookahead = tokens.get(0);
-//				OptionalActualParameterList();
-//			}
-			AssignmentStatement();
-			
+			AssignmentStatement();		
 			break;
 		case "MP_IF":
 			IfStatement();

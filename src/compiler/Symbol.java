@@ -33,12 +33,12 @@ public class Symbol {
 	
 	public void printSymbol(){
 		if(parameterList.size() > 0) {
-			System.out.printf("IDEN: %s, TYPE: %s, KIND: %s, MODE: ->", iden, type, kind);
+			System.out.printf("IDEN: %-10s TYPE: %-15s KIND: %-10s MODE: ->", iden, type, kind);
 			for(Symbol s: parameterList) {
 				System.out.printf(" (%s, %s)", s.type, s.kind);
 			}
 		} else {
-			System.out.printf("IDEN: %s, TYPE: %s, KIND: %s, MODE: %s", iden, type, kind, mode);
+			System.out.printf("IDEN: %-10s TYPE: %-15s KIND: %-10s MODE: %-10s", iden, type, kind, mode);
 		}
 		System.out.println("");
 	}
