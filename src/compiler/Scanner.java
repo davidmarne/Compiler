@@ -23,13 +23,12 @@ public class Scanner {
 		{"MP_BOOLEAN", "Boolean"},{"MP_FALSE", "false"},{"MP_STRING", "string"},{"MP_TRUE", "true"}, {"MP_WRITELN","writeln"}};
 
 	public static Token getToken() throws Exception {
-		String token = "";
 		dispatch();
-		if(token == "MP_RUN_STRING") {
+		if (currentToken == "MP_RUN_STRING") {
 			throw new Exception("Scanned in a run-on string: " + lineNumber + ":" + colNumber + " " + currentLexeme);
-		} else if(token == "MP_ERROR") {
+		} else if (currentToken == "MP_ERROR") {
 			throw new Exception("Unknown first character of token: " + lineNumber + ":" + colNumber + " " + currentLexeme);
-		} else if (token == "MP_RUN_COMMENT") {
+		} else if (currentToken == "MP_RUN_COMMENT") {
 			throw new Exception("Scanned in run-on comment: " + lineNumber + ":" + colNumber);
 		}
 
@@ -110,6 +109,9 @@ public class Scanner {
 				break;
 			case('*'):
 				MP_TIMES();
+				break;
+			case('/'):
+				MP_FLOAT_DIVIDE();
 				break;
 			default:
 				index++;
@@ -635,7 +637,7 @@ public class Scanner {
 		}
 	}
 
-	public static void MP_FLOAT_DIVID() {
+	public static void MP_FLOAT_DIVIDE() {
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
 
