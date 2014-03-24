@@ -48,13 +48,15 @@ public class Parser {
 	
 	public static void VariableDeclarationPart() throws Exception{
 		if(lookahead == "MP_VAR"){
-			idenListKind = "var";
+			idenListKind = "variable";
+			idenListMode = "copy";
 			match("MP_VAR");
 			VariableDeclaration();
 			match("MP_SCOLON");
 			VariableDeclarationTail();
 		}else if(lookahead == "MP_BEGIN" || lookahead == "MP_FUNCTION" || lookahead == "MP_PROCEDURE" ){
 			//epsilon
+			
 		}else{
 			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_VAR, MP_BEGIN, MP_FUNCTION, or MP_PROCEDURE");
 		}
@@ -62,7 +64,6 @@ public class Parser {
 	
 	public static void VariableDeclarationTail() throws Exception{
 		if(lookahead == "MP_IDENTIFIER"){
-			idenListKind = "value";
 			VariableDeclaration();
 			match("MP_SCOLON");
 			VariableDeclarationTail();
@@ -199,8 +200,8 @@ public class Parser {
 	public static void ValueParameterSection() throws Exception{
 		int currentPos = currTable.table.size();
 		
-		idenListMode = "in";
-		idenListKind = "value";
+		idenListMode = "copy";
+		idenListKind = "parameter";
 		
 		IdentifierList();
 		match("MP_COLON");
@@ -221,8 +222,8 @@ public class Parser {
 	public static void VariableParameterSection() throws Exception{
 		match("MP_VAR");
 		
-		idenListMode = "in";
-		idenListKind = "var";
+		idenListMode = "ref";
+		idenListKind = "parameter";
 		
 		int currentPos = currTable.table.size();
 		IdentifierList();
@@ -727,7 +728,7 @@ public class Parser {
 		// add the first one
 		listOfParameters.clear();
 		currTable.insert(new Symbol(tokens.get(0).lexeme, idenListType, idenListKind, idenListMode));
-		listOfParameters.add(new Symbol(idenListType, idenListKind));
+		listOfParameters.add(new Symbol(idenListType, idenListMode));
 		match("MP_IDENTIFIER");
 		IdentifierTail();
 	}
@@ -738,7 +739,7 @@ public class Parser {
 			match("MP_COMMA");
 			// add the rest
 			currTable.insert(new Symbol(tokens.get(0).lexeme, idenListType, idenListKind, idenListMode));
-			listOfParameters.add(new Symbol(idenListType, idenListKind));
+			listOfParameters.add(new Symbol(idenListType, idenListMode));
 			match("MP_IDENTIFIER");
 			IdentifierTail();
 			break;
