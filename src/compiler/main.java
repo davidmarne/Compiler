@@ -9,7 +9,7 @@ public class main {
 		//String filename = args[0];
 		ArrayList<Token> tkns = new ArrayList<Token>();
 		try{
-			Scanner.openFile("test.txt");
+			Scanner.openFile("longSample.txt");
 			Token s = null;
 			while(true){
 				try {
