@@ -554,7 +554,6 @@ public class Parser {
 		case "MP_NEQUAL":
 		case "MP_RPAREN":
 		case "MP_SCOLON":
-		case "MP_THEN":
 			// epsilon
 			break;
 		default:
@@ -609,11 +608,11 @@ public class Parser {
 	
 	public static void FactorTail() throws Exception {
 		switch(lookahead) {
-		case "MP_TIMES":
-		case "MP_FLOAT_DIVIDE":
+		case "MP_AND":
 		case "MP_DIV":
 		case "MP_MOD":
-		case "MP_AND":
+		case "MP_FLOAT_DIVIDE":
+		case "MP_TIMES":		
 			MultiplyingOperator();
 			Factor();
 			FactorTail();
@@ -637,7 +636,6 @@ public class Parser {
 		case "MP_PLUS":
 		case "MP_RPAREN":
 		case "MP_SCOLON":
-		case "MP_THEN":
 			//epsilon
 			break;
 		default:
@@ -699,9 +697,7 @@ public class Parser {
 		case "MP_IDENTIFIER":
 			//maybe clone tokns and have try catch??
 			FunctionIdentifier();
-			OptionalActualParameterList();
-			
-			
+			OptionalActualParameterList();		
 			break;
 		default:
 			throw new Exception("Parse Error");
