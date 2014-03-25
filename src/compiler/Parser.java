@@ -168,7 +168,7 @@ public class Parser {
 			FormalParameterSection();
 			FormalParameterSectionTail();
 			match("MP_RPAREN");
-		}else if(lookahead == "MP_COLON" || lookahead == "MP_SCOLON"){
+		}else if(lookahead == "MP_COLON"){// || lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
 			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_LPAREN, MP_COLON, or MP_SCOLON");
@@ -389,7 +389,7 @@ public class Parser {
 		if(lookahead == "MP_ELSE"){
 			match("MP_ELSE");
 			Statement();
-		}else if(lookahead == "MP_END" || lookahead == "MP_UNTIL"){
+		}else if(lookahead == "MP_END" || lookahead == "MP_UNTIL" || lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
 			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_ELSE, MP_END, or MP_UNTIL");
@@ -454,8 +454,8 @@ public class Parser {
 			ActualParameter();
 			ActualParameterTail();
 			match("MP_RPAREN");
-		}else if(lookahead == "MP_END" || lookahead == "MP_UNTIL" || lookahead == "MP_TIMES" || lookahead == "MP_DIV" || lookahead == "MP_FLOAT_DIV" || lookahead == "MP_MOD"|| lookahead == "MP_AND" || lookahead == "MP_PLUS"|| lookahead == "MP_MINUS"|| lookahead == "MP_OR" || lookahead == "MP_EQUAL"|| lookahead == "MP_LTHAN"|| lookahead == "MP_GTHAN"|| lookahead == "MP_GEQUAL"|| lookahead == "MP_LEQUAL"|| lookahead == "MP_NEQUAL"|| lookahead == "MP_COMMA"|| lookahead == "MP_RPAREN"|| lookahead == "MP_DO"|| lookahead == "MP_DOWNTO"|| lookahead == "MP_TO"|| lookahead == "MP_THEN"|| lookahead == "MP_SCOLON"){
-			//epsilon
+		}else if(lookahead == "MP_AND" || lookahead == "MP_DIV" ||lookahead == "MP_DO" ||lookahead == "MP_DOWNTO" || lookahead == "MP_ELSE" ||lookahead == "MP_END" ||lookahead == "MP_MOD" ||lookahead == "MP_OR" ||lookahead == "MP_THEN" ||lookahead == "MP_TO" ||lookahead == "MP_UNTIL" ||lookahead == "MP_COMMA" ||lookahead == "MP_EQUAL" ||lookahead == "MP_FLOAT_DIV" ||lookahead == "MP_GEQUAL" ||lookahead == "MP_GTHAN" |lookahead == "MP_LEQUAL" ||lookahead == "MP_LTHAN" ||lookahead == "MP_MINUS" ||lookahead == "MP_NEQUAL" ||lookahead == "MP_PLUS" ||lookahead == "MP_RPAREN" ||lookahead == "MP_SCOLON" ||lookahead == "MP_TIMES" ){
+				//epsilon
 		}else{
 			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_ELSE, MP_END, or MP_UNTIL");
 		}
@@ -487,7 +487,7 @@ public class Parser {
 		if(lookahead == "MP_EQUAL" || lookahead == "MP_GTHAN" || lookahead == "MP_LTHAN" || lookahead == "MP_LEQUAL" || lookahead == "MP_GEQUAL" || lookahead == "MP_NEQUAL"){
 			RelationalOperator();
 			SimpleExpression();
-		}else if (lookahead == "MP_END" || lookahead == "MP_UNTIL" || lookahead == "MP_COMMA"|| lookahead == "MP_RPAREN"|| lookahead == "MP_DO"|| lookahead == "MP_DOWNTO"|| lookahead == "MP_TO"|| lookahead == "MP_THEN"|| lookahead == "MP_SCOLON"){
+		}else if(lookahead == "MP_DO" ||lookahead == "MP_DOWNTO" || lookahead == "MP_ELSE" ||lookahead == "MP_END"||lookahead == "MP_THEN" ||lookahead == "MP_TO" ||lookahead == "MP_UNTIL" ||lookahead == "MP_COMMA" ||lookahead == "MP_RPAREN" ||lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
 			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_EQUAL, MP_GTHAN, MP_LTHAN, MP_LEQUAL, MP_GEQUAL, MP_NEQUAL, MP_END, or MP_UNTIL");
@@ -540,7 +540,9 @@ public class Parser {
 			break;
 		case "MP_DO":
 		case "MP_DOWNTO":
+		case "MP_ELSE":
 		case "MP_END":
+		case "MP_THEN":
 		case "MP_TO":
 		case "MP_UNTIL":
 		case "MP_COMMA":
@@ -615,10 +617,15 @@ public class Parser {
 			Factor();
 			FactorTail();
 			break;
-		case "MP_TO":
 		case "MP_DO":
 		case "MP_DOWNTO":
+		case "MP_ELSE":
+		case "MP_END":
+		case "MP_OR":
+		case "MP_THEN":
+		case "MP_TO":
 		case "MP_UNTIL":
+		case "MP_COMMA":
 		case "MP_EQUAL":
 		case "MP_GEQUAL":
 		case "MP_GTHAN":
