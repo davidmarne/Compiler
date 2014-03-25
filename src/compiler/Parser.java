@@ -554,6 +554,7 @@ public class Parser {
 		case "MP_NEQUAL":
 		case "MP_RPAREN":
 		case "MP_SCOLON":
+		case "MP_THEN":
 			// epsilon
 			break;
 		default:
@@ -636,10 +637,11 @@ public class Parser {
 		case "MP_PLUS":
 		case "MP_RPAREN":
 		case "MP_SCOLON":
+		case "MP_THEN":
 			//epsilon
 			break;
 		default:
-			throw new Exception("Parse Error : Found " + lookahead + ", Expected MP_TIMES, MP_FLOAT_DIVIDE, MP_DIV, MP_MOD, or MP_AND");
+			throw new Exception("Parse Error : Found " + lookahead + ", Expected MP_TIMES, MP_FLOAT_DIVIDE, MP_DIV, MP_MOD, or MP_AND (" + tokens.get(0).lineNumber + ", " + tokens.get(0).colNumber + ")" );
 		}
 	}
 	

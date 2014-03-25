@@ -6,10 +6,15 @@ import java.util.ArrayList;
 public class main {
 
 	public static void main(String[] args) {
-		//String filename = args[0];
+		String filename = "";
+		if(args.length == 1) {
+			filename = args[0];
+		} else {
+			filename = "longSample.txt";
+		}
 		ArrayList<Token> tkns = new ArrayList<Token>();
 		try{
-			Scanner.openFile("longSample.txt");
+			Scanner.openFile(filename);
 			Token s = null;
 			while(true){
 				try {
@@ -28,7 +33,7 @@ public class main {
 
 			}	
 			
-//			Parser.parser(tkns);
+			Parser.parser(tkns);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
