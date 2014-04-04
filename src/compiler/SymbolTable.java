@@ -39,6 +39,10 @@ public class SymbolTable {
 		
 	}
 	
+	public int getSize(){
+		return table.size();
+	}
+	
 	public void printTable(){
 		String parentName;
 		if(parent == null){

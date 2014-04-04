@@ -10,7 +10,7 @@ public class main {
 		if(args.length == 1) {
 			filename = args[0];
 		} else {
-			filename = "longSample.txt";
+			filename = "longSample2.txt";
 		}
 		ArrayList<Token> tkns = new ArrayList<Token>();
 		try{
