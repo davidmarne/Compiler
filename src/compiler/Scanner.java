@@ -111,7 +111,7 @@ public class Scanner {
 				MP_TIMES();
 				break;
 			case('/'):
-				MP_FLOAT_DIVIDE();
+				MP_FLOAT_DIV();
 				break;
 			default:
 				index++;
@@ -637,7 +637,7 @@ public class Scanner {
 		}
 	}
 
-	public static void MP_FLOAT_DIVIDE() {
+	public static void MP_FLOAT_DIV() {
 		char currentChar = file.charAt(index);
 		currentLexeme= "";
 
@@ -647,7 +647,7 @@ public class Scanner {
 				currentLexeme = currentLexeme+ currentChar;
 				index++;
 				currentColNumber++;
-				currentToken = "MP_FLOAT_DIVIDE";
+				currentToken = "MP_FLOAT_DIV";
 				return;
 			default:
 				// Should never reach here

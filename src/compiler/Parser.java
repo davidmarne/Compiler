@@ -285,7 +285,12 @@ public class Parser {
 			WriteStatement();
 			break;
 		case "MP_IDENTIFIER":
-			AssignmentStatement();		
+			// double lookahead to determine if we wnat to expand Assignment Statement or Procedure Statement
+			if(tokens.get(1).token.equals("MP_ASSIGN")) {
+				AssignmentStatement();
+			} else {
+				ProcedureStatement();
+			}
 			break;
 		case "MP_IF":
 			IfStatement();
@@ -611,7 +616,7 @@ public class Parser {
 		case "MP_AND":
 		case "MP_DIV":
 		case "MP_MOD":
-		case "MP_FLOAT_DIVIDE":
+		case "MP_FLOAT_DIV":
 		case "MP_TIMES":		
 			MultiplyingOperator();
 			Factor();
@@ -639,7 +644,7 @@ public class Parser {
 			//epsilon
 			break;
 		default:
-			throw new Exception("Parse Error : Found " + lookahead + ", Expected MP_TIMES, MP_FLOAT_DIVIDE, MP_DIV, MP_MOD, or MP_AND (" + tokens.get(0).lineNumber + ", " + tokens.get(0).colNumber + ")" );
+			throw new Exception("Parse Error : Found " + lookahead + ", Expected MP_TIMES, MP_FLOAT_DIV, MP_DIV, MP_MOD, or MP_AND (" + tokens.get(0).lineNumber + ", " + tokens.get(0).colNumber + ")" );
 		}
 	}
 	
@@ -648,8 +653,8 @@ public class Parser {
 		case "MP_TIMES":
 			match("MP_TIMES");
 			break;
-		case "MP_FLOAT_DIVIDE":
-			match("MP_FLOAT_DIVIDE");
+		case "MP_FLOAT_DIV":
+			match("MP_FLOAT_DIV");
 			break;
 		case "MP_DIV":
 			match("MP_DIV");
