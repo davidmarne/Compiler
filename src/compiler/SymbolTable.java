@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 public class SymbolTable {
 	public String name;
-	public char label;
+	public int label;
 	public int sizeInBytes, nestingLevel;
 	public SymbolTable parent;
 	
 	public ArrayList<Symbol> table = new ArrayList<Symbol>();
 	
 	//constructor for first table (Program's scope)
-	public SymbolTable(String name, char label){
+	public SymbolTable(String name, int label){
 		this.name = name;
 		this.label = label;
 		this.nestingLevel = 1;
@@ -19,7 +19,7 @@ public class SymbolTable {
 	}
 	
 	//constructor for additional scopes
-	public SymbolTable(String name, char label, SymbolTable parent){
+	public SymbolTable(String name, int label, SymbolTable parent){
 		this.name = name;
 		this.label = label;
 		this.nestingLevel = parent.nestingLevel + 1;
@@ -50,5 +50,9 @@ public class SymbolTable {
 		for(Symbol s : table){
 			s.printSymbol();
 		}
+	}
+	
+	public String getLabel() {
+		return "L" + label;
 	}
 }

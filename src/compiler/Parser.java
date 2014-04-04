@@ -36,7 +36,7 @@ public class Parser {
 	
 	public static void ProgramHeading() throws Exception{
 		match("MP_PROGRAM");
-		currTable = new SymbolTable(tokens.get(0).lexeme, (char) 0);
+		currTable = new SymbolTable(tokens.get(0).lexeme, 0);
 		ProgramIdentifier();
 	}
 	
@@ -44,6 +44,7 @@ public class Parser {
 		VariableDeclarationPart();
 		ProcedureAndFunctionDeclarationPart();
 		StatementPart();
+		currTable = currTable.destroy();
 	}
 	
 	public static void VariableDeclarationPart() throws Exception{
@@ -105,7 +106,7 @@ public class Parser {
 			match("MP_FLOAT");
 			break;
 		default:
-			throw new Exception("Parse Error");
+			throw new Exception("PARSE ERROR : Found " + lookahead);
 		}
 	}
 	
@@ -141,7 +142,7 @@ public class Parser {
 	public static void ProcedureHeading() throws Exception{
 		match("MP_PROCEDURE");
 		idenListId = tokens.get(0).lexeme;
-		currTable = new SymbolTable(idenListId, (char) (currTable.label + 1), currTable);
+		currTable = new SymbolTable(idenListId, currTable.label + 1, currTable);
 		ProcedureIdentifier();
 		listOfParameters.clear();
 		OptionalFormalParameterList();
@@ -152,7 +153,7 @@ public class Parser {
 	public static void FunctionHeading() throws Exception{
 		match("MP_FUNCTION");
 		idenListId = tokens.get(0).lexeme;
-		currTable = new SymbolTable(idenListId, (char) (currTable.label + 1), currTable);
+		currTable = new SymbolTable(idenListId, currTable.label + 1, currTable);
 		FunctionIdentifier();
 		listOfParameters.clear();
 		OptionalFormalParameterList();
@@ -168,7 +169,7 @@ public class Parser {
 			FormalParameterSection();
 			FormalParameterSectionTail();
 			match("MP_RPAREN");
-		}else if(lookahead == "MP_COLON"){// || lookahead == "MP_SCOLON"){
+		}else if(lookahead == "MP_COLON" || lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
 			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_LPAREN, MP_COLON, or MP_SCOLON");
@@ -249,7 +250,6 @@ public class Parser {
 	public static void CompoundStatement() throws Exception{
 		match("MP_BEGIN");
 		StatementSequence();
-		currTable = currTable.destroy();
 		match("MP_END");
 	}
 	

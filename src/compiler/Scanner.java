@@ -20,7 +20,7 @@ public class Scanner {
 		{"MP_FUNCTION","function"},{"MP_IF","if"},{"MP_INTEGER","integer"},{"MP_MOD","mod"},{"MP_NOT","not"},
 		{"MP_OR","or"}, {"MP_PROCEDURE","procedure"},{"MP_PROGRAM","program"},{"MP_READ","read"},{"MP_REPEAT","repeat"},
 		{"MP_THEN","then"},{"MP_TO","to"},{"MP_UNTIL","until"},{"MP_VAR","var"},{"MP_WHILE","while"},{"MP_WRITE","write"},
-		{"MP_BOOLEAN", "Boolean"},{"MP_FALSE", "false"},{"MP_STRING", "string"},{"MP_TRUE", "true"}, {"MP_WRITELN","writeln"}};
+		{"MP_BOOLEAN", "boolean"},{"MP_FALSE", "false"},{"MP_STRING", "string"},{"MP_TRUE", "true"}, {"MP_WRITELN","writeln"}};
 
 	public static Token getToken() throws Exception {
 		dispatch();
@@ -719,7 +719,7 @@ public class Scanner {
 	}
 	private static void getTokenFromIdentifier(String lexeme){
 		for(int i = 0; i < reservedWords.length; i++){
-			if(lexeme.equals(reservedWords[i][1])){
+			if(lexeme.toLowerCase().equals(reservedWords[i][1].toLowerCase())){
 				currentToken = reservedWords[i][0];
 				return;
 			}
