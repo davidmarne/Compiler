@@ -8,13 +8,13 @@ public class SymbolTable {
 	public int sizeInBytes, nestingLevel;
 	public SymbolTable parent;
 	
-	public ArrayList<Symbol> table = new ArrayList<Symbol>();
+	public ArrayList<Symbol> symbols = new ArrayList<Symbol>();
 	
 	//constructor for first table (Program's scope)
 	public SymbolTable(String name, int label){
 		this.name = name;
 		this.label = label;
-		this.nestingLevel = 1;
+		this.nestingLevel = 0;
 		this.parent = null;
 	}
 	
@@ -27,7 +27,7 @@ public class SymbolTable {
 	}
 	
 	public void insert(Symbol s){
-		table.add(s);
+		symbols.add(s);
 	}
 	
 	public SymbolTable destroy(){
@@ -35,12 +35,25 @@ public class SymbolTable {
 		return parent;
 	}
 	
-	public void find(){
+	public int[] findByLexeme(String lexeme){
+		// search through current table
+		for (Symbol symbol : symbols) {
+			if(symbol.iden.equals(lexeme)){
+				int[] returnArray = {symbol.offset, nestingLevel};
+				return returnArray;
+			}
+		}
 		
+		//search through any parent tables
+		if(parent != null) {
+			return parent.findByLexeme(lexeme);
+		} else {
+			return null;
+		}
 	}
 	
 	public int getSize(){
-		return table.size();
+		return symbols.size();
 	}
 	
 	public void printTable(){
@@ -50,8 +63,8 @@ public class SymbolTable {
 		}else{
 			parentName = parent.name;
 		}
-		System.out.printf("NAME: %-10s LABEL: %-10c NL: %-10d PARENT: %-10s \n", name, label, nestingLevel, parentName);
-		for(Symbol s : table){
+		System.out.printf("NAME: %-10s LABEL: %-10s NL: %-10d PARENT: %-10s \n", name, getLabel(), nestingLevel, parentName);
+		for(Symbol s : symbols){
 			s.printSymbol();
 		}
 	}

@@ -8,18 +8,20 @@ public class Symbol {
 	public ArrayList<Symbol> parameterList = new ArrayList<Symbol>();
 	
 	// Constructor for symbol table symbol 
-	public Symbol(String iden, String type, String kind, String mode){
+	public Symbol(String iden, String type, String kind, String mode, int offset){
 		this.iden = iden;
 		this.type = type;
 		this.kind = kind;
 		this.mode = mode;
+		this.offset = offset;
 	}
 	
 	// Constructor for symbol table procedure or function 
-		public Symbol(String iden, String type, String kind, ArrayList<Symbol> parameterList){
+		public Symbol(String iden, String type, String kind, ArrayList<Symbol> parameterList, int offset){
 			this.iden = iden;
 			this.type = type;
 			this.kind = kind;
+			this.offset = offset;
 			for(Symbol p: parameterList) {
 				this.parameterList.add(p);
 			}

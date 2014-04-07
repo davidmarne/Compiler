@@ -12,13 +12,16 @@ public class Parser {
 	static String idenListKind = "";
 	static String idenListMode = "";
 	static String idenListId = "";
+	static int label = 0;
 	
 	static ArrayList<Symbol> listOfParameters = new ArrayList<Symbol>();
 	
 	public static void parser(ArrayList<Token> tkns) throws Exception{
+		SymanticAnalyzer.init();
 		tokens = tkns;
 		lookahead = tokens.get(0).token;
 		SystemGoal();
+		SymanticAnalyzer.close();
 	}
 	
 	public static void SystemGoal() throws Exception{
@@ -36,13 +39,16 @@ public class Parser {
 	
 	public static void ProgramHeading() throws Exception{
 		match("MP_PROGRAM");
-		currTable = new SymbolTable(tokens.get(0).lexeme, 0);
+		currTable = new SymbolTable(tokens.get(0).lexeme, label++);
 		ProgramIdentifier();
 	}
 	
 	public static void Block() throws Exception{
 		VariableDeclarationPart();
+		// generate code to allocate stack space for local variables and properly offset the SP
+		SymanticAnalyzer.programDeclaration(currTable.nestingLevel, currTable.getSize());
 		ProcedureAndFunctionDeclarationPart();
+		SymanticAnalyzer.beginStatement(currTable.label);
 		StatementPart();
 		currTable = currTable.destroy();
 	}
@@ -76,15 +82,15 @@ public class Parser {
 	}
 	
 	public static void VariableDeclaration() throws Exception{
-		int currentPos = currTable.table.size();
+		int currentPos = currTable.symbols.size();
 		
 		
 		IdentifierList();
 		match("MP_COLON");
 		Type();
 		//update the type for all identifiers just added to the symbolTable
-		for(int i = currentPos; i < currTable.table.size(); i++){
-			currTable.table.get(i).type = idenListType;
+		for(int i = currentPos; i < currTable.symbols.size(); i++){
+			currTable.symbols.get(i).type = idenListType;
 		}
 	}
 	
@@ -142,25 +148,25 @@ public class Parser {
 	public static void ProcedureHeading() throws Exception{
 		match("MP_PROCEDURE");
 		idenListId = tokens.get(0).lexeme;
-		currTable = new SymbolTable(idenListId, currTable.label + 1, currTable);
+		currTable = new SymbolTable(idenListId, label++, currTable);
 		ProcedureIdentifier();
 		listOfParameters.clear();
 		OptionalFormalParameterList();
 		// insert into parent table after we know all the parameters listOfParameters
-		currTable.parent.insert(new Symbol(idenListId, "", "procedure", listOfParameters));
+		currTable.parent.insert(new Symbol(idenListId, "", "procedure", listOfParameters, currTable.symbols.size()));
 	}
 	
 	public static void FunctionHeading() throws Exception{
 		match("MP_FUNCTION");
 		idenListId = tokens.get(0).lexeme;
-		currTable = new SymbolTable(idenListId, currTable.label + 1, currTable);
+		currTable = new SymbolTable(idenListId, label++, currTable);
 		FunctionIdentifier();
 		listOfParameters.clear();
 		OptionalFormalParameterList();
 		match("MP_COLON");
 		idenListType = lookahead;
 		Type();
-		currTable.parent.insert(new Symbol(idenListId, idenListType, "function", listOfParameters));
+		currTable.parent.insert(new Symbol(idenListId, idenListType, "function", listOfParameters, currTable.symbols.size()));
 	}
 	
 	public static void OptionalFormalParameterList() throws Exception{
@@ -199,7 +205,7 @@ public class Parser {
 	}
 	
 	public static void ValueParameterSection() throws Exception{
-		int currentPos = currTable.table.size();
+		int currentPos = currTable.symbols.size();
 		
 		idenListMode = "copy";
 		idenListKind = "parameter";
@@ -210,8 +216,8 @@ public class Parser {
 		Type();
 		
 		// update the type for all identifiers just added to the symbolTable
-		for(int i = currentPos; i < currTable.table.size(); i++){
-			currTable.table.get(i).type = idenListType;
+		for(int i = currentPos; i < currTable.symbols.size(); i++){
+			currTable.symbols.get(i).type = idenListType;
 		}
 		
 		// update the types of the parameter list for the parent table
@@ -226,15 +232,15 @@ public class Parser {
 		idenListMode = "ref";
 		idenListKind = "parameter";
 		
-		int currentPos = currTable.table.size();
+		int currentPos = currTable.symbols.size();
 		IdentifierList();
 		match("MP_COLON");
 		idenListType = lookahead;
 		Type();
 		
 		// update the type for all identifiers just added to the symbolTable
-		for(int i = currentPos; i < currTable.table.size(); i++){
-			currTable.table.get(i).type = idenListType;
+		for(int i = currentPos; i < currTable.symbols.size(); i++){
+			currTable.symbols.get(i).type = idenListType;
 		}
 		
 		// update the types of the parameter list for the parent table
@@ -339,6 +345,7 @@ public class Parser {
 	}
 	
 	public static void ReadParameter() throws Exception{
+		SymanticAnalyzer.readStatement(tokens.get(0).lexeme, currTable);
 		VariableIdentifier();
 	}
 	
@@ -373,6 +380,7 @@ public class Parser {
 	}
 	
 	public static void WriteParameter() throws Exception{
+		SymanticAnalyzer.writeStatement(tokens.get(0).lexeme, currTable);
 		OrdinalExpression();
 	}
 	
@@ -737,7 +745,7 @@ public class Parser {
 	public static void IdentifierList() throws Exception {
 		// add the first one
 		listOfParameters.clear();
-		currTable.insert(new Symbol(tokens.get(0).lexeme, idenListType, idenListKind, idenListMode));
+		currTable.insert(new Symbol(tokens.get(0).lexeme, idenListType, idenListKind, idenListMode, currTable.symbols.size()));
 		listOfParameters.add(new Symbol(idenListType, idenListMode));
 		match("MP_IDENTIFIER");
 		IdentifierTail();
@@ -748,7 +756,7 @@ public class Parser {
 		case "MP_COMMA":
 			match("MP_COMMA");
 			// add the rest
-			currTable.insert(new Symbol(tokens.get(0).lexeme, idenListType, idenListKind, idenListMode));
+			currTable.insert(new Symbol(tokens.get(0).lexeme, idenListType, idenListKind, idenListMode, currTable.symbols.size()));
 			listOfParameters.add(new Symbol(idenListType, idenListMode));
 			match("MP_IDENTIFIER");
 			IdentifierTail();
