@@ -503,7 +503,7 @@ public class Parser {
 		}else if(lookahead == "MP_DO" ||lookahead == "MP_DOWNTO" || lookahead == "MP_ELSE" ||lookahead == "MP_END"||lookahead == "MP_THEN" ||lookahead == "MP_TO" ||lookahead == "MP_UNTIL" ||lookahead == "MP_COMMA" ||lookahead == "MP_RPAREN" ||lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_EQUAL, MP_GTHAN, MP_LTHAN, MP_LEQUAL, MP_GEQUAL, MP_NEQUAL, MP_END, or MP_UNTIL");
+			
 		}
 	}
 	
@@ -537,7 +537,7 @@ public class Parser {
 	 * DOMS SECTION
 	 ****************/
 	public static void SimpleExpression() throws Exception {
-		OptionalSign();
+		Boolean hasMinus = OptionalSign();
 		Term();
 		TermTail();
 	}
@@ -574,13 +574,15 @@ public class Parser {
 		}
 	}
 	
-	public static void OptionalSign() throws Exception {
+	public static Boolean OptionalSign() throws Exception {
+		Boolean returnVal = false;
 		switch(lookahead) {
 		case "MP_PLUS":
 			match("MP_PLUS");
 			break;
 		case "MP_MINUS":
 			match("MP_MINUS");
+			returnVal = true;
 			break;
 		case "MP_FALSE":
 		case "MP_NOT":
@@ -596,6 +598,7 @@ public class Parser {
 		default:
 			throw new Exception("Parse Error");
 		}
+		return returnVal;
 	}
 
 	public static void AddingOperator() throws Exception {
@@ -681,24 +684,31 @@ public class Parser {
 	public static void Factor() throws Exception {
 		switch(lookahead) {
 		case "MP_INTEGER_LIT":
+			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
 			match("MP_INTEGER_LIT");
 			break;
 		case "MP_FIXED_LIT":
+			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
 			match("MP_FIXED_LIT");
 			break;
 		case "MP_FLOAT_LIT":
+			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
 			match("MP_FLOAT_LIT");
 			break;
 		case "MP_STRING_LIT":
+			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
 			match("MP_STRING_LIT");
 			break;
 		case "MP_TRUE":
+			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
 			match("MP_TRUE");
 			break;
 		case "MP_FALSE":
+			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
 			match("MP_FALSE");
 			break;
 		case "MP_NOT":
+			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
 			match("MP_NOT");
 			Factor();
 			break;
@@ -708,7 +718,7 @@ public class Parser {
 			match("MP_RPAREN");
 			break;
 		case "MP_IDENTIFIER":
-			//maybe clone tokns and have try catch??
+			SymanticAnalyzer.pushRegisterVal(tokens.get(0).lexeme, currTable);
 			FunctionIdentifier();
 			OptionalActualParameterList();		
 			break;

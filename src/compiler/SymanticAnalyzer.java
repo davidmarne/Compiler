@@ -49,4 +49,15 @@ public class SymanticAnalyzer {
 			bw.write("WRT " + offset[0] + "(D" + offset[1] + ")\n");
 		}			
 	}
+	
+	public static void pushLiteralVal(String intVal) throws IOException {
+		bw.write("PUSH #" + intVal);	
+	}
+	
+	public static void pushRegisterVal(String lexeme, SymbolTable currTable) throws IOException {
+		int[] offset = currTable.findByLexeme(lexeme);
+		if(offset != null) {
+			bw.write("PUSH " + offset[0] + "(D" + offset[1] + ")\n");
+		}	
+	}
 }
