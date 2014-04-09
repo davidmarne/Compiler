@@ -707,7 +707,7 @@ public class Parser {
 			break;
 		case "MP_DIV":
 			match("MP_DIV");
-			returnVal = "DIVF";
+			returnVal = "DIVS";
 			break;
 		case "MP_MOD":
 			match("MP_MOD");
