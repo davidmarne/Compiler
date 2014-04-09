@@ -52,6 +52,22 @@ public class SymbolTable {
 		}
 	}
 	
+	public String getTypeByLexeme(String lexeme){
+		// search through current table
+		for (Symbol symbol : symbols) {
+			if(symbol.iden.equals(lexeme)){
+				return symbol.type;
+			}
+		}
+		
+		//search through any parent tables
+		if(parent != null) {
+			return parent.getTypeByLexeme(lexeme);
+		} else {
+			return null;
+		}
+	}
+	
 	public int getSize(){
 		return symbols.size();
 	}

@@ -51,7 +51,7 @@ public class SymanticAnalyzer {
 	}
 	
 	public static void pushLiteralVal(String intVal) throws IOException {
-		bw.write("PUSH #" + intVal);	
+		bw.write("PUSH #" + intVal + "\n");	
 	}
 	
 	public static void pushRegisterVal(String lexeme, SymbolTable currTable) throws IOException {
@@ -59,5 +59,24 @@ public class SymanticAnalyzer {
 		if(offset != null) {
 			bw.write("PUSH " + offset[0] + "(D" + offset[1] + ")\n");
 		}	
+	}
+	
+	public static void computeExpression(String factorType, String factorTailType, String operator) throws IOException {
+		// check for type compatibility
+		if(factorType.equals(factorTailType)) {
+			// do nothing
+		} else if(factorType.equals("float") && factorTailType.equals("int")) {
+			bw.write("CASTSF\n");
+		} else if (factorType.equals("int") && factorTailType.equals("flaot")) {
+			bw.write("CASTSI\n");
+		} else {
+			return;
+		}
+		
+		bw.write(operator + "\n");
+	}
+	
+	public static void write(String s) throws IOException {
+		bw.write(s);
 	}
 }

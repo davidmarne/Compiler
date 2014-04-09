@@ -538,18 +538,23 @@ public class Parser {
 	 ****************/
 	public static void SimpleExpression() throws Exception {
 		Boolean hasMinus = OptionalSign();
-		Term();
-		TermTail();
+		String termType = Term();
+		if(hasMinus) {
+			SymanticAnalyzer.pushLiteralVal("-1");
+			SymanticAnalyzer.computeExpression(termType, "MP_INTEGER", "MULS");
+		}		
+		TermTail(termType);
 	}
 	
-	public static void TermTail() throws Exception {	
+	public static void TermTail(String termType) throws Exception {	
 		switch(lookahead) {
 		case "MP_PLUS":
 		case "MP_MINUS":
 		case "MP_OR":
-			AddingOperator();
-			Term();
-			TermTail();
+			String operator =  AddingOperator();
+			String termTailType = Term();
+			SymanticAnalyzer.computeExpression(termType, termTailType, operator);
+			TermTail(termType);
 			break;
 		case "MP_DO":
 		case "MP_DOWNTO":
@@ -601,37 +606,44 @@ public class Parser {
 		return returnVal;
 	}
 
-	public static void AddingOperator() throws Exception {
+	public static String AddingOperator() throws Exception {
+		String returnVal = null;
 		switch(lookahead) {
 		case "MP_PLUS":
 			match("MP_PLUS");
+			returnVal = "ADDS";
 			break;
 		case "MP_MINUS":
 			match("MP_MINUS");
+			returnVal = "SUBS";
 			break;
 		case "MP_OR":
 			match("MP_OR");
+			returnVal = "ORS";
 			break;
 		default:
 			throw new Exception("PARSE ERROR");
 		}
+		return returnVal;
 	}
 	
-	public static void Term() throws Exception {
-		Factor();
-		FactorTail();
+	public static String Term() throws Exception {
+		String factorType = Factor();
+		FactorTail(factorType);
+		return factorType;
 	}
 	
-	public static void FactorTail() throws Exception {
+	public static void FactorTail(String factorType) throws Exception {
 		switch(lookahead) {
 		case "MP_AND":
 		case "MP_DIV":
 		case "MP_MOD":
 		case "MP_FLOAT_DIV":
 		case "MP_TIMES":		
-			MultiplyingOperator();
-			Factor();
-			FactorTail();
+			String operator = MultiplyingOperator();
+			String factorTailType = Factor();
+			SymanticAnalyzer.computeExpression(factorType, factorTailType, operator);
+			FactorTail(factorType);
 			break;
 		case "MP_DO":
 		case "MP_DOWNTO":
@@ -659,58 +671,73 @@ public class Parser {
 		}
 	}
 	
-	public static void MultiplyingOperator() throws Exception {
+	public static String MultiplyingOperator() throws Exception {
+		String returnVal = null;
 		switch(lookahead) {
 		case "MP_TIMES":
 			match("MP_TIMES");
+			returnVal = "MULS";
 			break;
 		case "MP_FLOAT_DIV":
 			match("MP_FLOAT_DIV");
+			returnVal = "DIVSF";
 			break;
 		case "MP_DIV":
 			match("MP_DIV");
+			returnVal = "DIVF";
 			break;
 		case "MP_MOD":
 			match("MP_MOD");
+			returnVal = "MODS";
 			break;
 		case "MP_AND":
 			match("MP_AND");
+			returnVal = "ANDS";
 			break;
 		default:
 			throw new Exception("Parse Error");
 		}
+		return returnVal;
 	}
 	
-	public static void Factor() throws Exception {
+	public static String Factor() throws Exception {
+		String returnVal = null;
 		switch(lookahead) {
 		case "MP_INTEGER_LIT":
 			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
 			match("MP_INTEGER_LIT");
+			returnVal = "MP_INTEGER";
 			break;
 		case "MP_FIXED_LIT":
 			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
 			match("MP_FIXED_LIT");
+			returnVal = "MP_FIXED";
 			break;
 		case "MP_FLOAT_LIT":
 			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
 			match("MP_FLOAT_LIT");
+			returnVal = "MP_FLOAT";
 			break;
 		case "MP_STRING_LIT":
-			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
+			SymanticAnalyzer.pushLiteralVal("\"" + tokens.get(0).lexeme + "\"");
 			match("MP_STRING_LIT");
+			returnVal = "MP_STRING";
 			break;
 		case "MP_TRUE":
-			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
+			SymanticAnalyzer.pushLiteralVal("1");
 			match("MP_TRUE");
+			returnVal = "MP_BOOLEAN";
 			break;
 		case "MP_FALSE":
-			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
+			SymanticAnalyzer.pushLiteralVal("0");
 			match("MP_FALSE");
+			returnVal = "MP_BOOLEAN";
 			break;
 		case "MP_NOT":
 			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
 			match("MP_NOT");
 			Factor();
+			returnVal = "MP_BOOLEAN";
 			break;
 		case "MP_LPAREN":
 			match("MP_LPAREN");
@@ -719,12 +746,14 @@ public class Parser {
 			break;
 		case "MP_IDENTIFIER":
 			SymanticAnalyzer.pushRegisterVal(tokens.get(0).lexeme, currTable);
+			returnVal = currTable.getTypeByLexeme(tokens.get(0).lexeme);
 			FunctionIdentifier();
-			OptionalActualParameterList();		
+			OptionalActualParameterList();	
 			break;
 		default:
 			throw new Exception("Parse Error");
 		}
+		return returnVal;
 	}
 		
 	public static void ProgramIdentifier() throws Exception {
@@ -739,8 +768,7 @@ public class Parser {
 		match("MP_IDENTIFIER");
 	}
 	
-	public static void FunctionIdentifier() throws Exception {
-		
+	public static void FunctionIdentifier() throws Exception {	
 		match("MP_IDENTIFIER");
 	}
 	
