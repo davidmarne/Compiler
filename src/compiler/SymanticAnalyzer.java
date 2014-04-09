@@ -82,4 +82,17 @@ public class SymanticAnalyzer {
 	public static void write(String s) throws IOException {
 		bw.write(s);
 	}
+	
+	public static void assign(String result, String exp, int[] offset) throws IOException{
+		if(result.equals(exp)) {
+			// do nothing
+		} else if(result.equals("MP_FLOAT") && exp.equals("MP_INTEGER")) {
+			bw.write("CASTSF\n");
+		} else if (result.equals("MP_INTEGER") && exp.equals("MP_FLOAT")) {
+			bw.write("CASTSI\n");
+		} else {
+			return;
+		}
+		bw.write("POP " + offset[0] + "(D" + offset[1] + ")\n");
+	}
 }

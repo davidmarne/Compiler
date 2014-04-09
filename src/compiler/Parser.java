@@ -385,9 +385,13 @@ public class Parser {
 	}
 	
 	public static void AssignmentStatement() throws Exception{
+		String resultType = currTable.getTypeByLexeme(tokens.get(0).lexeme);
+		int[] offset = currTable.findByLexeme(tokens.get(0).lexeme);
 		match("MP_IDENTIFIER");
 		match("MP_ASSIGN");
-		Expression();
+		String exprType = Expression();
+		SymanticAnalyzer.assign(resultType, exprType, offset);
+		
 	}
 	
 	public static void IfStatement() throws Exception{
@@ -493,20 +497,27 @@ public class Parser {
 	
 	public static String Expression() throws Exception{
 		String expressionType = SimpleExpression();
-		OptionalRelationalPart(expressionType);
-		return expressionType;
+		Boolean relationalPart = OptionalRelationalPart(expressionType);
+		if(relationalPart){
+			return "MP_BOOLEAN";
+		}else{
+			return expressionType;
+		}
 	}
 	
-	public static void OptionalRelationalPart(String expressionType) throws Exception{
+	public static Boolean OptionalRelationalPart(String expressionType) throws Exception{
+		Boolean returnVal = false;
 		if(lookahead == "MP_EQUAL" || lookahead == "MP_GTHAN" || lookahead == "MP_LTHAN" || lookahead == "MP_LEQUAL" || lookahead == "MP_GEQUAL" || lookahead == "MP_NEQUAL"){
 			String operator = RelationalOperator();
 			String secondExpressionType = SimpleExpression();
 			SymanticAnalyzer.computeExpression(expressionType, secondExpressionType, operator);
+			returnVal = true;
 		}else if(lookahead == "MP_DO" ||lookahead == "MP_DOWNTO" || lookahead == "MP_ELSE" ||lookahead == "MP_END"||lookahead == "MP_THEN" ||lookahead == "MP_TO" ||lookahead == "MP_UNTIL" ||lookahead == "MP_COMMA" ||lookahead == "MP_RPAREN" ||lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
 			
 		}
+		return returnVal;
 	}
 	
 	public static String RelationalOperator() throws Exception{
