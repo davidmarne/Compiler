@@ -380,8 +380,8 @@ public class Parser {
 	}
 	
 	public static void WriteParameter() throws Exception{
-		SymanticAnalyzer.writeStatement(tokens.get(0).lexeme, currTable);
 		OrdinalExpression();
+		SymanticAnalyzer.writeStatement();
 	}
 	
 	public static void AssignmentStatement() throws Exception{
@@ -491,15 +491,17 @@ public class Parser {
 	}
 	
 	
-	public static void Expression() throws Exception{
-		SimpleExpression();
-		OptionalRelationalPart();
+	public static String Expression() throws Exception{
+		String expressionType = SimpleExpression();
+		OptionalRelationalPart(expressionType);
+		return expressionType;
 	}
 	
-	public static void OptionalRelationalPart() throws Exception{
+	public static void OptionalRelationalPart(String expressionType) throws Exception{
 		if(lookahead == "MP_EQUAL" || lookahead == "MP_GTHAN" || lookahead == "MP_LTHAN" || lookahead == "MP_LEQUAL" || lookahead == "MP_GEQUAL" || lookahead == "MP_NEQUAL"){
-			RelationalOperator();
-			SimpleExpression();
+			String operator = RelationalOperator();
+			String secondExpressionType = SimpleExpression();
+			SymanticAnalyzer.computeExpression(expressionType, secondExpressionType, operator);
 		}else if(lookahead == "MP_DO" ||lookahead == "MP_DOWNTO" || lookahead == "MP_ELSE" ||lookahead == "MP_END"||lookahead == "MP_THEN" ||lookahead == "MP_TO" ||lookahead == "MP_UNTIL" ||lookahead == "MP_COMMA" ||lookahead == "MP_RPAREN" ||lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
@@ -507,36 +509,44 @@ public class Parser {
 		}
 	}
 	
-	public static void RelationalOperator() throws Exception{
+	public static String RelationalOperator() throws Exception{
+		String returnVal = null;
 		switch(lookahead){
 		case "MP_EQUAL":
 			match("MP_EQUAL");
+			returnVal = "CMPEQS";
 			break;
 		case "MP_LTHAN":
 			match("MP_LTHAN");
+			returnVal = "CMPLTS";
 			break;
 		case "MP_GTHAN":
 			match("MP_GTHAN");
+			returnVal = "CMPGTS";
 			break;
 		case "MP_LEQUAL":
 			match("MP_LEQUAL");
+			returnVal = "CMPLES";
 			break;
 		case "MP_GEQUAL":
 			match("MP_GEQUAL");
+			returnVal = "CMPGES";
 			break;
 		case "MP_NEQUAL":
 			match("MP_NEQUAL");
+			returnVal = "CMPNES";
 			break;
 		default:
 			throw new Exception("PARSE ERROR");
 		}
+		return returnVal;
 	}
 
 	
 	/****************
 	 * DOMS SECTION
 	 ****************/
-	public static void SimpleExpression() throws Exception {
+	public static String SimpleExpression() throws Exception {
 		Boolean hasMinus = OptionalSign();
 		String termType = Term();
 		if(hasMinus) {
@@ -544,6 +554,7 @@ public class Parser {
 			SymanticAnalyzer.computeExpression(termType, "MP_INTEGER", "MULS");
 		}		
 		TermTail(termType);
+		return termType;
 	}
 	
 	public static void TermTail(String termType) throws Exception {	

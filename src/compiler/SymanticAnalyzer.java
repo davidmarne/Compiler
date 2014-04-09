@@ -43,11 +43,8 @@ public class SymanticAnalyzer {
 		}			
 	}
 	
-	public static void writeStatement(String lexeme, SymbolTable currTable) throws IOException{
-		int[] offset = currTable.findByLexeme(lexeme);
-		if(offset != null) {
-			bw.write("WRT " + offset[0] + "(D" + offset[1] + ")\n");
-		}			
+	public static void writeStatement() throws IOException{
+		bw.write("WRTS\n");			
 	}
 	
 	public static void pushLiteralVal(String intVal) throws IOException {
@@ -65,15 +62,21 @@ public class SymanticAnalyzer {
 		// check for type compatibility
 		if(factorType.equals(factorTailType)) {
 			// do nothing
-		} else if(factorType.equals("float") && factorTailType.equals("int")) {
+		} else if(factorType.equals("MP_FLOAT") && factorTailType.equals("MP_INTEGER")) {
 			bw.write("CASTSF\n");
-		} else if (factorType.equals("int") && factorTailType.equals("flaot")) {
+		} else if (factorType.equals("MP_INTEGER") && factorTailType.equals("MP_FLOAT")) {
 			bw.write("CASTSI\n");
 		} else {
 			return;
 		}
-		
+		if(factorType.equals("MP_FLOAT")) {
+			operator += "F";
+		}
 		bw.write(operator + "\n");
+	}
+	
+	public static void relationalExpression() {
+		
 	}
 	
 	public static void write(String s) throws IOException {
