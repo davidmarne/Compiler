@@ -1,8 +1,8 @@
 program Program1;
   var Apples: Integer;
-       Cost:   Integer;
+       Cost:   Boolean;
   begin
-     Read(Apples, Cost);
-     Cost := -Apples * 5 * 4 + Cost div Apples;
+     Read(Apples);
+     Cost := (Apples * 5) > (Apples div 5);
      Write(Cost);
    end.

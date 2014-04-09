@@ -764,7 +764,7 @@ public class Parser {
 			break;
 		case "MP_LPAREN":
 			match("MP_LPAREN");
-			Expression();
+			returnVal = Expression();
 			match("MP_RPAREN");
 			break;
 		case "MP_IDENTIFIER":
