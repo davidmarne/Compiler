@@ -50,6 +50,7 @@ public class Parser {
 		ProcedureAndFunctionDeclarationPart();
 		SymanticAnalyzer.beginStatement(currTable.label);
 		StatementPart();
+		SymanticAnalyzer.programDestroy(currTable.nestingLevel, currTable.getSize());
 		currTable = currTable.destroy();
 	}
 	
@@ -515,7 +516,7 @@ public class Parser {
 		}else if(lookahead == "MP_DO" ||lookahead == "MP_DOWNTO" || lookahead == "MP_ELSE" ||lookahead == "MP_END"||lookahead == "MP_THEN" ||lookahead == "MP_TO" ||lookahead == "MP_UNTIL" ||lookahead == "MP_COMMA" ||lookahead == "MP_RPAREN" ||lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
-			
+			throw new Exception("PARSE ERROR : Found " + lookahead);
 		}
 		return returnVal;
 	}

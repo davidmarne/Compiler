@@ -32,6 +32,12 @@ public class SymanticAnalyzer {
 		bw.write("BR L" + nestingLevel + "\n");	
 	}
 	
+	public static void programDestroy(int nestingLevel, int size) throws IOException {
+		bw.write("MOV D" + nestingLevel + " SP\n");
+		bw.write("POP D" + nestingLevel + "\n");
+		bw.write("HLT");
+	}
+	
 	public static void beginStatement(int label) throws IOException{
 		bw.write("L" + label + ":\n");		
 	}
