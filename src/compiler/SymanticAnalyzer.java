@@ -65,6 +65,12 @@ public class SymanticAnalyzer {
 	}
 	
 	public static void computeExpression(String factorType, String factorTailType, String operator) throws IOException {
+		if(factorType.equals("MP_FIXED")){
+			factorType = "MP_FLOAT";
+		}
+		if(factorTailType.equals("MP_FIXED")){
+			factorTailType = "MP_FLOAT";
+		}
 		// check for type compatibility
 		if(factorType.equals(factorTailType)) {
 			// do nothing
@@ -90,6 +96,12 @@ public class SymanticAnalyzer {
 	}
 	
 	public static void assign(String result, String exp, int[] offset) throws IOException{
+		if(result.equals("MP_FIXED")){
+			result = "MP_FLOAT";
+		}
+		if(exp.equals("MP_FIXED")){
+			exp = "MP_FLOAT";
+		}
 		if(result.equals(exp)) {
 			// do nothing
 		} else if(result.equals("MP_FLOAT") && exp.equals("MP_INTEGER")) {
