@@ -49,8 +49,12 @@ public class SymanticAnalyzer {
 		}			
 	}
 	
-	public static void writeStatement() throws IOException{
-		bw.write("WRTS\n");			
+	public static void writeStatement(Boolean writeLine) throws IOException{
+		if(writeLine){
+			bw.write("WRTLNS\n");
+		}else{
+			bw.write("WRTS\n");	
+		}
 	}
 	
 	public static void pushLiteralVal(String intVal) throws IOException {

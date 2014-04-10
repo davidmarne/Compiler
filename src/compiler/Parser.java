@@ -354,25 +354,25 @@ public class Parser {
 		if(lookahead == "MP_WRITE"){
 			match("MP_WRITE");
 			match("MP_LPAREN");
-			WriteParameter();
-			WriteParameterTail();
+			WriteParameter(false);
+			WriteParameterTail(false);
 			match("MP_RPAREN");
 		}else if(lookahead == "MP_WRITELN"){ //Does not exist yet..
 			match("MP_WRITELN");
 			match("MP_LPAREN");
-			WriteParameter();
-			WriteParameterTail();
+			WriteParameter(true);
+			WriteParameterTail(true);
 			match("MP_RPAREN");
 		}else{
 			throw new Exception("PARSE ERROR");
 		}
 	}
 	
-	public static void WriteParameterTail() throws Exception{
+	public static void WriteParameterTail(Boolean writeLine) throws Exception{
 		if(lookahead == "MP_COMMA"){
 			match("MP_COMMA");
-			WriteParameter();
-			WriteParameterTail();
+			WriteParameter(writeLine);
+			WriteParameterTail(writeLine);
 		}else if(lookahead == "MP_RPAREN"){
 			//epsilon
 		}else{
@@ -380,9 +380,9 @@ public class Parser {
 		}
 	}
 	
-	public static void WriteParameter() throws Exception{
+	public static void WriteParameter(Boolean writeLn) throws Exception{
 		OrdinalExpression();
-		SymanticAnalyzer.writeStatement();
+		SymanticAnalyzer.writeStatement(writeLn);
 	}
 	
 	public static void AssignmentStatement() throws Exception{

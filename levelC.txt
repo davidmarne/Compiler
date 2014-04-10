@@ -7,8 +7,8 @@ program Program1;
      float1 := 1.22;
      float2 := 3.33;
      Cost := (Apples * 5) > (Apples div 5);
-     Write(Cost);
-     Write(Apples * float2);
-     Write(float1 * float2);
-     Write(float1 * Apples);
+     Writeln(Cost);
+     Writeln(Apples * float2);
+     Writeln(float1 * float2);
+     Writeln(float1 * Apples);
    end.
