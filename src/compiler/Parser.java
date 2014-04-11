@@ -427,9 +427,12 @@ public class Parser {
 	
 	public static void RepeatStatement() throws Exception{
 		match("MP_REPEAT");
+		String startLabel = "L" + label++;
+		SymanticAnalyzer.write(startLabel + ":\n");
 		StatementSequence();
 		match("MP_UNTIL");
 		BooleanExpression();
+		SymanticAnalyzer.write("BRFS "+ startLabel + "\n");
 	}
 	
 	public static void WhileStatement() throws Exception{

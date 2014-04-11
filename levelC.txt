@@ -28,4 +28,9 @@ program Program1;
       Apples := Apples + 1;
       Writeln(Apples);
     end;
+    Apples := 1;
+    Repeat
+      Apples := Apples + 1;
+      Writeln(Apples);
+    Until (Apples = Oranges)
    end.
