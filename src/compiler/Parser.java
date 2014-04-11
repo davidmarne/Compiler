@@ -387,7 +387,7 @@ public class Parser {
 	
 	public static void AssignmentStatement() throws Exception{
 		String resultType = currTable.getTypeByLexeme(tokens.get(0).lexeme);
-		int[] offset = currTable.findByLexeme(tokens.get(0).lexeme);
+		int[] offset = currTable.getOffsetByLexeme(tokens.get(0).lexeme);
 		match("MP_IDENTIFIER");
 		match("MP_ASSIGN");
 		String exprType = Expression();
@@ -453,7 +453,7 @@ public class Parser {
 		String finishLabel = "L" + label++;
 		String startLabel = "L" + label++;
 		//get offset and type of control variable
-		int[] offset = currTable.findByLexeme(tokens.get(0).lexeme);
+		int[] offset = currTable.getOffsetByLexeme(tokens.get(0).lexeme);
 		String resultType = currTable.getTypeByLexeme(tokens.get(0).lexeme);
 		ControlVariable();
 		match("MP_ASSIGN");

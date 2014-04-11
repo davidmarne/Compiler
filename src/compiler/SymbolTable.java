@@ -35,7 +35,7 @@ public class SymbolTable {
 		return parent;
 	}
 	
-	public int[] findByLexeme(String lexeme){
+	public int[] getOffsetByLexeme(String lexeme){
 		// search through current table
 		for (Symbol symbol : symbols) {
 			if(symbol.iden.equals(lexeme)){
@@ -46,7 +46,7 @@ public class SymbolTable {
 		
 		//search through any parent tables
 		if(parent != null) {
-			return parent.findByLexeme(lexeme);
+			return parent.getOffsetByLexeme(lexeme);
 		} else {
 			return null;
 		}

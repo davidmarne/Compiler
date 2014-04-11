@@ -3,6 +3,7 @@ program Program1;
         Cost:   Boolean;
 	float1, float2: float;
   begin
+    Read(float1);
     Read(Oranges);
     For Apples := 5 to Oranges do
     begin
