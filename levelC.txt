@@ -23,14 +23,9 @@ program Program1;
     Writeln(Cost);
     Writeln('We have level C complete');
 
-    While(Apples < Oranges) do
+    
+    For Apples := 5 to Oranges do
     begin
-      Apples := Apples + 1;
       Writeln(Apples);
     end;
-    Apples := 1;
-    Repeat
-      Apples := Apples + 1;
-      Writeln(Apples);
-    Until (Apples = Oranges)
    end.

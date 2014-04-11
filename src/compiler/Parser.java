@@ -450,35 +450,66 @@ public class Parser {
 	
 	public static void ForStatement() throws Exception{
 		match("MP_FOR");
+		String finishLabel = "L" + label++;
+		String startLabel = "L" + label++;
+		//get offset and type of control variable
+		int[] offset = currTable.findByLexeme(tokens.get(0).lexeme);
+		String resultType = currTable.getTypeByLexeme(tokens.get(0).lexeme);
 		ControlVariable();
 		match("MP_ASSIGN");
-		InitialValue();
-		StepValue();
-		FinalValue();
+		String exprType = InitialValue();
+		//assign the init value to the control variable
+		SymanticAnalyzer.assign(resultType, exprType, offset);
+		Boolean stepUp = StepValue();
+		//jump here every iteration
+		SymanticAnalyzer.write(startLabel + ":\n");
+		String finalType = FinalValue();
+		//finalval is ontop of stack, push control variable to compare
+		SymanticAnalyzer.write("PUSH " + offset[0] + "(D" + offset[1] + ")\n");
+		SymanticAnalyzer.computeExpression(resultType, finalType, "CMPEQS");
+		//if equal go to finishlabel
+		SymanticAnalyzer.write("BRTS " + finishLabel + "\n");
+		//else do the statement again
 		match("MP_DO");
 		Statement();
+		if(stepUp){
+			SymanticAnalyzer.write("PUSH " + offset[0] + "(D" + offset[1] + ")\n");
+			SymanticAnalyzer.write("PUSH #1\n");
+			SymanticAnalyzer.computeExpression(resultType, "MP_INTEGER", "ADDS");
+			SymanticAnalyzer.write("POP " + offset[0] + "(D" + offset[1] + ")\n");
+		}else{
+			SymanticAnalyzer.write("PUSH " + offset[0] + "(D" + offset[1] + ")\n");
+			SymanticAnalyzer.write("PUSH #1\n");
+			SymanticAnalyzer.computeExpression(resultType, "MP_INTEGER", "SUBS");
+			SymanticAnalyzer.write("POP " + offset[0] + "(D" + offset[1] + ")\n");
+		}
+		SymanticAnalyzer.write("BR " + startLabel + "\n");
+		SymanticAnalyzer.write(finishLabel + ":\n");
+		
 	}
 	
 	public static void ControlVariable() throws Exception{
 		VariableIdentifier();
 	}
 	
-	public static void InitialValue() throws Exception{
-		OrdinalExpression();
+	public static String InitialValue() throws Exception{
+		return OrdinalExpression();
 	}
 	
-	public static void StepValue() throws Exception{
+	public static Boolean StepValue() throws Exception{
 		if(lookahead == "MP_TO"){
 			match("MP_TO");
+			return true;
 		}else if(lookahead == "MP_DOWNTO"){
 			match("MP_DOWNTO");
+			return false;
 		}else{
 			throw new Exception("PARSE ERROR");
 		}
 	}
 	
-	public static void FinalValue() throws Exception{
-		OrdinalExpression();
+	public static String FinalValue() throws Exception{
+		return OrdinalExpression();
 	}
 	
 	public static void ProcedureStatement() throws Exception{
@@ -819,8 +850,8 @@ public class Parser {
 		return Expression();
 	}
 	
-	public static void OrdinalExpression() throws Exception {
-		Expression();
+	public static String OrdinalExpression() throws Exception {
+		return Expression();
 	}
 	
 	public static void IdentifierList() throws Exception {
