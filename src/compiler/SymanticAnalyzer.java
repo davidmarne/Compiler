@@ -68,7 +68,7 @@ public class SymanticAnalyzer {
 		}	
 	}
 	
-	public static void computeExpression(String factorType, String factorTailType, String operator) throws IOException {
+	public static void computeExpression(String factorType, String factorTailType, String operator) throws Exception {
 		if(factorType.equals("MP_FIXED")){
 			factorType = "MP_FLOAT";
 		}
@@ -83,7 +83,7 @@ public class SymanticAnalyzer {
 		} else if (factorType.equals("MP_INTEGER") && factorTailType.equals("MP_FLOAT")) {
 			bw.write("CASTSI\n");
 		} else {
-			return;
+			throw new Exception("incompatible types");
 		}
 		if(factorType.equals("MP_FLOAT")) {
 			operator += "F";
@@ -99,7 +99,7 @@ public class SymanticAnalyzer {
 		bw.write(s);
 	}
 	
-	public static void assign(String result, String exp, int[] offset) throws IOException{
+	public static void assign(String result, String exp, int[] offset) throws Exception{
 		if(result.equals("MP_FIXED")){
 			result = "MP_FLOAT";
 		}
@@ -113,7 +113,7 @@ public class SymanticAnalyzer {
 		} else if (result.equals("MP_INTEGER") && exp.equals("MP_FLOAT")) {
 			bw.write("CASTSI\n");
 		} else {
-			return;
+			throw new Exception("Assiging incompatible types");
 		}
 		bw.write("POP " + offset[0] + "(D" + offset[1] + ")\n");
 	}
