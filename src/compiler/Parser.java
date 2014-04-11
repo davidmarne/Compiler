@@ -467,9 +467,9 @@ public class Parser {
 		//finalval is ontop of stack, push control variable to compare
 		SymanticAnalyzer.write("PUSH " + offset[0] + "(D" + offset[1] + ")\n");
 		if(stepUp){
-			SymanticAnalyzer.computeExpression(resultType, finalType, "CMPLES");
+			SymanticAnalyzer.computeExpression(resultType, finalType, "CMPLTS");
 		}else{
-			SymanticAnalyzer.computeExpression(resultType, finalType, "CMPGES");
+			SymanticAnalyzer.computeExpression(resultType, finalType, "CMPGTS");
 		}
 		//if equal go to finishlabel
 		SymanticAnalyzer.write("BRTS " + finishLabel + "\n");
