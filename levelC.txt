@@ -22,4 +22,10 @@ program Program1;
     Cost := (Apples * float2) = (float1 * Apples);
     Writeln(Cost);
     Writeln('We have level C complete');
+
+    While(Apples < Oranges) do
+    begin
+      Apples := Apples + 1;
+      Writeln(Apples);
+    end;
    end.

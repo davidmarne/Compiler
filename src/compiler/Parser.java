@@ -434,9 +434,15 @@ public class Parser {
 	
 	public static void WhileStatement() throws Exception{
 		match("MP_WHILE");
+		String checkLabel = "L" + label++;
+		String endLabel = "L" + label++;
+		SymanticAnalyzer.write(checkLabel + ":\n");
 		BooleanExpression();
+		SymanticAnalyzer.write("BRFS "+ endLabel + "\n");
 		match("MP_DO");
 		Statement();
+		SymanticAnalyzer.write("BR" + checkLabel + "\n");
+		SymanticAnalyzer.write(endLabel + ":\n");
 	}
 	
 	public static void ForStatement() throws Exception{
