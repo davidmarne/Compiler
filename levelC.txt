@@ -1,14 +1,25 @@
 program Program1;
-  var Apples: Integer;
+  var Apples, Oranges: Integer;
         Cost:   Boolean;
 	float1, float2: float;
   begin
-     Read(Apples);
-     float1 := 1.22;
-     float2 := 3.33;
-     Cost := (Apples * 5) > (Apples div 5);
-     Writeln(Cost);
-     Writeln(Apples * float2);
-     Writeln(float1 * float2);
-     Writeln(float1 * Apples);
+    Read(Apples);
+    Read(Oranges);
+    {case sensitivity matters right now !}
+    if(Apples = Oranges) then
+      Writeln('Yes')
+    else
+      Writeln('No');  
+
+
+    {reading floats does not work}
+    float1 := 1.22;
+    float2 := 1.33;
+    Cost := (Apples * float1) = (Apples * float2);
+    Writeln(Cost);
+    Cost := (float1 * Apples) > (Apples * float2);
+    Writeln(Cost);
+    Cost := (Apples * float2) = (float1 * Apples);
+    Writeln(Cost);
+    Writeln('We have level C complete');
    end.

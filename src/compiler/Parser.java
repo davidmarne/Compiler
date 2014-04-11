@@ -397,10 +397,21 @@ public class Parser {
 	
 	public static void IfStatement() throws Exception{
 		match("MP_IF");
-		BooleanExpression();
-		match("MP_THEN");
-		Statement();
-		OptionalElsePart();
+		if(BooleanExpression() == "MP_BOOLEAN"){
+			match("MP_THEN");
+			//two labels, one to branch to else part, one to branch to finish of else part
+			String branchLable = "L" + label++;
+			String branchAfterElse = "L" + label++;
+			SymanticAnalyzer.write("BRFS "+ branchLable + "\n");
+			Statement();
+			//if statement was executed branch to after the else part
+			SymanticAnalyzer.write("BR "+ branchAfterElse + "\n");
+			SymanticAnalyzer.write(branchLable + ":\n");
+			OptionalElsePart();
+			SymanticAnalyzer.write(branchAfterElse + ":\n");
+		}else{
+			throw new Exception("Could not resolve if statement");
+		}
 	}
 	
 	public static void OptionalElsePart() throws Exception{
@@ -795,8 +806,8 @@ public class Parser {
 		match("MP_IDENTIFIER");
 	}
 	
-	public static void BooleanExpression() throws Exception {
-		Expression();
+	public static String BooleanExpression() throws Exception {
+		return Expression();
 	}
 	
 	public static void OrdinalExpression() throws Exception {
