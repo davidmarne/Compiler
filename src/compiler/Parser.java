@@ -62,6 +62,7 @@ public class Parser {
 			VariableDeclaration();
 			match("MP_SCOLON");
 			VariableDeclarationTail();
+			
 		}else if(lookahead == "MP_BEGIN" || lookahead == "MP_FUNCTION" || lookahead == "MP_PROCEDURE" ){
 			//epsilon
 			
@@ -84,8 +85,6 @@ public class Parser {
 	
 	public static void VariableDeclaration() throws Exception{
 		int currentPos = currTable.symbols.size();
-		
-		
 		IdentifierList();
 		match("MP_COLON");
 		Type();
@@ -113,7 +112,7 @@ public class Parser {
 			match("MP_FLOAT");
 			break;
 		default:
-			throw new Exception("PARSE ERROR : Found " + lookahead);
+			throw new Exception("PARSE ERROR : Found " + lookahead + " expected MP_INTEGER, MP_STRING, MP_BOOLEAN, MP_FIXED, or MP_FLOAT");
 		}
 	}
 	
@@ -188,6 +187,7 @@ public class Parser {
 			match("MP_SCOLON");
 			FormalParameterSection();
 			FormalParameterSectionTail();
+			
 		}else if(lookahead == "MP_RPAREN"){
 			//epsilon
 		}else{
@@ -201,7 +201,7 @@ public class Parser {
 		}else if(lookahead == "MP_VAR"){
 			VariableParameterSection();
 		}else{
-			throw new Exception("Parse Error");
+			throw new Exception("Parse Error : Found " + lookahead +", Expected MP_IDENTIFER or MP_VAR");
 		}
 	}
 	
@@ -261,15 +261,33 @@ public class Parser {
 	}
 	
 	public static void StatementSequence() throws Exception{
-		Statement();
-		StatementTail();
+		try{
+			Statement();
+		}catch(Exception e){
+			System.out.println(e);
+			while(!tokens.get(0).token.equals("MP_SCOLON")){
+				tokens.remove(0);
+			}
+			lookahead = tokens.get(0).token;
+		}finally{
+			StatementTail();
+		}
 	}
 	
 	public static void StatementTail() throws Exception{
 		if(lookahead == "MP_SCOLON"){
 			match("MP_SCOLON");
-			Statement();
-			StatementTail();
+			try{
+				Statement();
+			}catch(Exception e){
+				System.out.println(e);
+				while(!tokens.get(0).token.equals("MP_SCOLON")){
+					tokens.remove(0);
+				}
+				lookahead = tokens.get(0).token;
+			}finally{
+				StatementTail();
+			}
 		}else if(lookahead == "MP_UNTIL" || lookahead == "MP_END"){
 			//epsilon
 		}else{
@@ -364,7 +382,7 @@ public class Parser {
 			WriteParameterTail(true);
 			match("MP_RPAREN");
 		}else{
-			throw new Exception("PARSE ERROR");
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_WRITE, or MP_WRITELN");
 		}
 	}
 	
@@ -410,7 +428,7 @@ public class Parser {
 			OptionalElsePart();
 			SymanticAnalyzer.write(branchAfterElse + ":\n");
 		}else{
-			throw new Exception("Could not resolve if statement");
+			throw new Exception("Could not resolve if statement, expected a boolean expression");
 		}
 	}
 	
@@ -444,7 +462,7 @@ public class Parser {
 		SymanticAnalyzer.write("BRFS "+ endLabel + "\n");
 		match("MP_DO");
 		Statement();
-		SymanticAnalyzer.write("BR" + checkLabel + "\n");
+		SymanticAnalyzer.write("BR " + checkLabel + "\n");
 		SymanticAnalyzer.write(endLabel + ":\n");
 	}
 	
@@ -508,7 +526,7 @@ public class Parser {
 			match("MP_DOWNTO");
 			return false;
 		}else{
-			throw new Exception("PARSE ERROR");
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_DOWNTO or MP_TO");
 		}
 	}
 	
@@ -530,7 +548,7 @@ public class Parser {
 		}else if(lookahead == "MP_AND" || lookahead == "MP_DIV" ||lookahead == "MP_DO" ||lookahead == "MP_DOWNTO" || lookahead == "MP_ELSE" ||lookahead == "MP_END" ||lookahead == "MP_MOD" ||lookahead == "MP_OR" ||lookahead == "MP_THEN" ||lookahead == "MP_TO" ||lookahead == "MP_UNTIL" ||lookahead == "MP_COMMA" ||lookahead == "MP_EQUAL" ||lookahead == "MP_FLOAT_DIV" ||lookahead == "MP_GEQUAL" ||lookahead == "MP_GTHAN" |lookahead == "MP_LEQUAL" ||lookahead == "MP_LTHAN" ||lookahead == "MP_MINUS" ||lookahead == "MP_NEQUAL" ||lookahead == "MP_PLUS" ||lookahead == "MP_RPAREN" ||lookahead == "MP_SCOLON" ||lookahead == "MP_TIMES" ){
 				//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_ELSE, MP_END, or MP_UNTIL");
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected just about anything else");
 		}
 	}
 	
@@ -571,7 +589,7 @@ public class Parser {
 		}else if(lookahead == "MP_DO" ||lookahead == "MP_DOWNTO" || lookahead == "MP_ELSE" ||lookahead == "MP_END"||lookahead == "MP_THEN" ||lookahead == "MP_TO" ||lookahead == "MP_UNTIL" ||lookahead == "MP_COMMA" ||lookahead == "MP_RPAREN" ||lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead);
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected just about anything else");
 		}
 		return returnVal;
 	}
@@ -604,7 +622,7 @@ public class Parser {
 			returnVal = "CMPNES";
 			break;
 		default:
-			throw new Exception("PARSE ERROR");
+			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected boolean operator");
 		}
 		return returnVal;
 	}

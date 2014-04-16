@@ -1,12 +1,29 @@
 program Program1;
   var Apples, Oranges: Integer;
         Cost:   Boolean;
-	float1, float2: float;
+	x, y, z: float;
+
+  procedure foo(var A: Integer);
   begin
-    Read(float1);
-    Read(Oranges);
-    For Apples := 5 to Oranges do
+    Write('A');
+  end;
+
+  begin
+    
+    x := 1;
+    y := 2;
+    z := 3;
+    
+    aidsjf := 5;
+
+    if x = y then
     begin
-      Writeln(Apples);
-    end;
+      Write('x');
+      if x < z then
+        Write('z');
+    end
+    else if x < y then
+      Write('y')
+    else 
+      Write('Fail');
    end.
