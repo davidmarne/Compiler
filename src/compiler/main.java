@@ -10,12 +10,13 @@ public class main {
 		if(args.length == 1) {
 			filename = args[0];
 		} else {
-			filename = "levelC.txt";
+			filename = "assignment.txt";
 		}
 		ArrayList<Token> tkns = new ArrayList<Token>();
 		try{
 			Scanner.openFile(filename);
 			Token s = null;
+			boolean scannerError = false;
 			while(true){
 				try {
 					s = Scanner.getToken();
@@ -29,11 +30,14 @@ public class main {
 					}
 				} catch (Exception e) {
 					System.out.println(e);
+					scannerError = true;
 				}
 
-			}	
-			
-			Parser.parser(tkns);
+			}
+			// only parse the program if there was no scanner error
+			if(!scannerError) {
+				Parser.parser(tkns);
+			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
