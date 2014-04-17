@@ -37,6 +37,8 @@ public class main {
 			// only parse the program if there was no scanner error
 			if(!scannerError) {
 				Parser.parser(tkns);
+			} else {
+				System.out.println("Prgram failed to scan");
 			}
 		}catch(Exception e){
 			e.printStackTrace();

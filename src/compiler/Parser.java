@@ -13,6 +13,7 @@ public class Parser {
 	static String idenListMode = "";
 	static String idenListId = "";
 	static int label = 0;
+	static boolean parseError = false;
 	
 	static ArrayList<Symbol> listOfParameters = new ArrayList<Symbol>();
 	
@@ -22,6 +23,11 @@ public class Parser {
 		lookahead = tokens.get(0).token;
 		SystemGoal();
 		SymanticAnalyzer.close();
+		if (!parseError) {
+			System.out.println("Programs successfully parsed");
+		} else {
+			System.out.println("Program parsed with errors");
+		}
 	}
 	
 	public static void SystemGoal() throws Exception{
@@ -261,15 +267,16 @@ public class Parser {
 	}
 	
 	public static void StatementSequence() throws Exception{
-		try{
+		try {
 			Statement();
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e);
-			while(!tokens.get(0).token.equals("MP_SCOLON")){
+			while (!tokens.get(0).token.equals("MP_SCOLON")) {
 				tokens.remove(0);
 			}
+			parseError = true;
 			lookahead = tokens.get(0).token;
-		}finally{
+		} finally {
 			StatementTail();
 		}
 	}
@@ -284,6 +291,7 @@ public class Parser {
 				while(!tokens.get(0).token.equals("MP_SCOLON")){
 					tokens.remove(0);
 				}
+				parseError = true;
 				lookahead = tokens.get(0).token;
 			}finally{
 				StatementTail();
@@ -921,8 +929,6 @@ public class Parser {
 						break;
 					}
 				}
-			}else{
-				System.out.println("Programs successfully parsed");
 			}
 		}else{
 			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected " + token);
