@@ -73,7 +73,7 @@ public class Parser {
 			//epsilon
 			
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_VAR, MP_BEGIN, MP_FUNCTION, or MP_PROCEDURE");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", Expected MP_VAR, MP_BEGIN, MP_FUNCTION, or MP_PROCEDURE");
 		}
 	}
 	
@@ -85,7 +85,7 @@ public class Parser {
 		}else if(lookahead == "MP_BEGIN" || lookahead == "MP_FUNCTION" || lookahead == "MP_PROCEDURE" ){
 			//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_IDENTIFIER, MP_BEGIN, MP_FUNCTION, or MP_PROCEDURE");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", Expected MP_IDENTIFIER, MP_BEGIN, MP_FUNCTION, or MP_PROCEDURE");
 		}
 	}
 	
@@ -118,7 +118,7 @@ public class Parser {
 			match("MP_FLOAT");
 			break;
 		default:
-			throw new Exception("PARSE ERROR : Found " + lookahead + " expected MP_INTEGER, MP_STRING, MP_BOOLEAN, MP_FIXED, or MP_FLOAT");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_INTEGER, MP_STRING, MP_BOOLEAN, MP_FIXED, or MP_FLOAT");
 		}
 	}
 	
@@ -133,7 +133,7 @@ public class Parser {
 		}else if(lookahead == "MP_BEGIN"){
 			//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_BEGIN, MP_FUNCTION, or MP_PROCEDURE");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_BEGIN, MP_FUNCTION, or MP_PROCEDURE");
 		}
 	}
 	
@@ -184,7 +184,7 @@ public class Parser {
 		}else if(lookahead == "MP_COLON" || lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_LPAREN, MP_COLON, or MP_SCOLON");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_LPAREN, MP_COLON, or MP_SCOLON");
 		}
 	}
 	
@@ -197,7 +197,7 @@ public class Parser {
 		}else if(lookahead == "MP_RPAREN"){
 			//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_RPAREN, or MP_SCOLON");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_RPAREN, or MP_SCOLON");
 		}
 	}
 	
@@ -207,7 +207,7 @@ public class Parser {
 		}else if(lookahead == "MP_VAR"){
 			VariableParameterSection();
 		}else{
-			throw new Exception("Parse Error : Found " + lookahead +", Expected MP_IDENTIFER or MP_VAR");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead +", expected MP_IDENTIFER or MP_VAR");
 		}
 	}
 	
@@ -271,6 +271,7 @@ public class Parser {
 			Statement();
 		} catch (Exception e) {
 			System.out.println(e);
+			
 			while (!tokens.get(0).token.equals("MP_SCOLON")) {
 				tokens.remove(0);
 			}
@@ -299,7 +300,7 @@ public class Parser {
 		}else if(lookahead == "MP_UNTIL" || lookahead == "MP_END"){
 			//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_UNTIL, MP_END, or MP_SCOLON");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_UNTIL, MP_END, or MP_SCOLON");
 		}
 	}
 	
@@ -367,7 +368,7 @@ public class Parser {
 		}else if(lookahead == "MP_RPAREN"){
 			//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_RPAREN, or MP_COMMA");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_RPAREN, or MP_COMMA");
 		}
 	}
 	
@@ -390,7 +391,7 @@ public class Parser {
 			WriteParameterTail(true);
 			match("MP_RPAREN");
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_WRITE, or MP_WRITELN");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_WRITE, or MP_WRITELN");
 		}
 	}
 	
@@ -402,7 +403,7 @@ public class Parser {
 		}else if(lookahead == "MP_RPAREN"){
 			//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_RPAREN, or MP_COMMA");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_RPAREN, or MP_COMMA");
 		}
 	}
 	
@@ -436,7 +437,7 @@ public class Parser {
 			OptionalElsePart();
 			SymanticAnalyzer.write(branchAfterElse + ":\n");
 		}else{
-			throw new Exception("Could not resolve if statement, expected a boolean expression");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Not a boolean expression");
 		}
 	}
 	
@@ -447,7 +448,7 @@ public class Parser {
 		}else if(lookahead == "MP_END" || lookahead == "MP_UNTIL" || lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_ELSE, MP_END, or MP_UNTIL");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_ELSE, MP_END, MP_UNTIL, or MP_SCOLON");
 		}
 	}
 	
@@ -534,7 +535,7 @@ public class Parser {
 			match("MP_DOWNTO");
 			return false;
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_DOWNTO or MP_TO");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_DOWNTO or MP_TO");
 		}
 	}
 	
@@ -556,7 +557,7 @@ public class Parser {
 		}else if(lookahead == "MP_AND" || lookahead == "MP_DIV" ||lookahead == "MP_DO" ||lookahead == "MP_DOWNTO" || lookahead == "MP_ELSE" ||lookahead == "MP_END" ||lookahead == "MP_MOD" ||lookahead == "MP_OR" ||lookahead == "MP_THEN" ||lookahead == "MP_TO" ||lookahead == "MP_UNTIL" ||lookahead == "MP_COMMA" ||lookahead == "MP_EQUAL" ||lookahead == "MP_FLOAT_DIV" ||lookahead == "MP_GEQUAL" ||lookahead == "MP_GTHAN" |lookahead == "MP_LEQUAL" ||lookahead == "MP_LTHAN" ||lookahead == "MP_MINUS" ||lookahead == "MP_NEQUAL" ||lookahead == "MP_PLUS" ||lookahead == "MP_RPAREN" ||lookahead == "MP_SCOLON" ||lookahead == "MP_TIMES" ){
 				//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected just about anything else");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected just about anything else");
 		}
 	}
 	
@@ -568,7 +569,7 @@ public class Parser {
 		}else if(lookahead == "MP_RPAREN"){
 			//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected MP_COMMA, or MP_RPAREN");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_COMMA, or MP_RPAREN");
 		}
 	}
 	
@@ -597,7 +598,7 @@ public class Parser {
 		}else if(lookahead == "MP_DO" ||lookahead == "MP_DOWNTO" || lookahead == "MP_ELSE" ||lookahead == "MP_END"||lookahead == "MP_THEN" ||lookahead == "MP_TO" ||lookahead == "MP_UNTIL" ||lookahead == "MP_COMMA" ||lookahead == "MP_RPAREN" ||lookahead == "MP_SCOLON"){
 			//epsilon
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected just about anything else");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected just about anything else");
 		}
 		return returnVal;
 	}
@@ -630,7 +631,7 @@ public class Parser {
 			returnVal = "CMPNES";
 			break;
 		default:
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected boolean operator");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected boolean operator");
 		}
 		return returnVal;
 	}
@@ -679,7 +680,7 @@ public class Parser {
 			// epsilon
 			break;
 		default:
-			throw new Exception("Parse Error");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected just about anything else");
 		}
 	}
 	
@@ -705,7 +706,7 @@ public class Parser {
 			//epsilon
 			break;
 		default:
-			throw new Exception("Parse Error");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_PLUS, MP_MINUS, MP_FALSE, MP_NOT, MP_TRUE, MP_IDENTIFIER, MP_INTEGER_LIT, MP_FIXED_LIT, MP_FLOAT_LIT, MP_STRING_LIT, OR MP_LPAREN");
 		}
 		return returnVal;
 	}
@@ -726,7 +727,7 @@ public class Parser {
 			returnVal = "ORS";
 			break;
 		default:
-			throw new Exception("PARSE ERROR");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_PLUS, MP_MINUS, or MP_OR");
 		}
 		return returnVal;
 	}
@@ -771,7 +772,7 @@ public class Parser {
 			//epsilon
 			break;
 		default:
-			throw new Exception("Parse Error : Found " + lookahead + ", Expected MP_TIMES, MP_FLOAT_DIV, MP_DIV, MP_MOD, or MP_AND (" + tokens.get(0).lineNumber + ", " + tokens.get(0).colNumber + ")" );
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected just about anything else");
 		}
 	}
 	
@@ -799,7 +800,7 @@ public class Parser {
 			returnVal = "ANDS";
 			break;
 		default:
-			throw new Exception("Parse Error");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expceted MP_TIMES, MP_FLOAT_DIV, MP_DIV, MP_MOD, or MP_AND");
 		}
 		return returnVal;
 	}
@@ -855,7 +856,7 @@ public class Parser {
 			OptionalActualParameterList();	
 			break;
 		default:
-			throw new Exception("Parse Error");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_INTEGER_LIT, MP_FIXED_LIT, MP_FLOAT_LIT, MP_STRING_LIT, MP_TRUE, MP_FALSE, MP_NOT, MP_LPAREN, or MP_IDENTIFIER");
 		}
 		return returnVal;
 	}
@@ -907,7 +908,7 @@ public class Parser {
 			//epsilon
 			break;
 		default:
-			throw new Exception("Parse Error");
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_COMMA or MP_COLON");
 		}	
 	}
 	
@@ -931,7 +932,7 @@ public class Parser {
 				}
 			}
 		}else{
-			throw new Exception("PARSE ERROR : Found " + lookahead + ", Expected " + token);
+			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected " + token);
 		}
 	}
 }
