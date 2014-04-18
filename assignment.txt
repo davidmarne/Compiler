@@ -1,0 +1,10 @@
+program Program1;
+  var Apples, Oranges: Integer;
+        Cost:   boolean;
+	float1, float2: float;
+  begin
+    Oranges := 10;
+    Read(Apples);
+    Cost a := (Apples >= Oranges) = false;
+    Write(Cost);
+   end.
