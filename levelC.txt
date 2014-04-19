@@ -3,27 +3,21 @@ program Program1;
         Cost:   Boolean;
 	x, y, z: float;
 
-  procedure foo(var A: Integer);
+  function foo(var A: Integer): Integer;
+  var X: Integer;
+
+    procedure foo2;
+    begin
+      Write('2');
+    end;
   begin
     Write('A');
+    foo2;
+    foo := 4;
   end;
 
-  begin
-    
-    x := 1;
-    y := 2;
-    z := 3;
-    
-    aidsjf := 5;
+begin
+  Apples := foo(5);
+  Write(Apples);
 
-    if x = y then
-    begin
-      Write('x');
-      if x < z then
-        Write('z');
-    end
-    else if x < y then
-      Write('y')
-    else 
-      Write('Fail');
-   end.
+end.

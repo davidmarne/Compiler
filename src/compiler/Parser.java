@@ -47,16 +47,20 @@ public class Parser {
 		match("MP_PROGRAM");
 		currTable = new SymbolTable(tokens.get(0).lexeme, label++);
 		ProgramIdentifier();
+		SymanticAnalyzer.write("PUSH D0\n");
+		SymanticAnalyzer.write("MOV SP D0\n");
+		SymanticAnalyzer.write("BR L0\n");
 	}
 	
 	public static void Block() throws Exception{
 		VariableDeclarationPart();
 		// generate code to allocate stack space for local variables and properly offset the SP
-		SymanticAnalyzer.programDeclaration(currTable.nestingLevel, currTable.getSize());
+		
 		ProcedureAndFunctionDeclarationPart();
-		SymanticAnalyzer.beginStatement(currTable.label);
+		SymanticAnalyzer.write(currTable.getLabel() + ":\n");
+		SymanticAnalyzer.programDeclaration(currTable.nestingLevel, currTable.getNumOfNonParams(), "L"+label);
 		StatementPart();
-		SymanticAnalyzer.programDestroy(currTable.nestingLevel, currTable.getSize());
+		SymanticAnalyzer.programDestroy(currTable.nestingLevel, currTable.getNumOfNonParams());
 		currTable = currTable.destroy();
 	}
 	
@@ -159,7 +163,7 @@ public class Parser {
 		listOfParameters.clear();
 		OptionalFormalParameterList();
 		// insert into parent table after we know all the parameters listOfParameters
-		currTable.parent.insert(new Symbol(idenListId, "", "procedure", listOfParameters, currTable.symbols.size()));
+		currTable.parent.insert(new Symbol(idenListId, "", "procedure", listOfParameters, currTable.parent.symbols.size(), currTable.label));
 	}
 	
 	public static void FunctionHeading() throws Exception{
@@ -172,7 +176,7 @@ public class Parser {
 		match("MP_COLON");
 		idenListType = lookahead;
 		Type();
-		currTable.parent.insert(new Symbol(idenListId, idenListType, "function", listOfParameters, currTable.symbols.size()));
+		currTable.parent.insert(new Symbol(idenListId, idenListType, "function", listOfParameters, currTable.parent.symbols.size(), currTable.label));
 	}
 	
 	public static void OptionalFormalParameterList() throws Exception{
@@ -415,10 +419,15 @@ public class Parser {
 	public static void AssignmentStatement() throws Exception{
 		String resultType = currTable.getTypeByLexeme(tokens.get(0).lexeme);
 		int[] offset = currTable.getOffsetByLexeme(tokens.get(0).lexeme);
+		boolean isFunction = currTable.isFunction(tokens.get(0).lexeme);
 		match("MP_IDENTIFIER");
 		match("MP_ASSIGN");
 		String exprType = Expression();
-		SymanticAnalyzer.assign(resultType, exprType, offset);
+		if (isFunction) {
+			SymanticAnalyzer.assignByReference(resultType, exprType, currTable.nestingLevel);
+		} else {
+			SymanticAnalyzer.assign(resultType, exprType, offset);
+		}
 		
 	}
 	
@@ -544,11 +553,14 @@ public class Parser {
 	}
 	
 	public static void ProcedureStatement() throws Exception{
+		String procedureName = tokens.get(0).lexeme;
 		ProcedureIdentifier();
-		OptionalActualParameterList();
+		SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName));
+		OptionalActualParameterList(procedureName);
+		SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName));
 	}
 	
-	public static void OptionalActualParameterList() throws Exception{
+	public static void OptionalActualParameterList(String name) throws Exception{
 		if(lookahead == "MP_LPAREN"){
 			match("MP_LPAREN");
 			ActualParameter();
@@ -558,6 +570,9 @@ public class Parser {
 				//epsilon
 		}else{
 			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected just about anything else");
+		}
+		if(currTable.isFunction(name) || currTable.isProcedure(name)){
+			SymanticAnalyzer.write("CALL L" + currTable.getLabelByLexeme(name) + "\n");
 		}
 	}
 	
@@ -850,10 +865,21 @@ public class Parser {
 			match("MP_RPAREN");
 			break;
 		case "MP_IDENTIFIER":
-			SymanticAnalyzer.pushRegisterVal(tokens.get(0).lexeme, currTable);
+			
 			returnVal = currTable.getTypeByLexeme(tokens.get(0).lexeme);
+			String name = tokens.get(0).lexeme;
+			boolean isFunction = currTable.isFunction(name);
+			if(isFunction){
+				SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(name));
+			}else{
+				SymanticAnalyzer.pushRegisterVal(name, currTable);
+			}
 			FunctionIdentifier();
-			OptionalActualParameterList();	
+			OptionalActualParameterList(name);	
+			if(isFunction){
+				SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(name));
+				SymanticAnalyzer.pushRegisterVal(name, currTable);
+			}
 			break;
 		default:
 			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected MP_INTEGER_LIT, MP_FIXED_LIT, MP_FLOAT_LIT, MP_STRING_LIT, MP_TRUE, MP_FALSE, MP_NOT, MP_LPAREN, or MP_IDENTIFIER");

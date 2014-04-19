@@ -25,22 +25,37 @@ public class SymanticAnalyzer {
 		bw.close(); 
 	}
 	
-	public static void programDeclaration(int nestingLevel, int size) throws IOException {
+	public static void programDeclaration(int nestingLevel, int size, String label) throws IOException {
+		bw.write("ADD SP #" + size + " SP\n");	
+	}
+	
+	public static void procedureFunctionDeclaration(int nestingLevel, int[] offset) throws IOException{
 		bw.write("PUSH D" + nestingLevel + "\n");
 		bw.write("MOV SP D" + nestingLevel + "\n");
-		bw.write("ADD SP #" + size + " SP\n");	
-		bw.write("BR L" + nestingLevel + "\n");	
+		//push function reference onto stack
+		bw.write("PUSH D"+ offset[1] +"\n");
+		bw.write("PUSH #" + offset[0]+"\n");
+		bw.write("ADDS\n");
+	}
+	
+	public static void procedureFunctionDestroy(int nestingLevel, int[] offset) throws IOException{
+		
+		bw.write("MOV D" + nestingLevel + " SP\n");
+		bw.write("POP D" + nestingLevel + "\n");
+
 	}
 	
 	public static void programDestroy(int nestingLevel, int size) throws IOException {
-		bw.write("MOV D" + nestingLevel + " SP\n");
-		bw.write("POP D" + nestingLevel + "\n");
-		bw.write("HLT");
+		if(nestingLevel == 0){
+			bw.write("MOV D" + nestingLevel + " SP\n");
+			bw.write("POP D" + nestingLevel + "\n");
+			bw.write("HLT");
+		}else{
+			bw.write("SUB SP #" + size + " SP\n");
+			bw.write("RET\n");
+		}
 	}
 	
-	public static void beginStatement(int label) throws IOException{
-		bw.write("L" + label + ":\n");		
-	}
 	
 	public static void readStatement(String lexeme, SymbolTable currTable) throws IOException{
 		int[] offset = currTable.getOffsetByLexeme(lexeme);
@@ -96,10 +111,6 @@ public class SymanticAnalyzer {
 		bw.write(operator + "\n");
 	}
 	
-	public static void relationalExpression() {
-		
-	}
-	
 	public static void write(String s) throws IOException {
 		bw.write(s);
 	}
@@ -123,4 +134,22 @@ public class SymanticAnalyzer {
 		bw.write("POP " + offset[0] + "(D" + offset[1] + ")\n");
 	}
 	
+	public static void assignByReference(String result, String exp, int nestingLevel) throws Exception{
+		if(result.equals("MP_FIXED")){
+			result = "MP_FLOAT";
+		}
+		if(exp.equals("MP_FIXED")){
+			exp = "MP_FLOAT";
+		}
+		if(result.equals(exp)) {
+			// do nothing
+		} else if(result.equals("MP_FLOAT") && exp.equals("MP_INTEGER")) {
+			bw.write("CASTSF\n");
+		} else if (result.equals("MP_INTEGER") && exp.equals("MP_FLOAT")) {
+			bw.write("CASTSI\n");
+		} else {
+			throw new Exception("Assiging incompatible types");
+		}
+		bw.write("POP @0(D" + nestingLevel + ")\n");
+	}
 }

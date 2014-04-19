@@ -68,6 +68,59 @@ public class SymbolTable {
 		}
 	}
 	
+	public Boolean isFunction(String lexeme){
+		// search through current table
+		for (Symbol symbol : symbols) {
+			if(symbol.iden.equals(lexeme)){
+				if(symbol.kind.equals("function")){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}
+		
+		//search through any parent tables
+		if(parent != null) {
+			return parent.isFunction(lexeme);
+		} else {
+			return null;
+		}
+	}
+	public Boolean isProcedure(String lexeme){
+		// search through current table
+		for (Symbol symbol : symbols) {
+			if(symbol.iden.equals(lexeme)){
+				if(symbol.kind.equals("procedure")){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}
+		
+		//search through any parent tables
+		if(parent != null) {
+			return parent.isProcedure(lexeme);
+		} else {
+			return null;
+		}
+	}
+	public int getLabelByLexeme(String lexeme){
+		for (Symbol symbol : symbols) {
+			if(symbol.iden.equals(lexeme)){
+				return symbol.label;
+			}
+		}
+		
+		//search through any parent tables
+		if(parent != null) {
+			return parent.getLabelByLexeme(lexeme);
+		} else {
+			return -1;
+		}
+	}
+	
 	public int getSize(){
 		return symbols.size();
 	}
@@ -87,5 +140,15 @@ public class SymbolTable {
 	
 	public String getLabel() {
 		return "L" + label;
+	}
+	
+	public int getNumOfNonParams(){
+		int counter = 0;
+		for(Symbol s: symbols){
+			if(!s.kind.equals("parameter")){
+				counter++;
+			}
+		}
+		return counter;
 	}
 }
