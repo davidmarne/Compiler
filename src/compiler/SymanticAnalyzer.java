@@ -49,7 +49,7 @@ public class SymanticAnalyzer {
 		if(nestingLevel == 0){
 			bw.write("MOV D" + nestingLevel + " SP\n");
 			bw.write("POP D" + nestingLevel + "\n");
-			bw.write("HLT");
+			bw.write("HLT\n");
 		}else{
 			bw.write("SUB SP #" + size + " SP\n");
 			bw.write("RET\n");
@@ -86,6 +86,14 @@ public class SymanticAnalyzer {
 		if(offset != null) {
 			bw.write("PUSH " + offset[0] + "(D" + offset[1] + ")\n");
 		}	
+	}
+	
+	public static void pushRegisterByReference(String lexeme, SymbolTable currTable) throws IOException {
+		int[] offset = currTable.getOffsetByLexeme(lexeme);
+		//push function reference onto stack
+		bw.write("PUSH D"+ offset[1] +"\n");
+		bw.write("PUSH #" + offset[0]+"\n");
+		bw.write("ADDS\n");
 	}
 	
 	public static void computeExpression(String factorType, String factorTailType, String operator) throws Exception {
@@ -134,7 +142,7 @@ public class SymanticAnalyzer {
 		bw.write("POP " + offset[0] + "(D" + offset[1] + ")\n");
 	}
 	
-	public static void assignByReference(String result, String exp, int nestingLevel) throws Exception{
+	public static void assignByReference(String result, String exp, int[] offset) throws Exception{
 		if(result.equals("MP_FIXED")){
 			result = "MP_FLOAT";
 		}
@@ -150,6 +158,6 @@ public class SymanticAnalyzer {
 		} else {
 			throw new Exception("Assiging incompatible types");
 		}
-		bw.write("POP @0(D" + nestingLevel + ")\n");
+		bw.write("POP @" + offset[0] + "(D" + offset[1] + ")\n");
 	}
 }

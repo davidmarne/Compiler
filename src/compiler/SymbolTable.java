@@ -68,6 +68,38 @@ public class SymbolTable {
 		}
 	}
 	
+	public String getKindByLexeme(String lexeme){
+		// search through current table
+		for (Symbol symbol : symbols) {
+			if(symbol.iden.equals(lexeme)){
+				return symbol.kind;
+			}
+		}
+		
+		//search through any parent tables
+		if(parent != null) {
+			return parent.getKindByLexeme(lexeme);
+		} else {
+			return null;
+		}
+	}
+	
+	public Symbol getSymbolByLexeme(String lexeme){
+		// search through current table
+		for (Symbol symbol : symbols) {
+			if(symbol.iden.equals(lexeme)){
+				return symbol;
+			}
+		}
+		
+		//search through any parent tables
+		if(parent != null) {
+			return parent.getSymbolByLexeme(lexeme);
+		} else {
+			return null;
+		}
+	}
+	
 	public Boolean isFunction(String lexeme){
 		// search through current table
 		for (Symbol symbol : symbols) {

@@ -14,6 +14,8 @@ public class Parser {
 	static String idenListId = "";
 	static int label = 0;
 	static boolean parseError = false;
+	static int parameterNum = 0;
+
 	
 	static ArrayList<Symbol> listOfParameters = new ArrayList<Symbol>();
 	
@@ -196,8 +198,7 @@ public class Parser {
 		if(lookahead == "MP_SCOLON"){
 			match("MP_SCOLON");
 			FormalParameterSection();
-			FormalParameterSectionTail();
-			
+			FormalParameterSectionTail();			
 		}else if(lookahead == "MP_RPAREN"){
 			//epsilon
 		}else{
@@ -233,7 +234,10 @@ public class Parser {
 		
 		// update the types of the parameter list for the parent table
 		for(int i = 0; i < listOfParameters.size(); i++) {
-			listOfParameters.get(i).type = idenListType;
+			if(listOfParameters.get(i).type == null) {
+				listOfParameters.get(i).type = idenListType;
+			}
+		
 		}
 	}
 	
@@ -412,20 +416,28 @@ public class Parser {
 	}
 	
 	public static void WriteParameter(Boolean writeLn) throws Exception{
-		OrdinalExpression();
+		OrdinalExpression(-1, null);
 		SymanticAnalyzer.writeStatement(writeLn);
 	}
 	
 	public static void AssignmentStatement() throws Exception{
-		String resultType = currTable.getTypeByLexeme(tokens.get(0).lexeme);
-		int[] offset = currTable.getOffsetByLexeme(tokens.get(0).lexeme);
-		boolean isFunction = currTable.isFunction(tokens.get(0).lexeme);
+		String lex = tokens.get(0).lexeme;
+		String resultType = currTable.getTypeByLexeme(lex);
+		int[] offset = currTable.getOffsetByLexeme(lex);
+		boolean isFunction = currTable.isFunction(lex);
 		match("MP_IDENTIFIER");
 		match("MP_ASSIGN");
-		String exprType = Expression();
+		String exprType = Expression(-1, null);
+		Symbol s = currTable.getSymbolByLexeme(lex);
 		if (isFunction) {
-			SymanticAnalyzer.assignByReference(resultType, exprType, currTable.nestingLevel);
+			//function
+			int[] input = {0, currTable.nestingLevel};
+			SymanticAnalyzer.assignByReference(resultType, exprType, input);
+		} else if (s.kind == "parameter" && s.mode == "ref") {
+			// ref
+			SymanticAnalyzer.assignByReference(resultType, exprType, currTable.getOffsetByLexeme(lex));
 		} else {
+			//copy
 			SymanticAnalyzer.assign(resultType, exprType, offset);
 		}
 		
@@ -533,7 +545,7 @@ public class Parser {
 	}
 	
 	public static String InitialValue() throws Exception{
-		return OrdinalExpression();
+		return OrdinalExpression(-1, null);
 	}
 	
 	public static Boolean StepValue() throws Exception{
@@ -549,7 +561,7 @@ public class Parser {
 	}
 	
 	public static String FinalValue() throws Exception{
-		return OrdinalExpression();
+		return OrdinalExpression(-1, null);
 	}
 	
 	public static void ProcedureStatement() throws Exception{
@@ -563,8 +575,9 @@ public class Parser {
 	public static void OptionalActualParameterList(String name) throws Exception{
 		if(lookahead == "MP_LPAREN"){
 			match("MP_LPAREN");
-			ActualParameter();
-			ActualParameterTail();
+			parameterNum = 0;
+			ActualParameter(name);
+			ActualParameterTail(name);
 			match("MP_RPAREN");
 		}else if(lookahead == "MP_AND" || lookahead == "MP_DIV" ||lookahead == "MP_DO" ||lookahead == "MP_DOWNTO" || lookahead == "MP_ELSE" ||lookahead == "MP_END" ||lookahead == "MP_MOD" ||lookahead == "MP_OR" ||lookahead == "MP_THEN" ||lookahead == "MP_TO" ||lookahead == "MP_UNTIL" ||lookahead == "MP_COMMA" ||lookahead == "MP_EQUAL" ||lookahead == "MP_FLOAT_DIV" ||lookahead == "MP_GEQUAL" ||lookahead == "MP_GTHAN" |lookahead == "MP_LEQUAL" ||lookahead == "MP_LTHAN" ||lookahead == "MP_MINUS" ||lookahead == "MP_NEQUAL" ||lookahead == "MP_PLUS" ||lookahead == "MP_RPAREN" ||lookahead == "MP_SCOLON" ||lookahead == "MP_TIMES" ){
 				//epsilon
@@ -576,11 +589,11 @@ public class Parser {
 		}
 	}
 	
-	public static void ActualParameterTail() throws Exception{
+	public static void ActualParameterTail(String name) throws Exception{
 		if(lookahead == "MP_COMMA"){
 			match("MP_COMMA");
-			ActualParameter();
-			ActualParameterTail();
+			ActualParameter(name);
+			ActualParameterTail(name);
 		}else if(lookahead == "MP_RPAREN"){
 			//epsilon
 		}else{
@@ -588,14 +601,15 @@ public class Parser {
 		}
 	}
 	
-	public static void ActualParameter() throws Exception{
-		OrdinalExpression();
+	public static void ActualParameter(String name) throws Exception{
+		OrdinalExpression(parameterNum, name);
+		parameterNum++;
 	}
 	
 	
-	public static String Expression() throws Exception{
-		String expressionType = SimpleExpression();
-		Boolean relationalPart = OptionalRelationalPart(expressionType);
+	public static String Expression(int parameterNum, String name) throws Exception{
+		String expressionType = SimpleExpression(parameterNum, name);
+		Boolean relationalPart = OptionalRelationalPart(expressionType, parameterNum, name);
 		if(relationalPart){
 			return "MP_BOOLEAN";
 		}else{
@@ -603,11 +617,11 @@ public class Parser {
 		}
 	}
 	
-	public static Boolean OptionalRelationalPart(String expressionType) throws Exception{
+	public static Boolean OptionalRelationalPart(String expressionType, int parameterNum, String name) throws Exception{
 		Boolean returnVal = false;
 		if(lookahead == "MP_EQUAL" || lookahead == "MP_GTHAN" || lookahead == "MP_LTHAN" || lookahead == "MP_LEQUAL" || lookahead == "MP_GEQUAL" || lookahead == "MP_NEQUAL"){
 			String operator = RelationalOperator();
-			String secondExpressionType = SimpleExpression();
+			String secondExpressionType = SimpleExpression(parameterNum, name);
 			SymanticAnalyzer.computeExpression(expressionType, secondExpressionType, operator);
 			returnVal = true;
 		}else if(lookahead == "MP_DO" ||lookahead == "MP_DOWNTO" || lookahead == "MP_ELSE" ||lookahead == "MP_END"||lookahead == "MP_THEN" ||lookahead == "MP_TO" ||lookahead == "MP_UNTIL" ||lookahead == "MP_COMMA" ||lookahead == "MP_RPAREN" ||lookahead == "MP_SCOLON"){
@@ -655,26 +669,26 @@ public class Parser {
 	/****************
 	 * DOMS SECTION
 	 ****************/
-	public static String SimpleExpression() throws Exception {
+	public static String SimpleExpression(int parameterNum, String name) throws Exception {
 		Boolean hasMinus = OptionalSign();
-		String termType = Term();
+		String termType = Term(parameterNum, name);
 		if(hasMinus) {
 			SymanticAnalyzer.pushLiteralVal("-1");
 			SymanticAnalyzer.computeExpression(termType, "MP_INTEGER", "MULS");
 		}		
-		TermTail(termType);
+		TermTail(termType, parameterNum, name);
 		return termType;
 	}
 	
-	public static void TermTail(String termType) throws Exception {	
+	public static void TermTail(String termType, int parameterNum, String name) throws Exception {	
 		switch(lookahead) {
 		case "MP_PLUS":
 		case "MP_MINUS":
 		case "MP_OR":
 			String operator =  AddingOperator();
-			String termTailType = Term();
+			String termTailType = Term(parameterNum, name);
 			SymanticAnalyzer.computeExpression(termType, termTailType, operator);
-			TermTail(termType);
+			TermTail(termType, parameterNum, name);
 			break;
 		case "MP_DO":
 		case "MP_DOWNTO":
@@ -747,13 +761,13 @@ public class Parser {
 		return returnVal;
 	}
 	
-	public static String Term() throws Exception {
-		String factorType = Factor();
-		FactorTail(factorType);
+	public static String Term(int parameterNum, String name) throws Exception {
+		String factorType = Factor(parameterNum, name);
+		FactorTail(factorType, parameterNum, name);
 		return factorType;
 	}
 	
-	public static void FactorTail(String factorType) throws Exception {
+	public static void FactorTail(String factorType, int parameterNum, String name) throws Exception {
 		switch(lookahead) {
 		case "MP_AND":
 		case "MP_DIV":
@@ -761,9 +775,9 @@ public class Parser {
 		case "MP_FLOAT_DIV":
 		case "MP_TIMES":		
 			String operator = MultiplyingOperator();
-			String factorTailType = Factor();
+			String factorTailType = Factor(parameterNum, name);
 			SymanticAnalyzer.computeExpression(factorType, factorTailType, operator);
-			FactorTail(factorType);
+			FactorTail(factorType, parameterNum, name);
 			break;
 		case "MP_DO":
 		case "MP_DOWNTO":
@@ -820,21 +834,21 @@ public class Parser {
 		return returnVal;
 	}
 	
-	public static String Factor() throws Exception {
+	public static String Factor(int parameterNum, String procedureName) throws Exception {
 		String returnVal = null;
 		switch(lookahead) {
 		case "MP_INTEGER_LIT":
-			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
+			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);			
 			match("MP_INTEGER_LIT");
 			returnVal = "MP_INTEGER";
 			break;
 		case "MP_FIXED_LIT":
-			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
+			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);			
 			match("MP_FIXED_LIT");
 			returnVal = "MP_FIXED";
 			break;
 		case "MP_FLOAT_LIT":
-			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
+			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);			
 			match("MP_FLOAT_LIT");
 			returnVal = "MP_FLOAT";
 			break;
@@ -854,31 +868,37 @@ public class Parser {
 			returnVal = "MP_BOOLEAN";
 			break;
 		case "MP_NOT":
-			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);
+			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);		
 			match("MP_NOT");
-			Factor();
+			Factor(parameterNum, procedureName);
 			returnVal = "MP_BOOLEAN";
 			break;
 		case "MP_LPAREN":
 			match("MP_LPAREN");
-			returnVal = Expression();
+			returnVal = Expression(parameterNum, procedureName);
 			match("MP_RPAREN");
 			break;
-		case "MP_IDENTIFIER":
-			
+		case "MP_IDENTIFIER":			
 			returnVal = currTable.getTypeByLexeme(tokens.get(0).lexeme);
-			String name = tokens.get(0).lexeme;
-			boolean isFunction = currTable.isFunction(name);
-			if(isFunction){
-				SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(name));
-			}else{
-				SymanticAnalyzer.pushRegisterVal(name, currTable);
+			String ID_name = tokens.get(0).lexeme;
+			boolean isFunction = currTable.isFunction(ID_name);
+			if (isFunction) {
+				SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name));
+			} else {
+				// pass in by copy or reference
+				if(parameterNum != -1 && currTable.getSymbolByLexeme(procedureName).parameterList.get(parameterNum).kind == "ref") {
+					SymanticAnalyzer.pushRegisterByReference(ID_name, currTable);
+
+				} else {
+					// by copy
+					SymanticAnalyzer.pushRegisterVal(ID_name, currTable);
+				}
 			}
 			FunctionIdentifier();
-			OptionalActualParameterList(name);	
+			OptionalActualParameterList(ID_name);	
 			if(isFunction){
-				SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(name));
-				SymanticAnalyzer.pushRegisterVal(name, currTable);
+				SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name));
+				SymanticAnalyzer.pushRegisterVal(ID_name, currTable);
 			}
 			break;
 		default:
@@ -904,18 +924,17 @@ public class Parser {
 	}
 	
 	public static String BooleanExpression() throws Exception {
-		return Expression();
+		return Expression(-1, null);
 	}
 	
-	public static String OrdinalExpression() throws Exception {
-		return Expression();
+	public static String OrdinalExpression(int parameterNum, String name) throws Exception {
+		return Expression(parameterNum, name);
 	}
 	
 	public static void IdentifierList() throws Exception {
 		// add the first one
-		listOfParameters.clear();
 		currTable.insert(new Symbol(tokens.get(0).lexeme, idenListType, idenListKind, idenListMode, currTable.symbols.size()));
-		listOfParameters.add(new Symbol(idenListType, idenListMode));
+		listOfParameters.add(new Symbol(null, idenListMode));
 		match("MP_IDENTIFIER");
 		IdentifierTail();
 	}
@@ -926,7 +945,7 @@ public class Parser {
 			match("MP_COMMA");
 			// add the rest
 			currTable.insert(new Symbol(tokens.get(0).lexeme, idenListType, idenListKind, idenListMode, currTable.symbols.size()));
-			listOfParameters.add(new Symbol(idenListType, idenListMode));
+			listOfParameters.add(new Symbol(null, idenListMode));
 			match("MP_IDENTIFIER");
 			IdentifierTail();
 			break;

@@ -41,7 +41,8 @@ public class main {
 				System.out.println("Program failed to scan");
 			}
 		}catch(Exception e){
-			e.printStackTrace();
+			System.out.println(e);
+			System.out.println("Program failed to parse");
 		}
 	}
 

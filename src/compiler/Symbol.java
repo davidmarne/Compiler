@@ -3,6 +3,7 @@ package compiler;
 import java.util.ArrayList;
 
 public class Symbol {
+	
 	public String iden, type, kind, mode;
 	public int size, offset, label;
 	public ArrayList<Symbol> parameterList = new ArrayList<Symbol>();

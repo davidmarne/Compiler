@@ -3,21 +3,16 @@ program Program1;
         Cost:   Boolean;
 	x, y, z: float;
 
-  function foo(var A: Integer): Integer;
+  function foo(var A, B, C: Integer; D, E: Integer): Integer;
   var X: Integer;
-
-    procedure foo2;
-    begin
-      Write('2');
-    end;
   begin
-    Write('A');
-    foo2;
+    A := 12;
+    D := 10;
     foo := 4;
   end;
 
 begin
-  Apples := foo(5);
-  Write(Apples);
-
+  Oranges := 15;
+  Apples := foo(Oranges, 6, 7, Oranges, 10);
+  Write(Oranges);
 end.

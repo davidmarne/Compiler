@@ -1,5 +1,5 @@
 program Program1;
-  var Apples, Oranges: Integer;
+  var Apples : 10;
         Cost:   boolean;
 	float1, float2: float;
   begin
