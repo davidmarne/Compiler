@@ -82,12 +82,21 @@ public class SymanticAnalyzer {
 	}
 	
 	public static void pushRegisterVal(String lexeme, SymbolTable currTable) throws IOException {
-		int[] offset = currTable.getOffsetByLexeme(lexeme);
+ 		int[] offset = currTable.getOffsetByLexeme(lexeme);
 		if(offset != null) {
 			bw.write("PUSH " + offset[0] + "(D" + offset[1] + ")\n");
 		}	
 	}
 	
+	// accessing parameter values
+	public static void pushRegisterRef(String lexeme, SymbolTable currTable) throws IOException {
+ 		int[] offset = currTable.getOffsetByLexeme(lexeme);
+		if(offset != null) {
+			bw.write("PUSH @" + offset[0] + "(D" + offset[1] + ")\n");
+		}	
+	}
+	
+	// passing in parameters
 	public static void pushRegisterByReference(String lexeme, SymbolTable currTable) throws IOException {
 		int[] offset = currTable.getOffsetByLexeme(lexeme);
 		//push function reference onto stack

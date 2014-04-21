@@ -889,7 +889,10 @@ public class Parser {
 				if(parameterNum != -1 && currTable.getSymbolByLexeme(procedureName).parameterList.get(parameterNum).kind == "ref") {
 					SymanticAnalyzer.pushRegisterByReference(ID_name, currTable);
 
+				} else if (currTable.getSymbolByLexeme(ID_name).mode == "ref") {
+					SymanticAnalyzer.pushRegisterRef(ID_name, currTable);
 				} else {
+				
 					// by copy
 					SymanticAnalyzer.pushRegisterVal(ID_name, currTable);
 				}

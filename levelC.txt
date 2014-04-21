@@ -4,15 +4,15 @@ program Program1;
 	x, y, z: float;
 
   function foo(var A, B, C: Integer; D, E: Integer): Integer;
-  var X: Integer;
+  var X, Y: Integer;
   begin
     A := 12;
     D := 10;
-    foo := 4;
+    foo := A + D;
   end;
 
 begin
   Oranges := 15;
   Apples := foo(Oranges, 6, 7, Oranges, 10);
-  Write(Oranges);
+  Write(Apples);
 end.
