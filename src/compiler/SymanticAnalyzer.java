@@ -29,9 +29,9 @@ public class SymanticAnalyzer {
 		bw.write("ADD SP #" + size + " SP\n");	
 	}
 	
-	public static void procedureFunctionDeclaration(int nestingLevel, int[] offset, String functionName, SymbolTable currTable) throws IOException{
+	public static void procedureFunctionDeclaration(int nestingLevel, int[] offset, SymbolTable currTable) throws IOException{
 		
-		if(functionName != null && functionName.equals(currTable.name)) {
+		if(currTable.contains()) {
 			nestingLevel--;
 		}
 		bw.write("PUSH D" + nestingLevel + "\n");
@@ -41,8 +41,8 @@ public class SymanticAnalyzer {
 		bw.write("ADDS\n");
 	}
 	
-	public static void updateStackPointer(int nestingLevel, int numParams, String functionName, SymbolTable currTable) throws IOException {
-		if(functionName != null && functionName.equals(currTable.name)) {
+	public static void updateStackPointer(int nestingLevel, int numParams, SymbolTable currTable) throws IOException {
+		if(currTable.contains()) {
 			nestingLevel--;
 		}
 		// move the address of beginning of activation record into D1
@@ -52,8 +52,8 @@ public class SymanticAnalyzer {
 		bw.write("POP D" + (nestingLevel+1) + "\n");
 	}
 	
-	public static void procedureFunctionDestroy(int nestingLevel, int[] offset, String functionName, SymbolTable currTable) throws IOException{
-		if(functionName != null && functionName.equals(currTable.name)) {
+	public static void procedureFunctionDestroy(int nestingLevel, int[] offset, SymbolTable currTable) throws IOException{
+		if(currTable.contains()) {
 			nestingLevel--;
 		}
 		bw.write("MOV D" + nestingLevel + " SP\n");

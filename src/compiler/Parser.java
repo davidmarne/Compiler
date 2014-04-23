@@ -571,9 +571,9 @@ public class Parser {
 	public static void ProcedureStatement() throws Exception{
 		String procedureName = tokens.get(0).lexeme;
 		ProcedureIdentifier();
-		SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName), procedureName, currTable);
+		SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName), currTable);
 		OptionalActualParameterList(procedureName);
-		SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName), procedureName, currTable);
+		SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName), currTable);
 	}
 	
 	public static void OptionalActualParameterList(String name) throws Exception{
@@ -589,7 +589,7 @@ public class Parser {
 			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected just about anything else");
 		}
 		if (currTable.isFunction(name) || currTable.isProcedure(name)) {
-			SymanticAnalyzer.updateStackPointer(currTable.nestingLevel, parameterNum, name, currTable);
+			SymanticAnalyzer.updateStackPointer(currTable.nestingLevel, parameterNum, currTable);
 			SymanticAnalyzer.write("CALL L" + currTable.getLabelByLexeme(name) + "\n");
 		}
 	}
@@ -888,7 +888,7 @@ public class Parser {
 			String ID_name = tokens.get(0).lexeme;
 			boolean isFunction = currTable.isFunction(ID_name);
 			if (isFunction) {
-				SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name), procedureName, currTable);
+				SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name), currTable);
 			} else {
 				// pass in by copy or reference
 				if(parameterNum != -1 && currTable.getSymbolByLexeme(procedureName).parameterList.get(parameterNum).kind == "ref") {
@@ -905,7 +905,7 @@ public class Parser {
 			FunctionIdentifier();
 			OptionalActualParameterList(ID_name);	
 			if(isFunction){
-				SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name), procedureName, currTable);
+				SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name), currTable);
 				SymanticAnalyzer.pushRegisterVal(ID_name, currTable);
 			}
 			break;
@@ -970,7 +970,7 @@ public class Parser {
 		if(lookahead.equals(token)) {
 			idenListType = tokens.get(0).token;
 			tokens.remove(0);
-//			System.out.println(lookahead + " matched");
+			System.out.println(lookahead + " matched");
 			if(tokens.size() > 0){
 				lookahead = tokens.get(0).token;
 				
