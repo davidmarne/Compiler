@@ -1,0 +1,331 @@
+<!DOCTYPE html> 
+<html><!-- InstanceBegin template="/Templates/page.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="../../../../../Stylesheets/prettify.css" />
+<link rel="stylesheet" href="../../../../../Stylesheets/pageStylesheet.css" />
+<link rel="stylesheet" href="../../../../../Stylesheets/navigationStylesheet.css" />
+<link rel="stylesheet" href="../../../../../Stylesheets/allTextStyles.css" />
+<link rel="stylesheet" href="../../../../../Stylesheets/colors-blue.css" />
+
+<script type="text/javascript" src="../../../../../Scripts/google-code-prettify/run_prettify.js"></script>
+<script type="text/javascript" src="../../../../../Scripts/recomputeAttributes.js"></script>
+
+
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Symobl Table</title>
+<!-- InstanceEndEditable -->
+</head>
+
+<body id="body-style">
+
+<!-- 
+<div id="browser-window-veil">
+</div>
+-->
+
+<div id="page-container">
+
+<header id="header">
+<div id="track-icon1">
+  <img src="../../../../../Media/StyleImages/bobcat-small.png" alt="bobcat icon" width="75" height="48"></div>
+<div id="track-icon2">
+</div>
+<div id="track-icon3">
+</div>
+  <div id="headMatter">
+    <span id="headTitle1">
+      <!-- InstanceBeginEditable name="Header" -->
+        Team 2
+	  <!-- InstanceEndEditable --> 
+    </span>
+    <span id="headTitle2">
+    </span>
+  </div>
+</header>
+
+<nav id="navigate">
+</nav>
+
+
+<aside id="aside-left">
+<div id="asideLeftTitle">
+Compilers 2014
+</div>
+
+</aside>
+
+<aside id="aside-right">
+</aside>
+
+<footer id="footer">
+  <div id="footMatter">
+    <span id="previousPageLink">
+
+    </span>
+    <span id="currentPageNumber">
+    </span>
+    <span id="nextPageLink">
+
+    </span>
+  </div>
+</footer>
+
+<article id="mainContent">
+<!-- InstanceBeginEditable name="Main" -->
+<h1>Symbol Table</h1>
+
+<h2>Specifications</h2>
+<p>
+Click <a href="../../../../01_Introduction/2_Project_Specifications/3_Symbol_Table_Specifications.html">here</a><a href="../../../../01_Introduction/2_Project_Specifications/3_SymbolTable.html"></a> to view the symbol table specifications.
+</p>
+
+<h2>Source Listing</h2>
+<pre class="prettyprint" ><code class="language-java">
+package compiler;
+
+import java.util.ArrayList;
+
+public class SymbolTable {
+  public String name;
+  public int label;
+  public int sizeInBytes, nestingLevel;
+  public SymbolTable parent;
+  
+  public ArrayList<Symbol> symbols = new ArrayList<Symbol>();
+  
+  //constructor for first table (Program's scope)
+  public SymbolTable(String name, int label){
+    this.name = name;
+    this.label = label;
+    this.nestingLevel = 0;
+    this.parent = null;
+  }
+  
+  //constructor for additional scopes
+  public SymbolTable(String name, int label, SymbolTable parent){
+    this.name = name;
+    this.label = label;
+    this.nestingLevel = parent.nestingLevel + 1;
+    this.parent = parent;
+  }
+  
+  public void insert(Symbol s){
+    symbols.add(s);
+  }
+  
+  public SymbolTable destroy(){
+    printTable();
+    return parent;
+  }
+  
+  public int[] getOffsetByLexeme(String lexeme){
+    // search through current table
+    for (Symbol symbol : symbols) {
+      if(symbol.iden.equals(lexeme)){
+        int[] returnArray = {symbol.offset, nestingLevel};
+        return returnArray;
+      }
+    }
+    
+    //search through any parent tables
+    if(parent != null) {
+      return parent.getOffsetByLexeme(lexeme);
+    } else {
+      return null;
+    }
+  }
+  
+  public String getTypeByLexeme(String lexeme){
+    // search through current table
+    for (Symbol symbol : symbols) {
+      if(symbol.iden.equals(lexeme)){
+        return symbol.type;
+      }
+    }
+    
+    //search through any parent tables
+    if(parent != null) {
+      return parent.getTypeByLexeme(lexeme);
+    } else {
+      return null;
+    }
+  }
+  
+  public String getKindByLexeme(String lexeme){
+    // search through current table
+    for (Symbol symbol : symbols) {
+      if(symbol.iden.equals(lexeme)){
+        return symbol.kind;
+      }
+    }
+    
+    //search through any parent tables
+    if(parent != null) {
+      return parent.getKindByLexeme(lexeme);
+    } else {
+      return null;
+    }
+  }
+  
+  public Symbol getSymbolByLexeme(String lexeme){
+    // search through current table
+    for (Symbol symbol : symbols) {
+      if(symbol.iden.equals(lexeme)){
+        return symbol;
+      }
+    }
+    
+    //search through any parent tables
+    if(parent != null) {
+      return parent.getSymbolByLexeme(lexeme);
+    } else {
+      return null;
+    }
+  }
+  
+  public Boolean isFunction(String lexeme){
+    // search through current table
+    for (Symbol symbol : symbols) {
+      if(symbol.iden.equals(lexeme)){
+        if(symbol.kind.equals("function")){
+          return true;
+        }else{
+          return false;
+        }
+      }
+    }
+    
+    //search through any parent tables
+    if(parent != null) {
+      return parent.isFunction(lexeme);
+    } else {
+      return null;
+    }
+  }
+  public Boolean isProcedure(String lexeme){
+    // search through current table
+    for (Symbol symbol : symbols) {
+      if(symbol.iden.equals(lexeme)){
+        if(symbol.kind.equals("procedure")){
+          return true;
+        }else{
+          return false;
+        }
+      }
+    }
+    
+    //search through any parent tables
+    if(parent != null) {
+      return parent.isProcedure(lexeme);
+    } else {
+      return null;
+    }
+  }
+  public int getLabelByLexeme(String lexeme){
+    for (Symbol symbol : symbols) {
+      if(symbol.iden.equals(lexeme)){
+        return symbol.label;
+      }
+    }
+    
+    //search through any parent tables
+    if(parent != null) {
+      return parent.getLabelByLexeme(lexeme);
+    } else {
+      return -1;
+    }
+  }
+  
+  public int getSize(){
+    return symbols.size();
+  }
+  
+  public void printTable(){
+    String parentName;
+    if(parent == null){
+      parentName = "null";
+    }else{
+      parentName = parent.name;
+    }
+    System.out.printf("NAME: %-10s LABEL: %-10s NL: %-10d PARENT: %-10s \n", name, getLabel(), nestingLevel, parentName);
+    for(Symbol s : symbols){
+      s.printSymbol();
+    }
+  }
+  
+  public String getLabel() {
+    return "L" + label;
+  }
+  
+  public int getNumOfNonParams(){
+    int counter = 0;
+    for(Symbol s: symbols){
+      if(!s.kind.equals("parameter")){
+        counter++;
+      }
+    }
+    return counter;
+  }
+}
+
+public class Symbol {
+  
+  public String iden, type, kind, mode;
+  public int size, offset, label;
+  public ArrayList<Symbol> parameterList = new ArrayList<Symbol>();
+  
+  // Constructor for symbol table symbol 
+  public Symbol(String iden, String type, String kind, String mode, int offset){
+    this.iden = iden;
+    this.type = type;
+    this.kind = kind;
+    this.mode = mode;
+    this.offset = offset+1;
+    if(!kind.equals("parameter")){
+      this.offset++;
+    }
+  }
+  
+  // Constructor for symbol table procedure or function 
+  public Symbol(String iden, String type, String kind, ArrayList<Symbol> parameterList, int offset, int label){
+    this.iden = iden;
+    this.type = type;
+    this.kind = kind;
+    this.offset = offset+1;
+    this.label = label;
+    if(!kind.equals("parameter")){
+      this.offset++;
+    }
+    for(Symbol p: parameterList) {
+      this.parameterList.add(p);
+    }
+  }
+  
+  // Constructor for parameter lists
+  public Symbol(String type, String kind) {
+    this.type = type;
+    this.kind = kind;
+  }
+  
+  public void printSymbol(){
+    if(parameterList.size() > 0) {
+      System.out.printf("IDEN: %-10s TYPE: %-15s OFFSET: %-10s KIND: %-10s MODE: ->", iden, type, offset, kind);
+      for(Symbol s: parameterList) {
+        System.out.printf(" (%s, %s)", s.type, s.kind);
+      }
+    } else {
+      System.out.printf("IDEN: %-10s TYPE: %-15s OFFSET: %-10s KIND: %-10s MODE: %-10s", iden, type, offset, kind, mode);
+    }
+    System.out.println("");
+  }
+}
+
+</code></pre>
+<!-- InstanceEndEditable -->
+
+</article>
+</div>
+</body>
+<!-- InstanceEnd --></html>
