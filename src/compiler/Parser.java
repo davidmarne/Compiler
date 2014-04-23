@@ -26,7 +26,7 @@ public class Parser {
 		SystemGoal();
 		SymanticAnalyzer.close();
 		if (!parseError) {
-			System.out.println("Programs successfully parsed");
+			System.out.println("Program successfully parsed");
 		} else {
 			System.out.println("Program parsed with errors");
 		}
@@ -965,7 +965,7 @@ public class Parser {
 		if(lookahead.equals(token)) {
 			idenListType = tokens.get(0).token;
 			tokens.remove(0);
-			System.out.println(lookahead + " matched");
+//			System.out.println(lookahead + " matched");
 			if(tokens.size() > 0){
 				lookahead = tokens.get(0).token;
 				

@@ -21,10 +21,10 @@ public class main {
 				try {
 					s = Scanner.getToken();
 					tkns.add(s);
-					System.out.format("token: %-15s", s.token);
-					System.out.format("  line number: %-3s", s.lineNumber);
-					System.out.format("  column number: %-3s", s.colNumber);
-					System.out.println("  lexeme " + s.lexeme);
+//					System.out.format("token: %-15s", s.token);
+//					System.out.format("  line number: %-3s", s.lineNumber);
+//					System.out.format("  column number: %-3s", s.colNumber);
+//					System.out.println("  lexeme " + s.lexeme);
 					if(s.token == "MP_EOF") {
 						break;
 					}

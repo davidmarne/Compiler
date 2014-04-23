@@ -31,7 +31,7 @@ public class SymbolTable {
 	}
 	
 	public SymbolTable destroy(){
-		printTable();
+//		printTable();
 		return parent;
 	}
 	
