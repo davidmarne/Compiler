@@ -1,28 +1,26 @@
 program Program1;
   var Apples, Oranges: Integer;
-        Cost:   Boolean;
-	x, y, z: float;
 
-  function foo(var A, B, C: Integer; D, E: Integer): Integer;
-  var X, Y: Integer;
+  function foo(A: Integer): Integer;
 
-    function bar: Integer;
+    function bar(A: Integer): Integer;
+
+      procedure baz(var A: Integer);
+      begin
+        A := A + 10
+      end;
+
     begin
-      bar := 10;
+      baz(A);
+      bar := A;
     end;
 
   begin
-    A := A + bar;
-    if A < 50 then 
-      foo := foo(A, B, C, D, E)
-    else
-      foo := 2;
-    
+    foo := A + bar(A);
   end;
 
 begin
-  Oranges := 15;
-  Apples := 999;
-  Apples := foo(Oranges, 6, Apples, Oranges, 10);
+  Oranges := 10;
+  Apples := foo(Oranges);
   Writeln(Apples);
 end.

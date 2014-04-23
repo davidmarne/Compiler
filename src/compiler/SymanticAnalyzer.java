@@ -31,11 +31,18 @@ public class SymanticAnalyzer {
 	
 	public static void procedureFunctionDeclaration(int nestingLevel, int[] offset) throws IOException{
 		bw.write("PUSH D" + nestingLevel + "\n");
-		bw.write("MOV SP D" + nestingLevel + "\n");
 		//push function reference onto stack
 		bw.write("PUSH D"+ offset[1] +"\n");
 		bw.write("PUSH #" + offset[0]+"\n");
 		bw.write("ADDS\n");
+	}
+	
+	public static void updateStackPointer(int nestingLevel, int numParams) throws IOException {
+		// move the address of beginning of activation record into D1
+		bw.write("PUSH SP\n");
+		bw.write("PUSH #" + (numParams + 1) + "\n");
+		bw.write("SUBS\n");
+		bw.write("POP D" + (nestingLevel+1) + "\n");
 	}
 	
 	public static void procedureFunctionDestroy(int nestingLevel, int[] offset) throws IOException{
@@ -146,7 +153,7 @@ public class SymanticAnalyzer {
 		} else if (result.equals("MP_INTEGER") && exp.equals("MP_FLOAT")) {
 			bw.write("CASTSI\n");
 		} else {
-			throw new Exception("Assiging incompatible types");
+			throw new Exception("Assigning incompatible types");
 		}
 		bw.write("POP " + offset[0] + "(D" + offset[1] + ")\n");
 	}

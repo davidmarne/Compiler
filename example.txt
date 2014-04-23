@@ -1,15 +1,11 @@
 program Example;
 
-function test(var i: Integer): Integer;
+  function test(var i: Integer): Integer;
   var Apples, Oranges: Integer;
-        Cost:   boolean;
-	float1, float2: float;
   begin
     Oranges := 10;
-    Read(Apples);
-    Cost := (Apples >= Oranges) = false;
-    Write(Cost);
-   end;
+    Writeln(i);
+  end;
 
 begin
 	test(4);

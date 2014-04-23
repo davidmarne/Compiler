@@ -41,7 +41,7 @@ public class Parser {
 	public static void Program() throws Exception{
 		ProgramHeading();
 		match("MP_SCOLON");
-		Block();
+		Block(true);
 		match("MP_PERIOD");
 	}
 	
@@ -54,13 +54,17 @@ public class Parser {
 		SymanticAnalyzer.write("BR L0\n");
 	}
 	
-	public static void Block() throws Exception{
+	public static void Block(boolean isProgram) throws Exception{
 		VariableDeclarationPart();
 		// generate code to allocate stack space for local variables and properly offset the SP
 		
 		ProcedureAndFunctionDeclarationPart();
 		SymanticAnalyzer.write(currTable.getLabel() + ":\n");
-		SymanticAnalyzer.programDeclaration(currTable.nestingLevel, currTable.getNumOfNonParams(), "L"+label);
+		if(isProgram) {
+			SymanticAnalyzer.programDeclaration(currTable.nestingLevel, currTable.getNumOfNonParams() + 2, "L"+label);
+		} else {
+			SymanticAnalyzer.programDeclaration(currTable.nestingLevel, currTable.getNumOfNonParams(), "L"+label);
+		}
 		StatementPart();
 		SymanticAnalyzer.programDestroy(currTable.nestingLevel, currTable.getNumOfNonParams());
 		currTable = currTable.destroy();
@@ -146,14 +150,14 @@ public class Parser {
 	public static void ProcedureDeclaration() throws Exception{
 		ProcedureHeading();
 		match("MP_SCOLON");
-		Block();
+		Block(false);
 		match("MP_SCOLON");
 	}
 	
 	public static void FunctionDeclaration() throws Exception{
 		FunctionHeading();
 		match("MP_SCOLON");
-		Block();
+		Block(false);
 		match("MP_SCOLON");
 	}
 	
@@ -573,9 +577,9 @@ public class Parser {
 	}
 	
 	public static void OptionalActualParameterList(String name) throws Exception{
+		parameterNum = 0;
 		if(lookahead == "MP_LPAREN"){
 			match("MP_LPAREN");
-			parameterNum = 0;
 			ActualParameter(name);
 			ActualParameterTail(name);
 			match("MP_RPAREN");
@@ -584,7 +588,8 @@ public class Parser {
 		}else{
 			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected just about anything else");
 		}
-		if(currTable.isFunction(name) || currTable.isProcedure(name)){
+		if (currTable.isFunction(name) || currTable.isProcedure(name)) {
+			SymanticAnalyzer.updateStackPointer(currTable.nestingLevel, parameterNum);
 			SymanticAnalyzer.write("CALL L" + currTable.getLabelByLexeme(name) + "\n");
 		}
 	}
