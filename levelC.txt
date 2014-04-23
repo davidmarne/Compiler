@@ -5,14 +5,22 @@ program Program1;
 
   function foo(var A, B, C: Integer; D, E: Integer): Integer;
   var X, Y: Integer;
+
+    function bar: Integer;
+    begin
+      bar := 10;
+    end;
+
   begin
-    A := 12;
-    D := 10;
-    foo := A + D;
+    A := A + bar;
+    if A < 50 then 
+      foo := foo(A, B, C, D, E)
+    
   end;
 
 begin
   Oranges := 15;
-  Apples := foo(Oranges, 6, 7, Oranges, 10);
-  Write(Apples);
+  Apples := 999;
+  Apples := foo(Oranges, 6, Apples, Oranges, 10);
+  Writeln(Oranges);
 end.
