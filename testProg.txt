@@ -31,8 +31,40 @@ begin
 		Writeln(6);
 end;
 
+procedure crazyLoop;
+var x, y, z : Integer;
 begin
-	a := 5;
-	a := factorial(a);
-	Writeln(a);
+	y := 5;
+	for x := 0 to 10 do
+	begin
+	  Writeln(x);
+	  Writeln('');
+	  if(y < x) then
+	  begin
+	  	Writeln(y);
+	  	z:= 8;
+	  	while(z < x) do
+	  	begin
+	  		Writeln('Z is ');
+	  		Writeln(z);
+	  		z := z+1;
+	  	end;
+	  end;
+	end;
+end;
+
+procedure ifsonifs;
+var h,i,j:Integer;
+begin
+	h:=6;
+	i:=8;
+	j:=1;
+	if h < i then
+		if i > j then
+			if h > j then
+				Writeln('yes');
+end;
+
+begin
+	ifsonifs;
 end.
