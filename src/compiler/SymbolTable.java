@@ -185,7 +185,7 @@ public class SymbolTable {
 	}
 	
 	public boolean contains(){
-		if(parent == null){
+		if(parent == null ){
 			return false;
 		}
 		for(Symbol s: parent.symbols){
