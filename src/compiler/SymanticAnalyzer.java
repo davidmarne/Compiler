@@ -29,8 +29,11 @@ public class SymanticAnalyzer {
 		bw.write("ADD SP #" + size + " SP\n");	
 	}
 	
-	public static void procedureFunctionDeclaration(int nestingLevel, int[] offset, SymbolTable currTable, String name) throws IOException{
-		
+	public static void procedureFunctionDeclaration(int nestingLevel, SymbolTable currTable, String name) throws Exception{
+		int[] offset = currTable.getOffsetByLexeme(name);
+		if(offset == null) {
+			throw new Exception(name + " is not defined");
+		}
 		if(currTable.contains(name)) {
 			nestingLevel--;
 		}
@@ -52,7 +55,7 @@ public class SymanticAnalyzer {
 		bw.write("POP D" + (nestingLevel+1) + "\n");
 	}
 	
-	public static void procedureFunctionDestroy(int nestingLevel, int[] offset, SymbolTable currTable, String name) throws IOException{
+	public static void procedureFunctionDestroy(int nestingLevel, SymbolTable currTable, String name) throws IOException{
 		if(currTable.contains(name)) {
 			nestingLevel--;
 		}
