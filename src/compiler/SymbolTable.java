@@ -116,7 +116,7 @@ public class SymbolTable {
 		if(parent != null) {
 			return parent.isFunction(lexeme);
 		} else {
-			return null;
+			return false;
 		}
 	}
 	public Boolean isProcedure(String lexeme){
@@ -135,7 +135,7 @@ public class SymbolTable {
 		if(parent != null) {
 			return parent.isProcedure(lexeme);
 		} else {
-			return null;
+			return false;
 		}
 	}
 	public int getLabelByLexeme(String lexeme){

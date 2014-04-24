@@ -1,13 +1,13 @@
 program Program1;
   var Apples, Oranges: Integer;
 
-  function foo(A: Integer): Integer;
+  function nesting(A: Integer): Integer;
 
     function bar(A: Integer): Integer;
 
       procedure baz(var A: Integer);
       begin
-        A := A + 10
+        A := A + 10.9;
       end;
 
     begin
@@ -16,11 +16,30 @@ program Program1;
     end;
 
   begin
-    foo := A + bar(A);
+    nesting := A + bar(A);
+  end;
+
+  procedure booleans;
+  var a: Integer;
+  begin
+    a := 10;
+    if (a > 9) and (a < 11) then
+      if (a >= 10) and (a <= 10) then
+        if (a >= 9) and (a <= 11) then
+          if (a <> 9) and (a <> 11) then
+            if a = 10 then 
+              Writeln('if statements pass');
+            
+  end;
+
+  procedure loops;
+  var i, b: float;
+  begin
+    for i := 10.5e2 to 11.5e2 do
+      Writeln('loops work', i);
   end;
 
 begin
-  Oranges := 10;
-  Apples := foo(Oranges);
-  Writeln(Apples);
+  booleans;
+  write('nested functions ''and procedures work'' - ', nesting(10), '\n');
 end.

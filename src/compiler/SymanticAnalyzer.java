@@ -29,8 +29,11 @@ public class SymanticAnalyzer {
 		bw.write("ADD SP #" + size + " SP\n");	
 	}
 	
-	public static void procedureFunctionDeclaration(int nestingLevel, int[] offset, SymbolTable currTable, String name) throws IOException{
-		
+	public static void procedureFunctionDeclaration(int nestingLevel, SymbolTable currTable, String name) throws Exception{
+		int[] offset = currTable.getOffsetByLexeme(name);
+		if(offset == null) {
+			throw new Exception(name + " is not defined");
+		}
 		if(currTable.contains(name)) {
 			nestingLevel--;
 		}
@@ -52,7 +55,7 @@ public class SymanticAnalyzer {
 		bw.write("POP D" + (nestingLevel+1) + "\n");
 	}
 	
-	public static void procedureFunctionDestroy(int nestingLevel, int[] offset, SymbolTable currTable, String name) throws IOException{
+	public static void procedureFunctionDestroy(int nestingLevel, SymbolTable currTable, String name) throws IOException{
 		if(currTable.contains(name)) {
 			nestingLevel--;
 		}
@@ -115,10 +118,19 @@ public class SymanticAnalyzer {
 	// passing in parameters
 	public static void pushRegisterByReference(String lexeme, SymbolTable currTable) throws IOException {
 		int[] offset = currTable.getOffsetByLexeme(lexeme);
+		
+		//push parameter that is a ref onto stack (so it's original address)
+		for(Symbol s : currTable.symbols) {
+			if(s.mode == "ref") {
+				bw.write("PUSH " + offset[0] + "(D" + offset[1] + ")\n");
+				return;
+			}
+		}
 		//push function reference onto stack
 		bw.write("PUSH D"+ offset[1] +"\n");
 		bw.write("PUSH #" + offset[0]+"\n");
 		bw.write("ADDS\n");
+		
 	}
 	
 	public static void computeExpression(String factorType, String factorTailType, String operator) throws Exception {

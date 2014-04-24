@@ -425,21 +425,24 @@ public class Parser {
 	}
 	
 	public static void AssignmentStatement() throws Exception{
-		String lex = tokens.get(0).lexeme;
-		String resultType = currTable.getTypeByLexeme(lex);
-		int[] offset = currTable.getOffsetByLexeme(lex);
-		boolean isFunction = currTable.isFunction(lex);
+		Token token = tokens.get(0);
+		String resultType = currTable.getTypeByLexeme(token.lexeme);
+		int[] offset = currTable.getOffsetByLexeme(token.lexeme);
+		boolean isFunction = currTable.isFunction(token.lexeme);
 		match("MP_IDENTIFIER");
 		match("MP_ASSIGN");
 		String exprType = Expression(-1, null);
-		Symbol s = currTable.getSymbolByLexeme(lex);
+		Symbol s = currTable.getSymbolByLexeme(token.lexeme);
+		if (s == null) {
+			throw new Exception(token.lineNumber + ":" + token.colNumber + " " + token.lexeme + " is not defined");
+		}
 		if (isFunction) {
 			//function
 			int[] input = {0, currTable.nestingLevel};
 			SymanticAnalyzer.assignByReference(resultType, exprType, input);
 		} else if (s.kind == "parameter" && s.mode == "ref") {
 			// ref
-			SymanticAnalyzer.assignByReference(resultType, exprType, currTable.getOffsetByLexeme(lex));
+			SymanticAnalyzer.assignByReference(resultType, exprType, currTable.getOffsetByLexeme(token.lexeme));
 		} else {
 			//copy
 			SymanticAnalyzer.assign(resultType, exprType, offset);
@@ -571,9 +574,9 @@ public class Parser {
 	public static void ProcedureStatement() throws Exception{
 		String procedureName = tokens.get(0).lexeme;
 		ProcedureIdentifier();
-		SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName), currTable, procedureName);
+		SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable, procedureName);
 		OptionalActualParameterList(procedureName);
-		SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName), currTable, procedureName);
+		SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable, procedureName);
 	}
 	
 	public static void OptionalActualParameterList(String name) throws Exception{
@@ -888,7 +891,7 @@ public class Parser {
 			String ID_name = tokens.get(0).lexeme;
 			boolean isFunction = currTable.isFunction(ID_name);
 			if (isFunction) {
-				SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name), currTable, ID_name);
+				SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable, ID_name);
 			} else {
 				// pass in by copy or reference
 				if(parameterNum != -1 && currTable.getSymbolByLexeme(procedureName).parameterList.get(parameterNum).kind == "ref") {
@@ -905,7 +908,7 @@ public class Parser {
 			FunctionIdentifier();
 			OptionalActualParameterList(ID_name);	
 			if(isFunction){
-				SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name), currTable, ID_name);
+				SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable, ID_name);
 				SymanticAnalyzer.pushRegisterVal(ID_name, currTable);
 			}
 			break;
@@ -970,7 +973,7 @@ public class Parser {
 		if(lookahead.equals(token)) {
 			idenListType = tokens.get(0).token;
 			tokens.remove(0);
-			System.out.println(lookahead + " matched");
+//			System.out.println(lookahead + " matched");
 			if(tokens.size() > 0){
 				lookahead = tokens.get(0).token;
 				

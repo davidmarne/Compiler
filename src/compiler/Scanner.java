@@ -155,7 +155,7 @@ public class Scanner {
 			switch(state){
 			case 0:
 				if(currentChar == '\'') {
-					tempLexeme += currentChar;
+					//tempLexeme += currentChar; -- don't want quotes in our lexeme
 					index++;
 					currentColNumber++;
 					state = 1;
@@ -165,12 +165,11 @@ public class Scanner {
 				break;
 			case 1:
 				if(currentChar == '\'') { // to accept state
-					tempLexeme += currentChar;
-					currentLexeme = tempLexeme;
+					//tempLexeme += currentChar; -- don't want quotes in our lexeme
+					currentLexeme = tempLexeme; 
 					indexOfLastAccept = index;
 					index++;
 					currentColNumber++;
-					currentLexeme = tempLexeme;
 					state = 2;
 				} else if (currentChar == '\n') { //if we get a new line in the middle of our string return run on string
 					currentLexeme = tempLexeme;
@@ -184,7 +183,7 @@ public class Scanner {
 				break;
 			case 2:
 				if (currentChar == '\'') {     
-					tempLexeme += currentChar;
+					tempLexeme += currentChar; // leave this in cause it means we escaped this char
 					currentLexeme = tempLexeme;
 					indexOfLastAccept = index;
 					index++;
