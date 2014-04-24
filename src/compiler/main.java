@@ -10,7 +10,7 @@ public class main {
 		if(args.length == 1) {
 			filename = args[0];
 		} else {
-			filename = "levelC.txt";
+			filename = "doms.txt";
 		}
 		ArrayList<Token> tkns = new ArrayList<Token>();
 		try{

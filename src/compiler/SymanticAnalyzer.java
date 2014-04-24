@@ -115,10 +115,19 @@ public class SymanticAnalyzer {
 	// passing in parameters
 	public static void pushRegisterByReference(String lexeme, SymbolTable currTable) throws IOException {
 		int[] offset = currTable.getOffsetByLexeme(lexeme);
+		
+		//push parameter that is a ref onto stack (so it's original address)
+		for(Symbol s : currTable.symbols) {
+			if(s.mode == "ref") {
+				bw.write("PUSH " + offset[0] + "(D" + offset[1] + ")\n");
+				return;
+			}
+		}
 		//push function reference onto stack
 		bw.write("PUSH D"+ offset[1] +"\n");
 		bw.write("PUSH #" + offset[0]+"\n");
 		bw.write("ADDS\n");
+		
 	}
 	
 	public static void computeExpression(String factorType, String factorTailType, String operator) throws Exception {

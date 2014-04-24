@@ -1,0 +1,120 @@
+program Program1;
+  var Apples, Oranges: Integer;
+    s: String;
+
+  function nesting(A: Integer): Integer;
+
+    function bar(A: Integer): Integer;
+
+      procedure baz(var A: Integer);
+      begin
+        A := A + 10.9;
+      end;
+
+    begin
+      baz(A);
+      bar := A;
+    end;
+
+  begin
+    nesting := A + bar(A);
+  end;
+
+  procedure booleans;
+  var a: Integer;
+  begin
+    a := 10;
+    if (a > 9) and (a < 11) then
+      if (a >= 10) and (a <= 10) then
+        if (a >= 9) and (a <= 11) then
+          if (a <> 9) and (a <> 11) then
+            if a = 10 then 
+              Writeln('if statements pass');
+            
+  end;
+
+  procedure loops;
+  var i, b: float;
+  begin
+    for i := 10.5e2 to 11.5e2 do
+      Writeln('loops work', i);
+  end;
+
+  function returnString(var str: String): String;
+  var tempString: String;
+  begin
+    tempString := str;
+    str := 'WORLD';
+    returnString := tempString;
+  end;
+
+  function fiveNestedFunctions: Integer;
+    function nestedFunction1: Integer;
+      function nestedFunction2: Integer;
+        function nestedFunction3: Integer;
+          function nestedFunction4: Integer;
+            function nestedFunction5: Integer;
+            begin
+              nestedFunction5 := 69;
+            end;
+          begin
+            nestedFunction4 := nestedFunction5;
+          end;
+        begin
+          nestedFunction3 := nestedFunction4;
+        end;
+      begin
+        nestedFunction2 := nestedFunction3;
+      end;
+    begin
+      nestedFunction1 := nestedFunction2;
+    end;
+  begin
+    fiveNestedFunctions := nestedFunction1;
+  end;
+
+  procedure fiveNestedProcedures(var i: Integer);
+    procedure nestedProcedure1(var i: Integer);
+      procedure nestedProcedure2(var i: Integer);
+        procedure nestedProcedure3(var i: Integer);
+          procedure nestedProcedure4(var i: Integer);
+            procedure nestedProcedure5(var i: Integer);
+            begin
+              i := 1;
+            end;
+          begin
+            nestedProcedure5(i);
+            i := i + 10;
+          end;
+        begin
+          nestedProcedure4(i);
+          i := i + 100;
+        end;
+      begin
+        nestedProcedure3(i);
+        i := i + 1000;
+      end;
+    begin
+      nestedProcedure2(i);
+      i := i + 10000;
+    end;
+  begin
+    nestedProcedure1(i);
+    i := i + 100000;
+  end;
+
+begin
+  booleans;
+  writeln(''''' - this is how you escape the '' character :)');
+  write('nested functions and procedures pass - ', nesting(10), '\n');
+  s := 'HELLO ';    
+  write('Strings by ref work - ', returnString(s), s, '\n');
+  write('nested functions work awesome ', fiveNestedFunctions, '\n');
+  Apples := 10;
+  fiveNestedProcedures(Apples);
+  write('nested procedures work awesome ', Apples, '\n');
+end.
+
+
+
+
