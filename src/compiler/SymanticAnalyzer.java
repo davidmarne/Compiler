@@ -44,10 +44,13 @@ public class SymanticAnalyzer {
 		bw.write("ADDS\n");
 	}
 	
-	public static void updateStackPointer(int nestingLevel, int numParams, SymbolTable currTable, String name) throws IOException {
+	public static void updateStackPointer(int nestingLevel, SymbolTable currTable, String name) throws IOException {
+		int numParams = currTable.getSymbolByLexeme(name).parameterList.size();
+		
 		if(currTable.contains(name)) {
 			nestingLevel--;
 		}
+	
 		// move the address of beginning of activation record into DX
 		bw.write("PUSH SP\n");
 		bw.write("PUSH #" + (numParams + 1) + "\n");

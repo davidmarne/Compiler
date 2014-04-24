@@ -172,6 +172,8 @@ public class Scanner {
 					currentColNumber++;
 					state = 2;
 				} else if (currentChar == '\n') { //if we get a new line in the middle of our string return run on string
+					lineNumber++;
+					currentColNumber = 1;
 					currentLexeme = tempLexeme;
 					currentToken = "MP_RUN_STRING";
 					return;
@@ -364,7 +366,13 @@ public class Scanner {
 					currentLexeme = tempLexeme;
 					currentToken = "MP_RUN_COMMENT";
 					return;
+				} else if (currentChar == '\n') {
+					tempLexeme += currentChar;
+					index++;
+					currentColNumber = 1;
+					lineNumber++;
 				} else { //other
+				
 					tempLexeme += currentChar;
 					index++;
 					currentColNumber++;

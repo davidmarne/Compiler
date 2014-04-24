@@ -592,7 +592,7 @@ public class Parser {
 			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected just about anything else");
 		}
 		if (currTable.isFunction(name) || currTable.isProcedure(name)) {
-			SymanticAnalyzer.updateStackPointer(currTable.nestingLevel, parameterNum, currTable, name);
+			SymanticAnalyzer.updateStackPointer(currTable.nestingLevel, currTable, name);
 			SymanticAnalyzer.write("CALL L" + currTable.getLabelByLexeme(name) + "\n");
 		}
 	}
