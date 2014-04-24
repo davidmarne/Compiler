@@ -79,11 +79,27 @@ public class SymanticAnalyzer {
 	public static void readStatement(String lexeme, SymbolTable currTable) throws IOException{
 		int[] offset = currTable.getOffsetByLexeme(lexeme);
 		String type = currTable.getTypeByLexeme(lexeme);
+		boolean byRef = false;
 		if(offset != null) {
-			if(type.equals("MP_FLOAT") || type.equals("MP_FIXED")){
-				bw.write("RDF " + offset[0] + "(D" + offset[1] + ")\n");
-			}else{
-				bw.write("RD " + offset[0] + "(D" + offset[1] + ")\n");
+			//by copy
+			for (Symbol s: currTable.symbols) {
+				if(s.iden.equals(lexeme) && s.mode.equals("ref")) {
+					byRef = true;
+					break;
+				}	
+			}
+			if(byRef) {
+				if(type.equals("MP_FLOAT") || type.equals("MP_FIXED")){
+					bw.write("RDF @" + offset[0] + "(D" + offset[1] + ")\n");
+				}else{
+					bw.write("RD @" + offset[0] + "(D" + offset[1] + ")\n");
+				}
+			} else {
+				if(type.equals("MP_FLOAT") || type.equals("MP_FIXED")){
+					bw.write("RDF " + offset[0] + "(D" + offset[1] + ")\n");
+				}else{
+					bw.write("RD " + offset[0] + "(D" + offset[1] + ")\n");
+				}
 			}
 		}			
 	}

@@ -10,7 +10,7 @@ public class main {
 		if(args.length == 1) {
 			filename = args[0];
 		} else {
-			filename = "8nastyIf.txt";
+			filename = "02functions.txt";
 		}
 		ArrayList<Token> tkns = new ArrayList<Token>();
 		try{
@@ -36,7 +36,7 @@ public class main {
 			}
 			// only parse the program if there was no scanner error
 			if(!scannerError) {
-				Parser.parser(tkns);
+				Parser.parser(tkns); 
 			} else {
 				System.out.println("Program failed to scan");
 			}
