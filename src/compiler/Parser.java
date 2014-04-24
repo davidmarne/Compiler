@@ -876,9 +876,9 @@ public class Parser {
 			returnVal = "MP_BOOLEAN";
 			break;
 		case "MP_NOT":
-			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);		
 			match("MP_NOT");
 			Factor(parameterNum, procedureName);
+			SymanticAnalyzer.write("NOTS\n");
 			returnVal = "MP_BOOLEAN";
 			break;
 		case "MP_LPAREN":
@@ -992,5 +992,8 @@ public class Parser {
 		}
 	}
 }
+
+
+
 
 

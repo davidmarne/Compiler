@@ -10,7 +10,7 @@ public class main {
 		if(args.length == 1) {
 			filename = args[0];
 		} else {
-			filename = "doms.txt";
+			filename = "8nastyIf.txt";
 		}
 		ArrayList<Token> tkns = new ArrayList<Token>();
 		try{
