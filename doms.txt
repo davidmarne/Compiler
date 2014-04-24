@@ -106,21 +106,19 @@ program Program1;
   end;
 
 
-  procedure nesting(A: Integer);
-
+  procedure mixedNesting;
+  var A: Integer;
     function bar(A: Integer): Integer;
-
       procedure baz(var A: Integer);
       begin
         A := A + 10.9;
       end;
-
     begin
       baz(A);
       bar := A;
     end;
-
   begin
+    A := 10;
     A := A + bar(A);
     if A = 30 then
       Writeln('pass - mixed function/procedure nesting')
@@ -151,11 +149,11 @@ program Program1;
   }
 
 begin
-  nesting(10);
   ifStatements;
   forLoops;
   fiveNestedFunctions;
   fiveNestedProcedures;
+  mixedNesting;  
 end.
 
 
