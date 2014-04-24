@@ -184,15 +184,7 @@ public class SymbolTable {
 		return counter;
 	}
 	
-	public boolean contains(){
-		if(parent == null ){
-			return false;
-		}
-		for(Symbol s: parent.symbols){
-			if(name.equals(s.iden)){
-				return true;
-			}
-		}
-		return false;
+	public boolean contains(String ID){
+		return name.equals(ID);
 	}
 }

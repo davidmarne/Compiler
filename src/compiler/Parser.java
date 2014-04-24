@@ -571,9 +571,9 @@ public class Parser {
 	public static void ProcedureStatement() throws Exception{
 		String procedureName = tokens.get(0).lexeme;
 		ProcedureIdentifier();
-		SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName), currTable);
+		SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName), currTable, procedureName);
 		OptionalActualParameterList(procedureName);
-		SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName), currTable);
+		SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName), currTable, procedureName);
 	}
 	
 	public static void OptionalActualParameterList(String name) throws Exception{
@@ -589,7 +589,7 @@ public class Parser {
 			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected just about anything else");
 		}
 		if (currTable.isFunction(name) || currTable.isProcedure(name)) {
-			SymanticAnalyzer.updateStackPointer(currTable.nestingLevel, parameterNum, currTable);
+			SymanticAnalyzer.updateStackPointer(currTable.nestingLevel, parameterNum, currTable, name);
 			SymanticAnalyzer.write("CALL L" + currTable.getLabelByLexeme(name) + "\n");
 		}
 	}
@@ -888,7 +888,7 @@ public class Parser {
 			String ID_name = tokens.get(0).lexeme;
 			boolean isFunction = currTable.isFunction(ID_name);
 			if (isFunction) {
-				SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name), currTable);
+				SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name), currTable, ID_name);
 			} else {
 				// pass in by copy or reference
 				if(parameterNum != -1 && currTable.getSymbolByLexeme(procedureName).parameterList.get(parameterNum).kind == "ref") {
@@ -905,7 +905,7 @@ public class Parser {
 			FunctionIdentifier();
 			OptionalActualParameterList(ID_name);	
 			if(isFunction){
-				SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name), currTable);
+				SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name), currTable, ID_name);
 				SymanticAnalyzer.pushRegisterVal(ID_name, currTable);
 			}
 			break;
