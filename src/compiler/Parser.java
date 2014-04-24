@@ -970,7 +970,7 @@ public class Parser {
 		if(lookahead.equals(token)) {
 			idenListType = tokens.get(0).token;
 			tokens.remove(0);
-			System.out.println(lookahead + " matched");
+//			System.out.println(lookahead + " matched");
 			if(tokens.size() > 0){
 				lookahead = tokens.get(0).token;
 				

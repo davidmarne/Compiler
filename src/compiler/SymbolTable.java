@@ -84,7 +84,7 @@ public class SymbolTable {
 		}
 	}
 	
-	public Symbol getSymbolByLexeme(String lexeme){
+	public Symbol getSymbolByLexeme(String lexeme) throws Exception{
 		// search through current table
 		for (Symbol symbol : symbols) {
 			if(symbol.iden.equals(lexeme)){
@@ -96,7 +96,7 @@ public class SymbolTable {
 		if(parent != null) {
 			return parent.getSymbolByLexeme(lexeme);
 		} else {
-			return null;
+			throw new Exception(lexeme + " is not defined");
 		}
 	}
 	
@@ -116,7 +116,7 @@ public class SymbolTable {
 		if(parent != null) {
 			return parent.isFunction(lexeme);
 		} else {
-			return null;
+			return false;
 		}
 	}
 	public Boolean isProcedure(String lexeme){
@@ -135,7 +135,7 @@ public class SymbolTable {
 		if(parent != null) {
 			return parent.isProcedure(lexeme);
 		} else {
-			return null;
+			return false;
 		}
 	}
 	public int getLabelByLexeme(String lexeme){

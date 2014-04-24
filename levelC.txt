@@ -1,13 +1,13 @@
 program Program1;
   var Apples, Oranges: Integer;
 
-  function foo(A: Integer): Integer;
+  function nesting(A: Integer): Integer;
 
     function bar(A: Integer): Integer;
 
       procedure baz(var A: Integer);
       begin
-        A := A + 10
+        A := A + 10; 
       end;
 
     begin
@@ -20,7 +20,6 @@ program Program1;
   end;
 
 begin
-  Oranges := 10;
-  Apples := foo(Oranges);
-  Writeln(Apples);
+  Apples := 10;
+  Write(nesting(Apples));
 end.
