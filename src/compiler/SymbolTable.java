@@ -84,7 +84,7 @@ public class SymbolTable {
 		}
 	}
 	
-	public Symbol getSymbolByLexeme(String lexeme) throws Exception{
+	public Symbol getSymbolByLexeme(String lexeme){
 		// search through current table
 		for (Symbol symbol : symbols) {
 			if(symbol.iden.equals(lexeme)){
@@ -96,7 +96,7 @@ public class SymbolTable {
 		if(parent != null) {
 			return parent.getSymbolByLexeme(lexeme);
 		} else {
-			throw new Exception(lexeme + " is not defined");
+			return null;
 		}
 	}
 	

@@ -425,21 +425,24 @@ public class Parser {
 	}
 	
 	public static void AssignmentStatement() throws Exception{
-		String lex = tokens.get(0).lexeme;
-		String resultType = currTable.getTypeByLexeme(lex);
-		int[] offset = currTable.getOffsetByLexeme(lex);
-		boolean isFunction = currTable.isFunction(lex);
+		Token token = tokens.get(0);
+		String resultType = currTable.getTypeByLexeme(token.lexeme);
+		int[] offset = currTable.getOffsetByLexeme(token.lexeme);
+		boolean isFunction = currTable.isFunction(token.lexeme);
 		match("MP_IDENTIFIER");
 		match("MP_ASSIGN");
 		String exprType = Expression(-1, null);
-		Symbol s = currTable.getSymbolByLexeme(lex);
+		Symbol s = currTable.getSymbolByLexeme(token.lexeme);
+		if (s == null) {
+			throw new Exception(token.lineNumber + ":" + token.colNumber + " " + token.lexeme + " is not defined");
+		}
 		if (isFunction) {
 			//function
 			int[] input = {0, currTable.nestingLevel};
 			SymanticAnalyzer.assignByReference(resultType, exprType, input);
 		} else if (s.kind == "parameter" && s.mode == "ref") {
 			// ref
-			SymanticAnalyzer.assignByReference(resultType, exprType, currTable.getOffsetByLexeme(lex));
+			SymanticAnalyzer.assignByReference(resultType, exprType, currTable.getOffsetByLexeme(token.lexeme));
 		} else {
 			//copy
 			SymanticAnalyzer.assign(resultType, exprType, offset);

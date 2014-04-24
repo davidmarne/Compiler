@@ -21,5 +21,6 @@ program Program1;
 
 begin
   Apples := 10;
+  a := true;
   Write(nesting(Apples));
 end.
