@@ -1,0 +1,161 @@
+program Program1;
+
+  procedure ifStatements;
+  var a: Integer;
+  begin
+    a := 10;
+    if (a > 9) and (a < 11) then
+      if (a >= 10) and (a <= 10) then
+        if (a >= 9) and (a <= 11) then
+          if (a <> 9) and (a <> 11) then
+            if a = 10 then 
+              Writeln('pass - if statements')
+            else
+              Writeln('fail - if statements')
+          else
+            Writeln('fail - if statements')
+        else
+          Writeln('fail - if statements')
+      else
+        Writeln('fail - if statements')
+    else
+      Writeln('fail - if statements');        
+  end;
+
+
+  procedure forLoops;
+  var i, counter1, counter2: Integer;
+  begin
+    counter1 := 0;
+    counter2 := 0;
+    for i := 10 to 15 do
+      counter1 := counter1 + 1;
+
+    for i := 10 downto 0 do
+      counter2 := counter2 + 1;
+
+    if (counter1 = 6) and (counter2 = 11) then
+      Writeln('pass - for loops')
+    else
+      WriteLn('fail - for loops');
+  end;
+
+
+  procedure fiveNestedFunctions;
+    function nestedFunction1: Integer;
+      function nestedFunction2: Integer;
+        function nestedFunction3: Integer;
+          function nestedFunction4: Integer;
+            function nestedFunction5: Integer;
+            begin
+              nestedFunction5 := 69;
+            end;
+          begin
+            nestedFunction4 := nestedFunction5;
+          end;
+        begin
+          nestedFunction3 := nestedFunction4;
+        end;
+      begin
+        nestedFunction2 := nestedFunction3;
+      end;
+    begin
+      nestedFunction1 := nestedFunction2;
+    end;
+  begin
+    if nestedFunction1 = 69 then
+      Writeln('pass - 5 nested functions')
+    else
+      Writeln('fail - 5 nested functions');
+  end;
+
+
+  procedure fiveNestedProcedures;
+    var i: Integer;
+    procedure nestedProcedure1(var i: Integer);
+      procedure nestedProcedure2(var i: Integer);
+        procedure nestedProcedure3(var i: Integer);
+          procedure nestedProcedure4(var i: Integer);
+            procedure nestedProcedure5(var i: Integer);
+            begin
+              i := i + 10;
+            end;
+          begin
+            nestedProcedure5(i);
+            i := i + 100;
+          end;
+        begin
+          nestedProcedure4(i);
+          i := i + 1000;
+        end;
+      begin
+        nestedProcedure3(i);
+        i := i + 10000;
+      end;
+    begin
+      nestedProcedure2(i);
+      i := i + 100000;
+    end;
+  begin
+    i := 1;
+    nestedProcedure1(i);
+    if i = 111111 then
+      Writeln('pass - 5 nested procedures')
+    else
+      Writeln('fail - 5 nested procedures', i);
+  end;
+
+
+  procedure mixedNesting;
+  var A: Integer;
+    function bar(A: Integer): Integer;
+      procedure baz(var A: Integer);
+      begin
+        A := A + 10.9;
+      end;
+    begin
+      baz(A);
+      bar := A;
+    end;
+  begin
+    A := 10;
+    A := A + bar(A);
+    if A = 30 then
+      Writeln('pass - mixed function/procedure nesting')
+    else
+      Writeln('fail - mixed funciton/procedure nesting');
+  end;
+
+
+  {   --this may not be a valid test, I dont know 
+      --if we can even compare strings like this
+  procedure strings; 
+  var str1, str2: String;
+    function returnString(var str: String): String;
+    var tempString: String;
+    begin
+      tempString := str;
+      str := 'World';
+      returnString := tempString;
+    end;
+  begin 
+    str1 := 'Hello';
+    str2 := returnString(str1);
+    if (str1 = 'World') and (str2 = 'Hello') then
+      Writeln('pass - strings by copy and ref')
+    else
+      WriteLn('fail - strings by copy and ref');
+  end;
+  }
+
+begin
+  ifStatements;
+  forLoops;
+  fiveNestedFunctions;
+  fiveNestedProcedures;
+  mixedNesting;  
+end.
+
+
+
+

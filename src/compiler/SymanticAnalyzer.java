@@ -29,17 +29,39 @@ public class SymanticAnalyzer {
 		bw.write("ADD SP #" + size + " SP\n");	
 	}
 	
-	public static void procedureFunctionDeclaration(int nestingLevel, int[] offset) throws IOException{
+	public static void procedureFunctionDeclaration(int nestingLevel, SymbolTable currTable, String name) throws Exception{
+		int[] offset = currTable.getOffsetByLexeme(name);
+		if(offset == null) {
+			throw new Exception(name + " is not defined");
+		}
+		if(currTable.contains()) {
+			nestingLevel--;
+		}
 		bw.write("PUSH D" + nestingLevel + "\n");
-		bw.write("MOV SP D" + nestingLevel + "\n");
 		//push function reference onto stack
 		bw.write("PUSH D"+ offset[1] +"\n");
 		bw.write("PUSH #" + offset[0]+"\n");
 		bw.write("ADDS\n");
 	}
 	
-	public static void procedureFunctionDestroy(int nestingLevel, int[] offset) throws IOException{
+	public static void updateStackPointer(int nestingLevel, SymbolTable currTable, String name) throws IOException {
+		int numParams = currTable.getSymbolByLexeme(name).parameterList.size();
 		
+		if(currTable.contains()) {
+			nestingLevel--;
+		}
+	
+		// move the address of beginning of activation record into DX
+		bw.write("PUSH SP\n");
+		bw.write("PUSH #" + (numParams + 1) + "\n");
+		bw.write("SUBS\n");
+		bw.write("POP D" + (nestingLevel+1) + "\n");
+	}
+	
+	public static void procedureFunctionDestroy(int nestingLevel, SymbolTable currTable, String name) throws IOException{
+		if(currTable.contains()) {
+			nestingLevel--;
+		}
 		bw.write("MOV D" + nestingLevel + " SP\n");
 		bw.write("POP D" + nestingLevel + "\n");
 
@@ -60,11 +82,27 @@ public class SymanticAnalyzer {
 	public static void readStatement(String lexeme, SymbolTable currTable) throws IOException{
 		int[] offset = currTable.getOffsetByLexeme(lexeme);
 		String type = currTable.getTypeByLexeme(lexeme);
+		boolean byRef = false;
 		if(offset != null) {
-			if(type.equals("MP_FLOAT") || type.equals("MP_FIXED")){
-				bw.write("RDF " + offset[0] + "(D" + offset[1] + ")\n");
-			}else{
-				bw.write("RD " + offset[0] + "(D" + offset[1] + ")\n");
+			//by copy
+			for (Symbol s: currTable.symbols) {
+				if(s.iden.equals(lexeme) && s.mode.equals("ref")) {
+					byRef = true;
+					break;
+				}	
+			}
+			if(byRef) {
+				if(type.equals("MP_FLOAT") || type.equals("MP_FIXED")){
+					bw.write("RDF @" + offset[0] + "(D" + offset[1] + ")\n");
+				}else{
+					bw.write("RD @" + offset[0] + "(D" + offset[1] + ")\n");
+				}
+			} else {
+				if(type.equals("MP_FLOAT") || type.equals("MP_FIXED")){
+					bw.write("RDF " + offset[0] + "(D" + offset[1] + ")\n");
+				}else{
+					bw.write("RD " + offset[0] + "(D" + offset[1] + ")\n");
+				}
 			}
 		}			
 	}
@@ -99,10 +137,19 @@ public class SymanticAnalyzer {
 	// passing in parameters
 	public static void pushRegisterByReference(String lexeme, SymbolTable currTable) throws IOException {
 		int[] offset = currTable.getOffsetByLexeme(lexeme);
+		
+		//push parameter that is a ref onto stack (so it's original address)
+		for(Symbol s : currTable.symbols) {
+			if(s.mode == "ref") {
+				bw.write("PUSH " + offset[0] + "(D" + offset[1] + ")\n");
+				return;
+			}
+		}
 		//push function reference onto stack
 		bw.write("PUSH D"+ offset[1] +"\n");
 		bw.write("PUSH #" + offset[0]+"\n");
 		bw.write("ADDS\n");
+		
 	}
 	
 	public static void computeExpression(String factorType, String factorTailType, String operator) throws Exception {
@@ -146,7 +193,7 @@ public class SymanticAnalyzer {
 		} else if (result.equals("MP_INTEGER") && exp.equals("MP_FLOAT")) {
 			bw.write("CASTSI\n");
 		} else {
-			throw new Exception("Assiging incompatible types");
+			throw new Exception("Assigning incompatible types");
 		}
 		bw.write("POP " + offset[0] + "(D" + offset[1] + ")\n");
 	}

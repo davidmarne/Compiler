@@ -10,7 +10,7 @@ public class main {
 		if(args.length == 1) {
 			filename = args[0];
 		} else {
-			filename = "levelC.txt";
+			filename = "12recursion.txt";
 		}
 		ArrayList<Token> tkns = new ArrayList<Token>();
 		try{
@@ -21,10 +21,10 @@ public class main {
 				try {
 					s = Scanner.getToken();
 					tkns.add(s);
-					System.out.format("token: %-15s", s.token);
-					System.out.format("  line number: %-3s", s.lineNumber);
-					System.out.format("  column number: %-3s", s.colNumber);
-					System.out.println("  lexeme " + s.lexeme);
+//					System.out.format("token: %-15s", s.token);
+//					System.out.format("  line number: %-3s", s.lineNumber);
+//					System.out.format("  column number: %-3s", s.colNumber);
+//					System.out.println("  lexeme " + s.lexeme);
 					if(s.token == "MP_EOF") {
 						break;
 					}
@@ -36,7 +36,7 @@ public class main {
 			}
 			// only parse the program if there was no scanner error
 			if(!scannerError) {
-				Parser.parser(tkns);
+				Parser.parser(tkns); 
 			} else {
 				System.out.println("Program failed to scan");
 			}

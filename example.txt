@@ -1,0 +1,12 @@
+program Example;
+
+  function test(var i: Integer): Integer;
+  var Apples, Oranges: Integer;
+  begin
+    Oranges := 10;
+    Writeln(i);
+  end;
+
+begin
+	test(4);
+end. 

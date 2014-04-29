@@ -26,7 +26,7 @@ public class Parser {
 		SystemGoal();
 		SymanticAnalyzer.close();
 		if (!parseError) {
-			System.out.println("Programs successfully parsed");
+			System.out.println("Program successfully parsed");
 		} else {
 			System.out.println("Program parsed with errors");
 		}
@@ -41,7 +41,7 @@ public class Parser {
 	public static void Program() throws Exception{
 		ProgramHeading();
 		match("MP_SCOLON");
-		Block();
+		Block(true);
 		match("MP_PERIOD");
 	}
 	
@@ -54,13 +54,17 @@ public class Parser {
 		SymanticAnalyzer.write("BR L0\n");
 	}
 	
-	public static void Block() throws Exception{
+	public static void Block(boolean isProgram) throws Exception{
 		VariableDeclarationPart();
 		// generate code to allocate stack space for local variables and properly offset the SP
 		
 		ProcedureAndFunctionDeclarationPart();
 		SymanticAnalyzer.write(currTable.getLabel() + ":\n");
-		SymanticAnalyzer.programDeclaration(currTable.nestingLevel, currTable.getNumOfNonParams(), "L"+label);
+		if(isProgram) {
+			SymanticAnalyzer.programDeclaration(currTable.nestingLevel, currTable.getNumOfNonParams() + 2, "L"+label);
+		} else {
+			SymanticAnalyzer.programDeclaration(currTable.nestingLevel, currTable.getNumOfNonParams(), "L"+label);
+		}
 		StatementPart();
 		SymanticAnalyzer.programDestroy(currTable.nestingLevel, currTable.getNumOfNonParams());
 		currTable = currTable.destroy();
@@ -146,14 +150,14 @@ public class Parser {
 	public static void ProcedureDeclaration() throws Exception{
 		ProcedureHeading();
 		match("MP_SCOLON");
-		Block();
+		Block(false);
 		match("MP_SCOLON");
 	}
 	
 	public static void FunctionDeclaration() throws Exception{
 		FunctionHeading();
 		match("MP_SCOLON");
-		Block();
+		Block(false);
 		match("MP_SCOLON");
 	}
 	
@@ -421,21 +425,24 @@ public class Parser {
 	}
 	
 	public static void AssignmentStatement() throws Exception{
-		String lex = tokens.get(0).lexeme;
-		String resultType = currTable.getTypeByLexeme(lex);
-		int[] offset = currTable.getOffsetByLexeme(lex);
-		boolean isFunction = currTable.isFunction(lex);
+		Token token = tokens.get(0);
+		String resultType = currTable.getTypeByLexeme(token.lexeme);
+		int[] offset = currTable.getOffsetByLexeme(token.lexeme);
+		boolean isFunction = currTable.isFunction(token.lexeme);
 		match("MP_IDENTIFIER");
 		match("MP_ASSIGN");
 		String exprType = Expression(-1, null);
-		Symbol s = currTable.getSymbolByLexeme(lex);
+		Symbol s = currTable.getSymbolByLexeme(token.lexeme);
+		if (s == null) {
+			throw new Exception(token.lineNumber + ":" + token.colNumber + " " + token.lexeme + " is not defined");
+		}
 		if (isFunction) {
 			//function
 			int[] input = {0, currTable.nestingLevel};
 			SymanticAnalyzer.assignByReference(resultType, exprType, input);
 		} else if (s.kind == "parameter" && s.mode == "ref") {
 			// ref
-			SymanticAnalyzer.assignByReference(resultType, exprType, currTable.getOffsetByLexeme(lex));
+			SymanticAnalyzer.assignByReference(resultType, exprType, currTable.getOffsetByLexeme(token.lexeme));
 		} else {
 			//copy
 			SymanticAnalyzer.assign(resultType, exprType, offset);
@@ -567,15 +574,15 @@ public class Parser {
 	public static void ProcedureStatement() throws Exception{
 		String procedureName = tokens.get(0).lexeme;
 		ProcedureIdentifier();
-		SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName));
+		SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable, procedureName);
 		OptionalActualParameterList(procedureName);
-		SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(procedureName));
+		SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable, procedureName);
 	}
 	
 	public static void OptionalActualParameterList(String name) throws Exception{
+		parameterNum = 0;
 		if(lookahead == "MP_LPAREN"){
 			match("MP_LPAREN");
-			parameterNum = 0;
 			ActualParameter(name);
 			ActualParameterTail(name);
 			match("MP_RPAREN");
@@ -584,7 +591,8 @@ public class Parser {
 		}else{
 			throw new Exception("Parse Error " + tokens.get(0).lineNumber + ":" + tokens.get(0).colNumber + ": Found " + lookahead + ", expected just about anything else");
 		}
-		if(currTable.isFunction(name) || currTable.isProcedure(name)){
+		if (currTable.isFunction(name) || currTable.isProcedure(name)) {
+			SymanticAnalyzer.updateStackPointer(currTable.nestingLevel, currTable, name);
 			SymanticAnalyzer.write("CALL L" + currTable.getLabelByLexeme(name) + "\n");
 		}
 	}
@@ -868,9 +876,9 @@ public class Parser {
 			returnVal = "MP_BOOLEAN";
 			break;
 		case "MP_NOT":
-			SymanticAnalyzer.pushLiteralVal(tokens.get(0).lexeme);		
 			match("MP_NOT");
 			Factor(parameterNum, procedureName);
+			SymanticAnalyzer.write("NOTS\n");
 			returnVal = "MP_BOOLEAN";
 			break;
 		case "MP_LPAREN":
@@ -883,7 +891,7 @@ public class Parser {
 			String ID_name = tokens.get(0).lexeme;
 			boolean isFunction = currTable.isFunction(ID_name);
 			if (isFunction) {
-				SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name));
+				SymanticAnalyzer.procedureFunctionDeclaration(currTable.nestingLevel + 1, currTable, ID_name);
 			} else {
 				// pass in by copy or reference
 				if(parameterNum != -1 && currTable.getSymbolByLexeme(procedureName).parameterList.get(parameterNum).kind == "ref") {
@@ -900,7 +908,7 @@ public class Parser {
 			FunctionIdentifier();
 			OptionalActualParameterList(ID_name);	
 			if(isFunction){
-				SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable.getOffsetByLexeme(ID_name));
+				SymanticAnalyzer.procedureFunctionDestroy(currTable.nestingLevel + 1, currTable, ID_name);
 				SymanticAnalyzer.pushRegisterVal(ID_name, currTable);
 			}
 			break;
@@ -965,7 +973,7 @@ public class Parser {
 		if(lookahead.equals(token)) {
 			idenListType = tokens.get(0).token;
 			tokens.remove(0);
-			System.out.println(lookahead + " matched");
+//			System.out.println(lookahead + " matched");
 			if(tokens.size() > 0){
 				lookahead = tokens.get(0).token;
 				
@@ -984,5 +992,8 @@ public class Parser {
 		}
 	}
 }
+
+
+
 
 

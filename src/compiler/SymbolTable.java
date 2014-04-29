@@ -31,7 +31,7 @@ public class SymbolTable {
 	}
 	
 	public SymbolTable destroy(){
-		printTable();
+//		printTable();
 		return parent;
 	}
 	
@@ -116,7 +116,7 @@ public class SymbolTable {
 		if(parent != null) {
 			return parent.isFunction(lexeme);
 		} else {
-			return null;
+			return false;
 		}
 	}
 	public Boolean isProcedure(String lexeme){
@@ -135,7 +135,7 @@ public class SymbolTable {
 		if(parent != null) {
 			return parent.isProcedure(lexeme);
 		} else {
-			return null;
+			return false;
 		}
 	}
 	public int getLabelByLexeme(String lexeme){
@@ -182,5 +182,21 @@ public class SymbolTable {
 			}
 		}
 		return counter;
+	}
+	
+	public boolean isRecursiveCall(String ID){
+		return name.equals(ID);
+	}
+	
+	public boolean contains() {
+		if(parent == null) {
+			return false;
+		}
+		for (Symbol s: parent.symbols) {
+			if (s.iden.equals(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
