@@ -184,7 +184,19 @@ public class SymbolTable {
 		return counter;
 	}
 	
-	public boolean contains(String ID){
+	public boolean isRecursiveCall(String ID){
 		return name.equals(ID);
+	}
+	
+	public boolean contains() {
+		if(parent == null) {
+			return false;
+		}
+		for (Symbol s: parent.symbols) {
+			if (s.iden.equals(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

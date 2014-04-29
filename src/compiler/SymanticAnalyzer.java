@@ -34,7 +34,7 @@ public class SymanticAnalyzer {
 		if(offset == null) {
 			throw new Exception(name + " is not defined");
 		}
-		if(currTable.contains(name)) {
+		if(currTable.contains()) {
 			nestingLevel--;
 		}
 		bw.write("PUSH D" + nestingLevel + "\n");
@@ -47,7 +47,7 @@ public class SymanticAnalyzer {
 	public static void updateStackPointer(int nestingLevel, SymbolTable currTable, String name) throws IOException {
 		int numParams = currTable.getSymbolByLexeme(name).parameterList.size();
 		
-		if(currTable.contains(name)) {
+		if(currTable.contains()) {
 			nestingLevel--;
 		}
 	
@@ -59,7 +59,7 @@ public class SymanticAnalyzer {
 	}
 	
 	public static void procedureFunctionDestroy(int nestingLevel, SymbolTable currTable, String name) throws IOException{
-		if(currTable.contains(name)) {
+		if(currTable.contains()) {
 			nestingLevel--;
 		}
 		bw.write("MOV D" + nestingLevel + " SP\n");
