@@ -1,0 +1,13 @@
+program mathTest;
+var a, b, c, d, e, f: boolean;
+
+begin
+
+b := true;
+c := not b;
+
+d :=  b and c;
+e  := x < y;
+e := (x < y) and (y < z);
+:= b*a;
+f := c*d;

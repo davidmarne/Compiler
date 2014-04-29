@@ -153,12 +153,15 @@ public class SymanticAnalyzer {
 	}
 	
 	public static void computeExpression(String factorType, String factorTailType, String operator) throws Exception {
-		if(factorType.equals("MP_FIXED")){
+		// fixed acts the same as a float, so convert so we can compare
+		if(factorType.equals("MP_FIXED")){ 
 			factorType = "MP_FLOAT";
 		}
+		
 		if(factorTailType.equals("MP_FIXED")){
 			factorTailType = "MP_FLOAT";
 		}
+		
 		// check for type compatibility
 		if(factorType.equals(factorTailType)) {
 			// do nothing
@@ -169,9 +172,12 @@ public class SymanticAnalyzer {
 		} else {
 			throw new Exception("incompatible types");
 		}
+		
+		// add F to the instruction to deal with a float
 		if(factorType.equals("MP_FLOAT")) {
 			operator += "F";
 		}
+		
 		bw.write(operator + "\n");
 	}
 	
