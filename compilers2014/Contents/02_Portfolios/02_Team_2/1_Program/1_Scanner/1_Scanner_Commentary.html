@@ -77,40 +77,73 @@ Compilers 2014
 <h1>Scanner Commentary</h1>
 <h3 class="centered">By Jourdan Lipp</h3>
 <h2>Purpose of the Scanner</h2>
-<p>Discuss the purpose of the scanner in the context of the entire compiler.</p>
+<p> The scanner is the basis of the compiler because without the scanner the translation of the language can not be done. A scanner is also known as a lexical analyzer since its a process of converting a sequence of characters into a sequence of tokens. The scanner identifies the character and determines if it is a token. In order to determine what is a token the rules of the lexer (scanner) must be defined. This entire process gives the foundation of what is needed for the second phase of the compiler, which is the parser. </p>
 
 <h2>Theory Behind Scanning</h2>
-<p>A short paragraph here that just names the theories that underlie how a scanner can be desiged and implemented</p>
+<p> A scanner can be implemented by being broken into the following steps: 1. List of tokens, 2. Obtain regular regular expressions for each token, 3. Create the corresponding finite state automata, 4. Modify the finite state automata to handle the practicalities of scanning, 5. Combine the finite state automata into a single unit, and 6. eliminate nondeterminism. These six steps give the basis for implementing and building a scanner. The scanner is also made up of matching algorithms that match each individual token. In order for the scanner to work correctly the methods (rules) must be correctly declared. These methods are used to idenitify the tokens in the file. One of the methods used to identify a token is by using regular expressions, which gives a specific sequence of characters. Other methods to determine tokens are specific definitions by a dictionary, and by specific separating characters known as delimiters.</p>
 <h2>Dispatcher</h2>
-<p>Describe here how your dispatcher works. Use an abbreviated diagram that shows how this works, and list the preconditions and post-conditions</p>
+<p> 
+    The dispatcher works as intended, which is to prepare scanning for the next token. The dispatcher must first skip any white space in the input file beginning with the current position of the file pointer. The next step is to examine first non-white space character encountered without consuming the character. The final step is calling the proper method for handling tokens that begin with that character.  
+    <br><br>
+    Dispatcher Diagram:
+    <img src="dispatcher_diagram.png" />
+    <br><br>
+    PreConditions for the Dispatcher: The source file points to the first character of the lexeme corresponding to the next token.
+    <br><br>
+    PostConditions for the Dispatcher: The value of the token attribute or variable has just been set to the token just scanned, and the value of the lexeme attribute or variable has been set to the lexeme just scanned, and the file pointer is pointing to the first character after the token just scanned.</p>
 
 <h2>Tokens</h2>
-<p>Discuss what tokens are.</p>
+<p>A token is a string of characters. A token is determined by the grammar of the language. A token is typically an item that the compiler cares about such as reserved words, variable names, type names, and symbol names.</p>
 
 <h3>Interesting Token Example</h3>
-<p>Give the name of a particularly interesting token&nbsp;for micropascal&nbsp;along with a brief discussion in English that match this token.o</p>
+<p> When building our scanner many of the tokens that were defined in the micropascal language were similar to those of other programming languages. However, one particular token stood out to me. I found the MP_ASSIGN token to be interesting since many of the programming languages I use do not assign values this way. To determine if the token is MP_ASSIGN the ':' character must be matched first then followed by the matching of the '=' character.   
+</p>
 
 <h3>Regular Expression for Tokens</h3>
 
-<p>Give a regular expression for the interesting token you chose.</p>
-<ul>
-  <li>Define any necessary helper expressions you need, such as<strong> digit</strong> = 0 | 2 |&nbsp;...| 9 </li>
-  <li>Define the regular expression for your token using only the operators
-    <ul>
-      <li>* for <em>zero or more</em></li>
-      <li>a space  for <em>concatenation</em> between parts of the regular expression</li>
-      <li> | for <em>or</em>, where operator precedence from highest to lowest is ( ), *, concatenation, and </li>
-      </ul>
-  </li>
-  </ul>
-<p>An example is <strong>letter (letter | digit)*</strong> for identifier, if an identifier can be any string that starts with a letter and has zero or more letters&nbsp;and/or digits thereafter.</p>
+<p>Assign: : | = </p>
+
 
 <h3>Finite State Automaton for Token, Extended for Scanning</h3>
 
-<p>Use the finite state automaton animator of Lab 2 to create an FSA for the token above. Do a screen capture of the FSA. Annotate the FSA with text in a word processor that describes what your scanner does at the various states in the FSA, such a setting the token, lexeme, etc.</p>
+<p><img src="MP_ASSIGN_FSA.png"/></p>
 
 <h3>Implementing the Finite State Automaton</h3>
-<p>Give the code in your scanner that implements this finite state automaton.</p>
+<pre class="prettyprint"><code class="language-java">
+  public static void MP_ASSIGN() {
+    int state = 0;
+    char currentChar = file.charAt(index);
+    currentLexeme= "";
+
+    while (true) {
+      currentChar = file.charAt(index);
+      switch (state) {
+      case 0:
+        switch (currentChar) {
+        case ':':
+          currentLexeme = currentLexeme+ currentChar;
+          index++;
+          currentColNumber++;
+          state = 1;
+        }
+        break;
+      case 1:
+        switch (currentChar) {
+        case '=':
+          currentLexeme = currentLexeme+ currentChar;
+          index++;
+          currentColNumber++;
+          currentToken = "MP_ASSIGN";
+          return;
+        default:
+          currentToken = "MP_COLON";
+          return;
+        }
+      }
+    }
+  }
+
+</code></pre>
 <!-- InstanceEndEditable -->
 
 </article>

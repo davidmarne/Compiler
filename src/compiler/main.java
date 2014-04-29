@@ -11,6 +11,8 @@ public class main {
 			filename = args[0];
 		} else {
 			filename = "12recursion.txt";
+
+
 		}
 		ArrayList<Token> tkns = new ArrayList<Token>();
 		try{
