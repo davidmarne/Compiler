@@ -77,18 +77,40 @@ Compilers 2014
 <h1>Parser Commentary</h1>
 <h3 class="centered">By Dave Marne</h3>
 <h2>Purpose of the Parser</h2>
-<p>Discuss the purpose of the parser in the context of the entire compiler.</p>
+<p>The parser’s main purpose is to assure the program contains valid syntax. In doing so the parser provides the semantic analyzer a path to follow in which it can generate machine instructions. </p>
 <h2>Theory Behind Parsing</h2>
-<p>A short paragraph here that just names the theories that underlie how a parser can be desiged an implemented, including context free grammars, EBNF, LL(1) grammars, recursive descent parsing based on an LL(1) grammar, how the parsing works in&nbsp;terms of implicit tree construction&nbsp;in a top-down, leftmost parse that implicitly has a stack (like a pushdown automaton)</p>
+<p>To create the parser, first one must have a grammar. A grammar is a set of rules that define a language; We used a context-free grammar which consists of terminal symbols and non-terminal rules that must be followed to produce a valid program. Extended Backus Normal Form was used to express the grammar, as shown in the example below.<br><br>
+When a rule in the CFG is expanded the next tokens in the language must follow the rules definition. So if one expands A, which is defined A -> ab | b, and an ‘a’ or a ‘b’ is read then there is no error. However if a ‘c’ is read or two ‘a’s are read, the rule is not followed and an error in the program (or whatever type of language you are representing) has been found.
+CFG’s allow for recursive descent parsing. This means the CFG can expand a rule that has already been expanded in your path. This is crucial for allowing things like chaining operations and expressions together as well as declaring functions and procedures inside other function and procedure declarations.<br><br>
+We used an LL(1) parser to parse the CFG. This means the parser parses top-down and only uses one lookahead while parsing. LL parsers parse top-down from left to right, meaning it expands each non terminal it reaches and matches any non terminal. Therefore if we expand A, which is defined as A-> CBa, C would be fully expanded before B is reached. LL parsers also uses 1 lookahead. This means a rule could be expanded in multiple different ways by knowing which nonterminal the parser will match next. This means if we try to expand A, which is defined A-> AB | B | D, we could decide which rule to expand, A, B, or D, based on which nonterminal we will match next. For further explanation see the LL(1) Table section example below.</p>
 <h2>Example</h2>
 <h3>Context-Free&nbsp;Grammar Rules for Selected Nonterminal</h3>
-<p>Give all of the context-free grammar rules corresponding to a nonterminal that has more than one rule with it on the left hand side</p>
+<p>
+1. Start -> Factor FactorTail<br>
+2. Factor -> Integer<br>
+3. Factor -> Float<br>
+4. FactorTail -> Op Factor FactorTail<br>
+5. FactorTail -> epsilon<br>
+6. Op -> * <br>
+7. Op -> /<br><br>
+*epsilon means we will not expand anything, the parse will continue where FactorTail was expanded<br>
+*Notice that this allows recursive descent parsing, because FactorTail calls itself</p>
 <h3>LL(1) Table</h3>
-<p>Describe in English what an LL(1) table is and how it is used in parsing.</p>
-<p>Give the row in the LL(1) table corresponding to the above rules</p>
+<p>An LL(1) Table is a table where every rule corresponds to a row and every column corresponds to a lookahead token. For each column in a given row, if the lookahead represented by the column can be the first nonterminal matched when expanding a potential rule we know to expand that rule.<br><br>
+The following is the LL(1) table for the CFG defined above:<br><br>
+<img src="lltable.png"></img>
+</p>
 <h3>Rule Expansion</h3>
-<p>Discuss how the parser is designed around the &quot;one method per nonterminal paradigm&quot;</p>
-<p>Cut and paste the method from your parser here that implements the nonterminal given above.&nbsp;Provide any necessary discussioin, including a description of what any semantic calls are doing.</p>
+<p>As you can see in the LL(1) Table above, there is only one possible rule to expand per rule/non-terminal pair. This means if a rule can expand in multiple different ways, we always know which way to expand based on the lookahead.<br><br> Here is what a possible function would look like for the rules above:<br><br></p>
+<p>
+public void Factor(){<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if( lookahead == '*' || lookahead == '/' ){<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FactorTail();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}else{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new Exception("parse error");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+</p>
 <!-- InstanceEndEditable -->
 
 </article>
