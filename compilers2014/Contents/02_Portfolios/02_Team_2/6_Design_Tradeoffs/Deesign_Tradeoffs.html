@@ -77,8 +77,17 @@ Compilers 2014
 <h1>Design Tradeoffs</h1>
 
 <h2>Data Structure Tradeoffs</h2>
-
+<h3>Single Pass Parser</h3>
+<p>The downside to the single pass parser is that if some function A is defined after another function B, function A cannot be used in funcion B. When a function calls another it must look up the function it is calling in its symbol table, so even if function A is in function B's scope function B will not be able to call it because it has not been added to the symbol table yet. Some single pass parsers require prototypes to resolve this problem, but that would require adding more to the already complicated grammar so we decided not to include prototypes. Multiple pass parsers are another solution, however single pass are much simpler so we decided to opt out of that option as well.</p>
 <h3>Resolution of Keywords</h3>
+<p>
+The &micro;-pascal language has 36 reserved words. 
+We chose to use an array to store these words and simply do a linear search of each token scanned to determine whether or not it is a reserved word. 
+While this is not the most efficient method of searching, it is easy to program, and with only 36 elements in the list, is certainly fast enough. 
+A hash function makes little sense on a data set as small as this because calculating the hash would be expensive as performing a linear search. 
+Another alternative would be to implement a binary tree to reduce the search time to O(log(n)). 
+Again, because the data structure is more complicated than a simple array, the actual time savings would be insignificant to the overall runtime of the program.
+</p>
 <p>
 The &micro;-pascal language has 36 reserved words. 
 We chose to use an array to store these words and simply do a linear search of each token scanned to determine whether or not it is a reserved word. 
